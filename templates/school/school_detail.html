@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block container %}
+    <h1>{{ school.name }}</h1>
+    <p>Valoración promedio:
+        {% if school.average_valoration %}
+            {{ school.average_valoration }}
+        {% else %}
+            Sin valoraciones
+        {% endif %}
+    </p>
+    <p>Dirección: {{ school.address }}</p>
+    <p>Teléfono: {{ school.phone }}</p>
+    <p>Email: {{ school.email }}</p>
+{% endblock %}

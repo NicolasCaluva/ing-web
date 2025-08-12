@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block container %}
+    <h1>Lista de Escuelas</h1>
+    <ul>
+        {% for school in schools %}
+            <li>
+                <a href="{% url 'school_detail' school.pk %}">{{ school.name }}</a> - Valoración promedio:
+                {% if school.average_valoration %}
+                    {{ school.average_valoration }}
+                {% else %}
+                    Sin valoraciones
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No hay escuelas registradas.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
