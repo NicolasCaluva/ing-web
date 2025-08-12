@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="row w-100 h-100 p-0 m-0">
+        <div class="col-md-2 px-0 h-100">
+            <nav class="content offcanvas-body">
+                <div>
+                    <a href="{% url 'base:home' %}">Inicio</a>
+                </div>
+            </nav>
+        </div>
+
+        <div class="col-md-10 px-0 h-100">
+            {% block panel_right %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
+

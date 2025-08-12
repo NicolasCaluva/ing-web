@@ -1,0 +1,8 @@
+/dondeestudiar/local_settings.py
+__pycache__/
+*.pyc
+**/migrations/*
+.idea/
+.vscode/
+!**/migrations/__init__.py
+media/
