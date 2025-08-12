@@ -10,7 +10,7 @@ def school_list(request):
     return render(request, 'school/school_list.html', context)
 
 def school_detail(request, pk):
-    school = School.objects.get(pk=pk)
+    school = get_object_or_404(School, pk=pk)
     context = {
         'school': school
     }
