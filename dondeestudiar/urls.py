@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 
+from app.schools.views import school_list, school_detail
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('app.base.urls', namespace='base')),
+    path('', school_list, name='home'),
+    path('schools/<int:pk>/', school_detail, name='school_detail'),
 ]
