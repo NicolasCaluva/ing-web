@@ -6,7 +6,7 @@
             <li>
                 <a href="{% url 'school_detail' school.pk %}">{{ school.name }}</a> - Valoración promedio:
                 {% if school.average_valoration %}
-                    {{ school.average_valoration }}
+                    {{ school.average_valoration}}
                 {% else %}
                     Sin valoraciones
                 {% endif %}
