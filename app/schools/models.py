@@ -33,4 +33,4 @@ class Comment(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'Comment by {self.user} on {self.school.name}: {self.comment[:20]}...'
+        return f'Comment by {self.user} on {self.school.name}: {self.description[:20]}...'
