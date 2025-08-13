@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'app.base',
     'app.denuncias',
     'app.comentarios',
-    'app.escuelas'
+    'app.schools'
 ]
 
 MIDDLEWARE = [
