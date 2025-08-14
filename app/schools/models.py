@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class School(models.Model):
-    school_user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)#no esta bien lo del default, tenia un error y para probar
+    school_user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True)
     address = models.CharField(max_length=255, null=False, blank=False)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
@@ -15,11 +15,12 @@ class School(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.school_user.email}'
+
     @property
     def average_valoration(self):
-        comentarios = self.comments.all()
-        if comentarios.exists():
-            return round(sum(c.valoration for c in comentarios) / comentarios.count(), 2)
+        comments = self.comments.all()
+        if comments.exists():
+            return round(sum(c.valoration for c in comments) / comments.count(), 2)
         return None
 
 
