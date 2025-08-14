@@ -6,5 +6,5 @@ from app.schools.views import school_list, school_detail
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', school_list, name='home'),
-    path('schools/<int:pk>/', school_detail, name='school_detail'),
+    path('escuelas/', include('app.schools.urls', namespace='schools')),
 ]
