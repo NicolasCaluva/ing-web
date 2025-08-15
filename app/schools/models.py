@@ -24,6 +24,7 @@ class School(models.Model):
         comentarios = self.school_comments.all()
         if comentarios.exists():
             return round(sum(c.score for c in comentarios) / comentarios.count(), 2)
+
         return None
 
 

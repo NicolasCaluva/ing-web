@@ -2,6 +2,7 @@ from django.urls import path
 
 from app.schools.views import school_detail, delete_comment, edit_comment, edit_reply, delete_reply
 
+
 app_name = 'schools'
 
 urlpatterns = [
@@ -14,4 +15,5 @@ urlpatterns = [
     path('<int:pk>/', edit_reply, name='edit_reply'),
 
     path('<int:pk>/comentario/<int:idComentario>/respuesta/<int:idRespuesta>/', delete_reply, name='delete_reply'),
+
 ]
