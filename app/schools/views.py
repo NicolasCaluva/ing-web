@@ -36,11 +36,10 @@ def edit_comment(request, pk):
     return render(request, 'edit_comment.html', {'form': form})
 
 
-def delete_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    school_pk = comment.school.pk
+def delete_comment(request, pk, idComentario):
+    comment = get_object_or_404(Comment, pk=idComentario)
     comment.delete()
-    return redirect('school_detail', pk=school_pk)
+    return redirect('school:school_detail', pk=pk)
 
 
 def edit_reply(request, pk):
@@ -60,4 +59,4 @@ def edit_reply(request, pk):
 def delete_reply(request, pk, idComentario, idRespuesta):
     reply = get_object_or_404(Reply, pk=idRespuesta)
     reply.delete()
-    return redirect('schools:school_detail', pk=pk)
+    return redirect('school:school_detail', pk=pk)

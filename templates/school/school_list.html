@@ -4,7 +4,7 @@
     <ul>
         {% for school in schools %}
             <li>
-                <a href="{% url 'schools:school_detail' school.id %}">{{ school.name }}</a> - Valoración promedio:
+                <a href="{% url 'school:school_detail' school.id %}">{{ school.name }}</a> - Valoración promedio:
                 {% if school.average_valoration %}
                     {{ school.average_valoration }}
                 {% else %}
