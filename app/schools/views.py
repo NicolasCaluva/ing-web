@@ -55,8 +55,7 @@ def edit_reply(request, pk):
     return render(request, 'school/edit_reply.html', {'form': form})
 
 
-def delete_reply(request, pk):
-    reply = get_object_or_404(Reply, pk=pk)
-    school_pk = reply.school.pk
+def delete_reply(request, pk, idComentario, idRespuesta):
+    reply = get_object_or_404(Reply, pk=idRespuesta)
     reply.delete()
-    return redirect('school_detail', pk=school_pk)
+    return redirect('schools:school_detail', pk=pk)

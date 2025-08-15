@@ -17,15 +17,18 @@
         <p>{{ comment.description }}</p>
         <small>Por: {{ comment.author }}</small>
         <span>Puntuación: {{ comment.score }}</span>
-        <a href="{% url 'edit_comment' comment.id %}">Editar</a>
-        <a href="{% url 'delete_comment' comment.id %}">Eliminar</a>
+        <a href="{% url 'schools:edit_comment' comment.id %}">Editar</a>
+        <a href="{% url 'schools:delete_comment' comment.id %}">Eliminar</a>
         <div style="margin-left: 20px;">
             {% for reply in comment.replies.all %}
                 <div>
                     <p>{{ reply.description }}</p>
                     <small>Por: {{ reply.author }}</small>
-                    <a href="{% url 'edit_reply' reply.id %}">Editar</a>
-                    <a href="{% url 'delete_reply' reply.id %}">Eliminar</a>
+                    <a href="{% url 'schools:edit_reply' reply.id %}">Editar</a>
+                    <form action="{% url 'schools:delete_reply' school.id comment.id reply.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Eliminar</button>
+</form>
                 </div>
             {% empty %}
                 <p>No hay respuestas.</p>
