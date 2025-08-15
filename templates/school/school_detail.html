@@ -11,4 +11,28 @@
     <p>Dirección: {{ school.address }}</p>
     <p>Teléfono: {{ school.phone_number }}</p>
     <p>Email: {{ school.email }}</p>
+    <h2>Comentarios</h2>
+{% for comment in comments %}
+    <div>
+        <p>{{ comment.description }}</p>
+        <small>Por: {{ comment.author }}</small>
+        <span>Puntuación: {{ comment.score }}</span>
+        <a href="{% url 'edit_comment' comment.id %}">Editar</a>
+        <a href="{% url 'delete_comment' comment.id %}">Eliminar</a>
+        <div style="margin-left: 20px;">
+            {% for reply in comment.replies.all %}
+                <div>
+                    <p>{{ reply.description }}</p>
+                    <small>Por: {{ reply.author }}</small>
+                    <a href="{% url 'edit_reply' reply.id %}">Editar</a>
+                    <a href="{% url 'delete_reply' reply.id %}">Eliminar</a>
+                </div>
+            {% empty %}
+                <p>No hay respuestas.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% empty %}
+    <p>No hay comentarios.</p>
+{% endfor %}
 {% endblock %}
