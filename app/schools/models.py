@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from app.users.models import UserBase
 
 
-class School(models.Model):
-    user = models.ForeignKey(UserBase, on_delete=models.CASCADE)
+class School(UserBase):
     name = models.CharField(max_length=100, unique=True)
     address = models.CharField(max_length=255, null=False, blank=False)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
@@ -17,7 +16,7 @@ class School(models.Model):
 
 
     def __str__(self):
-        return f'{self.name} - {self.user.email}'
+        return self.name
 
     @property
     def average_valoration(self):
