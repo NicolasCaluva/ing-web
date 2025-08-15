@@ -51,7 +51,12 @@ def edit_reply(request, pk):
             form.save()
             return redirect('school_detail', pk=reply.school.pk)
     else:
-        form = CommentForm(instance=reply)
+        form = ReplyForm(request.POST, instance=reply)
+        if form.is_valid():
+            form.save()
+            return redirect('school_detail', pk=reply.school.pk)
+    else:
+        form = ReplyForm(instance=reply)
     return render(request, 'school/edit_reply.html', {'form': form})
 
 
