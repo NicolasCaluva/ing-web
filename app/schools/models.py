@@ -5,7 +5,7 @@ from app.users.models import UserBase
 
 
 class School(models.Model):
-    school_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserBase, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True)
     address = models.CharField(max_length=255, null=False, blank=False)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
@@ -17,7 +17,7 @@ class School(models.Model):
 
 
     def __str__(self):
-        return f'{self.name} - {self.school_user.email}'
+        return f'{self.name} - {self.user.email}'
 
     @property
     def average_valoration(self):
@@ -38,19 +38,19 @@ class BaseComment(models.Model):
 
 
 class Comment(BaseComment):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(UserBase, on_delete=models.CASCADE, related_name='comments')
     school = models.ForeignKey('School', on_delete=models.CASCADE, related_name='school_comments')
-    score = models.PositiveSmallIntegerField()
+    score = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.author.username[:10]} {self.description[:10]}...'
+        return f'{self.user.username[:10]} {self.description[:10]}...'
 
 
 class Reply(BaseComment):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='replies')
+    user = models.ForeignKey(UserBase, on_delete=models.CASCADE, related_name='replies')
     school = models.ForeignKey('School', on_delete=models.CASCADE, related_name='school_replies')
     parent = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='replies')
 
     def __str__(self):
-        return f'{self.author.username[:10]} {self.description[:10]}...'
+        return f'{self.user.username[:10]} {self.description[:10]}...'
 
