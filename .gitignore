@@ -6,3 +6,4 @@ __pycache__/
 .vscode/
 !**/migrations/__init__.py
 media/
+venv
