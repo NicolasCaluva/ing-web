@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .forms import CommentForm
+from .forms import CommentForm, ReplyForm
 from .models import School, Comment, Reply
 
 
@@ -36,11 +36,10 @@ def edit_comment(request, pk):
     return render(request, 'edit_comment.html', {'form': form})
 
 
-def delete_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    school_pk = comment.school.pk
+def delete_comment(request, pk, idComentario):
+    comment = get_object_or_404(Comment, pk=idComentario)
     comment.delete()
-    return redirect('school_detail', pk=school_pk)
+    return redirect('school:school_detail', pk=pk)
 
 
 def edit_reply(request, pk):
@@ -51,12 +50,13 @@ def edit_reply(request, pk):
             form.save()
             return redirect('school_detail', pk=reply.school.pk)
     else:
-        form = CommentForm(instance=reply)
-    return render(request, 'school/edit_reply.html', {'form': form})
+        form = ReplyForm(request.POST, instance=reply)
+        if form.is_valid():
+            form.save()
+            return redirect('school_detail', pk=reply.school.pk)
 
 
-def delete_reply(request, pk):
-    reply = get_object_or_404(Reply, pk=pk)
-    school_pk = reply.school.pk
+def delete_reply(request, pk, idComentario, idRespuesta):
+    reply = get_object_or_404(Reply, pk=idRespuesta)
     reply.delete()
-    return redirect('school_detail', pk=school_pk)
+    return redirect('school:school_detail', pk=pk)
