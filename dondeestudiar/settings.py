@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     'app.users',
-    'app.base',
     'app.denuncias',
     'app.comentarios',
     'app.schools'
