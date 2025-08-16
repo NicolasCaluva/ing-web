@@ -5,8 +5,10 @@
     <div class="row w-100 h-100 p-0 m-0">
         <div class="col-md-2 px-0 h-100">
             <nav class="content offcanvas-body">
-                <div>
-                    <a href="{% url 'base:home' %}">Inicio</a>
+                <p>Usuario: {{ user }}</p>
+                <div class="d-flex flex-column">
+                    <a href="{% url 'school:school_list' %}">Inicio</a>
+                    <a href="{% url 'users:logout' %}">Cerrar sesión</a>
                 </div>
             </nav>
         </div>

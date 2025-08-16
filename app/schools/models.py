@@ -5,19 +5,20 @@ from app.users.models import UserBase
 
 
 class School(models.Model):
-    user = models.ForeignKey(UserBase, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, unique=True)
-    address = models.CharField(max_length=255, null=False, blank=False)
+    user = models.ForeignKey(UserBase, on_delete=models.CASCADE, related_name='schools', null=True, blank=True)
+    name = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    slug = models.SlugField(max_length=100, unique=True, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     profile_photo = models.ImageField(upload_to='school_photos/', null=True, blank=True)
     logo = models.ImageField(upload_to='school_logo/', null=True, blank=True)
-    general_description = models.TextField(null=False, blank=False)
-    income_description = models.TextField(null=False, blank=False)
-    career_description = models.TextField(null=False, blank=False)
+    general_description = models.TextField(null=True, blank=True)
+    income_description = models.TextField(null=True, blank=True)
+    career_description = models.TextField(null=True, blank=True)
 
 
     def __str__(self):
-        return f'{self.name} - {self.user.email}'
+        return self.name
 
     @property
     def average_valoration(self):
@@ -38,8 +39,8 @@ class BaseComment(models.Model):
 
 
 class Comment(BaseComment):
-    user = models.ForeignKey(UserBase, on_delete=models.CASCADE, related_name='comments')
-    school = models.ForeignKey('School', on_delete=models.CASCADE, related_name='school_comments')
+    user = models.ForeignKey(UserBase, on_delete=models.CASCADE, related_name='comments', null=True, blank=True)
+    school = models.ForeignKey('School', on_delete=models.CASCADE, related_name='school_comments', null=True, blank=True)
     score = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):

@@ -8,7 +8,8 @@ from .models import School, Comment, Reply
 def school_list(request):
     schools = School.objects.all()
     context = {
-        'schools': schools
+        'schools': schools,
+        'user': request.user if request.user.is_authenticated else None
     }
 
     return render(request, 'school/school_list.html', context)
