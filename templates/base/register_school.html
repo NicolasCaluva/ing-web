@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block container %}
+    <div>
+        <form action="{% url 'school:register' %}" method="post">
+            {% csrf_token %}
+
+            <div>
+                <label for="name" class="form-label">Nombre de la institución</label>
+                <input type="text" name="name" id="name">
+            </div>
+
+            <div>
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="text" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div>
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div>
+                <label for="password2" class="form-label">Repetir contraseña</label>
+                <input type="password" class="form-control" id="password2" name="password2" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+            <a href="{% url 'login' %}" class="btn btn-secondary">Ya tengo una cuenta</a>
+        </form>
+    </div>
+{% endblock %}

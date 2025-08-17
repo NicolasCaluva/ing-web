@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block container %}
+    <div>
+        <form action="{% url 'users:register' %}" method="post">
+            {% csrf_token %}
+            
+            <div>
+                <label for="first_name" class="form-label">Nombre</label>
+                <input type="text" name="first_name" id="first_name">
+            </div>
+            
+            <div>
+                <label for="last_name" class="form-label">Apellidos</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" required>
+            </div>
+            
+            <div>
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="text" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div>
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div>
+                <label for="password2" class="form-label">Repetir contraseña</label>
+                <input type="password" class="form-control" id="password2" name="password2" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+            <a href="{% url 'login' %}" class="btn btn-secondary">Ya tengo una cuenta</a>
+        </form>
+    </div>
+{% endblock %}
