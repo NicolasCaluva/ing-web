@@ -2,7 +2,7 @@
 {% load static %}
 {% block container %}
     <div>
-        <form action="{% url 'users:login' %}" method="post">
+        <form action="{% url 'login' %}" method="post">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
@@ -15,7 +15,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-            <a href="" class="btn btn-secondary">Registrarse</a>
+            <a href="{% url 'base:index' %}" class="btn btn-secondary">Registrarse</a>
         </form>
     </div>
 {% endblock %}
