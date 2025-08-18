@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'app.users',
     'app.denuncias',
     'app.comentarios',
-    'app.schools'
+    'app.schools',
+    'app.panel'
 ]
 
 MIDDLEWARE = [

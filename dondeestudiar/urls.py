@@ -11,5 +11,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('escuelas/', include('app.schools.urls', namespace='schools')),
     path('usuarios/', include('app.users.urls', namespace='users')),
-    path('base/', include('app.base.urls', namespace='base'))
+    path('base/', include('app.base.urls', namespace='base')),
+    path('panel/', include('app.panel.urls', namespace='panel'))
 ]
