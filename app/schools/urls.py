@@ -6,7 +6,6 @@ from app.base.views import register_school_view
 app_name = 'school'
 
 urlpatterns = [
-    path('', school_list, name='school_list'),
     path('registro/', register_school_view, name='register'),
     path('<int:pk>/', school_detail, name='school_detail'),
     path('<int:pk>/', edit_comment, name='edit_comment'),
