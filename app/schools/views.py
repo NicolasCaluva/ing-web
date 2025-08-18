@@ -9,7 +9,7 @@ def school_list(request):
     schools = School.objects.all()
     context = {
         'schools': schools,
-        'user': request.user if request.user.is_authenticated else None
+        'user': request.user
     }
 
     return render(request, 'school/school_list.html', context)
