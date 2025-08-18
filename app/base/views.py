@@ -151,7 +151,6 @@ def edit_user_view(request):
                     'user': user
                 })
 
-        user.save()
         user.user.save()
         messages.success(request, "Perfil actualizado correctamente.")
         return redirect(reverse('home'))
