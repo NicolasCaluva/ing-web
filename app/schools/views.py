@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import CommentForm, ReplyForm
 from .models import School, Comment, Reply
+from ..users.models import UserBase
 
 
 # Create your views here.
@@ -17,12 +18,30 @@ def school_list(request):
 def school_detail(request, pk):
     school = get_object_or_404(School, pk=pk)
     comments = Comment.objects.filter(school=school).order_by('-created_at')
-    context = {
-        'school': school,
-        'comments': comments
-    }
 
-    return render(request, 'school/school_detail.html', context)
+    if request.method == "GET":
+        context = {
+            'school': school,
+            'comments': comments
+        }
+
+        return render(request, 'school/school_detail.html', context)
+    elif request.method == "POST":
+        if request.user.is_authenticated:
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.school = school
+                comment.user = UserBase.objects.get(user=request.user)
+                comment.score = form.cleaned_data['score']
+                comment.save()
+                return redirect('school:school_detail', pk=school.pk)
+        else:
+            return render(request, 'school/school_detail.html', {
+                'school': school,
+                'comments': comments,
+                'error': 'Debes iniciar sesión para comentar.'
+            })
 
 
 def edit_comment(request, pk):
