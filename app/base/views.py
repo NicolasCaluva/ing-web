@@ -131,7 +131,7 @@ def edit_user_view(request):
             user.user.last_name = last_name
 
         if new_email:
-            if User.objects.filter(email=new_email).exclude(id=user.id).exists():
+            if User.objects.filter(email=new_email).exclude(id=user.user.id).exists():
                 return render(request, 'base/edit_profile.html', {
                     'error': "El nuevo correo electrónico ya está registrado.",
                     'user': user
@@ -150,7 +150,7 @@ def edit_user_view(request):
                     'error': "Las nuevas contraseñas no coinciden.",
                     'user': user
                 })
-
+        user.save()
         user.user.save()
         messages.success(request, "Perfil actualizado correctamente.")
         return redirect(reverse('home'))
