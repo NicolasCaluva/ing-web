@@ -12,25 +12,40 @@
     <p>Teléfono: {{ school.phone_number }}</p>
     <p>Email: {{ school.email }}</p>
     <h2>Comentarios</h2>
+
+    {% if user.is_authenticated %}
+        <form action="{% url 'school:school_detail' school.id %}" method="post">
+            {% csrf_token %}
+            <textarea name="description" placeholder="Escribe tu comentario aquí..." required></textarea>
+            <input type="number" name="score" min="1" max="5" placeholder="Puntuación (1-5)" required>
+            <button type="submit">Agregar Comentario</button>
+        </form>
+    {% endif %}
+
 {% for comment in comments %}
     <div>
         <p>{{ comment.description }}</p>
         <small>Por: {{ comment.author }}</small>
         <span>Puntuación: {{ comment.score }}</span>
         <a>Editar</a>
-            <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Eliminar</button>
-            </form>        <div style="margin-left: 20px;">
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Eliminar</button>
+            </form>
+            {% endif %}
+            <div style="margin-left: 20px;">
             {% for reply in comment.replies.all %}
                 <div>
                     <p>{{ reply.description }}</p>
                     <small>Por: {{ reply.author }}</small>
                     <a >Editar</a>
+                    {% if request.user.is_staff or request.user.is_superuser %}
                     <form action="{% url 'school:delete_reply' school.id comment.id reply.id %}" method="post" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit">Eliminar</button>
-</form>
+                    </form>
+                    {% endif %}
                 </div>
             {% empty %}
                 <p>No hay respuestas.</p>
