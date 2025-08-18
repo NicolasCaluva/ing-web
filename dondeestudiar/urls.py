@@ -4,6 +4,8 @@ from django.urls import path, include
 from app.schools.views import school_list
 from app.base.views import login_view, logout_view
 
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', school_list, name='home'),
@@ -13,3 +15,5 @@ urlpatterns = [
     path('usuarios/', include('app.users.urls', namespace='users')),
     path('base/', include('app.base.urls', namespace='base'))
 ]
+if settings.DEBUG:  # hay que sacar esto despues en el servidor
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
