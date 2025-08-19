@@ -90,9 +90,9 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Configuración Cloudinary
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('devtlggvb'),
-    'API_KEY': os.environ.get('187972238595267'),
-    'API_SECRET': os.environ.get('3_mQ2Ag_npjjwdUkRTbQICn8hrQ'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
 # Default primary key
@@ -108,5 +108,3 @@ if 'RENDER' in os.environ:
         MIDDLEWARE.index('django.middleware.security.SecurityMiddleware') + 1,
         'whitenoise.middleware.WhiteNoiseMiddleware'
     )
-
-# Importa local_settings si existe (opcional para desarrollo local)
