@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'app.base',
     'app.users',
     'app.denuncias',
-    'app.comentarios',
     'app.schools',
     'app.panel'
 ]
