@@ -1,6 +1,9 @@
-# exit on error
+#!/bin/bash
+# Salir si hay error
 set -o errexit
 
-# run the web app server
-cd $(dirname $(find . | grep manage.py$))
-uv run gunicorn $(dirname $(find . | grep wsgi.py$) | sed "s/\.\///g").wsgi:application
+# Ir al directorio del proyecto (donde está manage.py)
+cd $(dirname "$0")
+
+# Ejecutar Gunicorn apuntando al módulo WSGI de Django
+gunicorn dondeestudiar.wsgi:application --bind 0.0.0.0:$PORT
