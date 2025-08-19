@@ -1,0 +1,63 @@
+{% extends 'panel/panel-admin.html' %}
+{% load static %}
+{% block panel_right %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Lista de Usuarios</h1>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Fecha de Registro</th>
+                <th>Correo verificado</th>
+                <th>Eliminado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.user.first_name }}</td>
+                    <td>{{ user.user.last_name }}</td>
+                    <td>{{ user.user.email }}</td>
+                    <td>{{ user.user.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if user.email_verified %}
+                            <span class="badge bg-success">VERIFICADO</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">NO VERIFICADO</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.user.is_active %}
+                            <span class="badge bg-success">NO</span>
+                        {% else %}
+                            <span class="badge bg-danger">SI</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'panel:edit_user' user.id %}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <form action="{% url 'panel:delete_user' user.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No hay usuarios registrados.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{% url 'panel:create_user' %}" type="button" class="btn btn-primary">Crear nuevo usuario</a>
+    </div>
+{% endblock %}

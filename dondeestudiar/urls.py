@@ -13,7 +13,8 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('escuelas/', include('app.schools.urls', namespace='schools')),
     path('usuarios/', include('app.users.urls', namespace='users')),
-    path('base/', include('app.base.urls', namespace='base'))
+    path('base/', include('app.base.urls', namespace='base')),
+    path('panel/', include('app.panel.urls', namespace='panel'))
 ]
 if settings.DEBUG:  # hay que sacar esto despues en el servidor
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
