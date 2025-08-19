@@ -8,10 +8,10 @@ from .models import School, Comment, Reply
 def school_list(request):
     schools = School.objects.all()
     context = {
-        'schools': schools
+        'schools': schools,
+        'user': request.user
     }
-
-    return render(request, 'school/school_list.html', context)
+    return render(request, 'base/index.html', context)
 
 def school_detail(request, pk):
     school = get_object_or_404(School, pk=pk)
@@ -60,3 +60,4 @@ def delete_reply(request, pk, idComentario, idRespuesta):
     reply = get_object_or_404(Reply, pk=idRespuesta)
     reply.delete()
     return redirect('school:school_detail', pk=pk)
+

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Escuelas</title>
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/static/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="#">Escuelas</a>
+            <!-- Botón a la derecha -->
+            <div class="ms-auto">
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item" href="{% url 'base:edit_profile' %}">Editar perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Cerrar sesión</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a class="btn btn-outline-primary" href="{% url 'login' %}">Iniciar sesión</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Listado de Escuelas</h1>
+                <p class="lead fw-normal text-white-50 mb-0">Encuentra la mejor escuela para ti</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section-->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+                {% for school in schools %}
+                <div class="col mb-5">
+                    <div class="card h-100">
+                        <!-- Imagen de la escuela -->
+                        {% if school.profile_photo %}
+                            <img class="card-img-top" src="{{ school.profile_photo.url }}" alt="{{ school.name }}">
+                        {% else %}
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Sin foto">
+                        {% endif %}
+
+                        <!-- Detalles -->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Nombre -->
+                                <h5 class="fw-bolder">{{ school.name }}</h5>
+
+                                <!-- Estrellas -->
+                                {% if school.average_valoration %}
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= school.average_valoration %}
+                                                <div class="bi-star-fill"></div>
+                                            {% else %}
+                                                <div class="bi-star"></div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p><small>Sin valoraciones</small></p>
+                                {% endif %}
+
+                                <!-- Dirección -->
+                                <p>{{ school.address }}</p>
+
+                                <!-- Carreras -->
+                                {% if school.careers.all %}
+                                    <ul class="list-unstyled">
+                                        {% for career in school.careers.all %}
+                                            <li>- {{ career.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p><em>No hay carreras registradas</em></p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Botón -->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center">
+                                <a class="btn btn-outline-dark mt-auto" href="{% url 'school:school_detail' school.id %}">
+                                    Ver escuela
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer-->
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">&copy; Proyecto Escuelas 2025</p></div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

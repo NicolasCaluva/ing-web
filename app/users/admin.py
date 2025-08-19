@@ -4,10 +4,9 @@ from django.contrib import admin
 
 from .models import UserBase
 
+
 @admin.register(UserBase)
 class UserBaseAdmin(admin.ModelAdmin):
-
-    list_display = ('username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active')
-    search_fields = ('username', 'first_name', 'last_name', 'email')
-    list_filter = ('is_staff', 'is_active')
-    ordering = ('username',)
+    list_display = ('user', 'user__first_name', 'user__last_name', 'user__is_staff', 'user__is_active',
+                    'user__date_joined')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name')

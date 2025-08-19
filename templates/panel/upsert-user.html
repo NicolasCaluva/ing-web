@@ -1,0 +1,35 @@
+{% extends 'panel/panel-admin.html' %}
+{% load static %}
+{% block panel_right %}
+    <div class="container mt-5">
+        <h1 class="mb-4">
+            {% if user.id %}Editar Usuario{% else %}Crear Usuario{% endif %}
+        </h1>
+
+        <div class="row d-flex w-100">
+            <form action="{% if user.id %}{% url 'panel:edit_user' user.id %}{% else %}{% url 'panel:create_user' %}{% endif %}"
+                  method="post">
+                {% csrf_token %}
+                <div class="col-6">
+                    <label for="first_name">Nombre</label>
+                    <input type="text" name="first_name" id="first_name" class="form-control mb-3"
+                           value="{{ user.user.first_name|default_if_none:'' }}" required>
+                </div>
+
+                <div class="col-6">
+                    <label for="last_name">Apellido</label>
+                    <input type="text" name="last_name" id="last_name" class="form-control mb-3"
+                           value="{{ user.user.last_name|default_if_none:'' }}" required>
+                </div>
+
+                <div class="col-12">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" name="email" id="email" class="form-control mb-3"
+                           value="{{ user.user.username|default_if_none:'' }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Confirmar</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
