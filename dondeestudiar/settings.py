@@ -101,7 +101,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Ajustes para Render
 if 'RENDER' in os.environ:
     print("USING RENDER.COM SETTINGS!")
-    DEBUG = True
+    DEBUG = False
     ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
     MIDDLEWARE.insert(
@@ -110,7 +110,3 @@ if 'RENDER' in os.environ:
     )
 
 # Importa local_settings si existe (opcional para desarrollo local)
-try:
-    from dondeestudiar.local_settings import *
-except ImportError:
-    pass
