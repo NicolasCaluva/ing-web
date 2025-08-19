@@ -80,3 +80,29 @@ def delete_reply(request, pk, idComentario, idRespuesta):
     reply.delete()
     return redirect('school:school_detail', pk=pk)
 
+
+def add_reply(request, pk, idComentario):
+    school = get_object_or_404(School, pk=pk)
+    comment = get_object_or_404(Comment, pk=idComentario)
+
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            form = ReplyForm(request.POST)
+            if form.is_valid():
+                reply = form.save(commit=False)
+                reply.parent = comment
+                reply.school = school
+                reply.description = form.cleaned_data['description']
+                reply.user = UserBase.objects.get(user=request.user)
+                reply.save()
+                return redirect('school:school_detail', pk=school.pk)
+        else:
+            return render(request, 'school/school_detail.html', {
+                'school': school,
+                'comment': comment,
+                'error': 'Debes iniciar sesión para responder.'
+            })
+    else:
+        form = ReplyForm()
+
+    return render(request, 'school/school_detail.html', {'form': form, 'comment': comment})
