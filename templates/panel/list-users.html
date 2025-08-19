@@ -39,7 +39,9 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a href="{% url 'panel:edit_user' user.id %}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
                         <form action="{% url 'panel:delete_user' user.id %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm">
@@ -55,5 +57,7 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <a href="{% url 'panel:create_user' %}" type="button" class="btn btn-primary">Crear nuevo usuario</a>
     </div>
 {% endblock %}
