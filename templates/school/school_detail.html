@@ -1,43 +1,98 @@
+<!-- templates/school/school_detail.html -->
 {% extends 'base.html' %}
 {% block container %}
-    <h1>{{ school.name }}</h1>
-    <p>Valoración promedio:
-        {% if school.average_valoration %}
-            {{ school.average_valoration }}
-        {% else %}
-            Sin valoraciones
-        {% endif %}
-    </p>
-    <p>Dirección: {{ school.address }}</p>
-    <p>Teléfono: {{ school.phone_number }}</p>
-    <p>Email: {{ school.email }}</p>
-    <h2>Comentarios</h2>
-{% for comment in comments %}
-    <div>
-        <p>{{ comment.description }}</p>
-        <small>Por: {{ comment.author }}</small>
-        <span>Puntuación: {{ comment.score }}</span>
-        <a>Editar</a>
-            <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Eliminar</button>
-            </form>        <div style="margin-left: 20px;">
-            {% for reply in comment.replies.all %}
-                <div>
-                    <p>{{ reply.description }}</p>
-                    <small>Por: {{ reply.author }}</small>
-                    <a >Editar</a>
-                    <form action="{% url 'school:delete_reply' school.id comment.id reply.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Eliminar</button>
-</form>
-                </div>
-            {% empty %}
-                <p>No hay respuestas.</p>
-            {% endfor %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h1 class="card-title">{{ school.name }}</h1>
+            <p class="card-text">
+                <strong>Valoración promedio:</strong>
+                {% if school.average_valoration %}
+                    <span class="badge bg-success">{{ school.average_valoration }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">Sin valoraciones</span>
+                {% endif %}
+            </p>
+            <p><strong>Dirección:</strong> {{ school.address }}</p>
+            <p><strong>Teléfono:</strong> {{ school.phone_number }}</p>
+            <p><strong>Email:</strong> {{ school.email }}</p>
         </div>
     </div>
-{% empty %}
-    <p>No hay comentarios.</p>
-{% endfor %}
+    <h2>Comentarios</h2>
+    {% if user.is_authenticated %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <form action="{% url 'school:school_detail' school.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        <textarea class="form-control" name="description" placeholder="Escribe tu comentario aquí..." required></textarea>
+                    </div>
+                    <div class="mb-2">
+                       <div class="star-rating">
+                            {% for i in "54321" %}
+                                <input type="radio" id="star{{ i }}" name="score" value="{{ i }}" required>
+                                <label for="star{{ i }}" title="{{ i }} estrellas">
+                                    <i class="fa-solid fa-star"></i>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Agregar Comentario</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <p>{{ comment.description }}</p>
+                <small class="text-muted">Por: {{ comment.user }}</small>
+                <span class="ms-2">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= comment.score %}
+                            <i class="fa-solid fa-star text-warning"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                    ({{ comment.score }})
+                </span>
+                {% if request.user.is_authenticated and request.user.id == comment.user.user.id %}
+                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2">Editar</a>
+                {% endif %}
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
+                    </form>
+                {% endif %}
+            <button class="btn btn-sm btn-primary reply-btn" onclick="toggleReply(this)">Responder</button>
+                <div class="reply-box mt-2" style="display:none;">
+                    <form action="{% url 'school:add_reply' school.id comment.id %}" method="post">
+                        {% csrf_token %}
+                        <textarea class="form-control mb-2" name="description" placeholder="Escribe tu respuesta..." required></textarea>
+                        <button class="btn btn-success btn-sm" type="submit">Enviar</button>
+                    </form>
+                </div>
+                <div class="ms-4 mt-3">
+                    {% for reply in comment.replies.all %}
+                        <div class="border rounded p-2 mb-2">
+                            <p>{{ reply.description }}</p>
+                            <small class="text-muted">Por: {{ reply.user }}</small>
+                        </div>
+                    {% empty %}
+                        <p>No hay respuestas.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No hay comentarios.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/replyBox.js"></script>
 {% endblock %}
