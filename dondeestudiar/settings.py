@@ -118,7 +118,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-from dondeestudiar.local_settings import *
+# from dondeestudiar.local_settings import *
 
 # code needed to deploy in Render.com:
 import os
