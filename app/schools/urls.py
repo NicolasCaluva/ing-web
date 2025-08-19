@@ -14,4 +14,4 @@ urlpatterns = [
     path('<int:pk>/', edit_reply, name='edit_reply'),
     path('<int:pk>/comentario/<int:idComentario>/respuesta/<int:idRespuesta>/', delete_reply, name='delete_reply'),
     path('<int:pk>/comentario/<int:idComentario>/respuesta/', add_reply, name='add_reply'),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
