@@ -10824,3 +10824,28 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.star-rating {
+    direction: rtl; /* para que funcione bien el hover */
+    display: inline-flex;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    color: #ddd;
+    transition: color 0.2s;
+    padding: 0 2px;
+}
+
+.star-rating input:checked ~ label i {
+    color: #ffc107; /* estrellas seleccionadas */
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc107; /* efecto hover */
+}
