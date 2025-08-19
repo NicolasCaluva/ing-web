@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block container %}
+    <div class="row">
+        <div class="d-flex flex-column">
+            <a href="{% url 'users:register' %}">Registrarse como usuario</a>
+            <a href="{% url 'school:register' %}">Registrarse como institución</a>
+        </div>
+    </div>
+{% endblock %}
