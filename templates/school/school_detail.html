@@ -80,14 +80,6 @@
                         <div class="border rounded p-2 mb-2">
                             <p>{{ reply.description }}</p>
                             <small class="text-muted">Por: {{ reply.user }}</small>
-
-                            {% if request.user.is_staff or request.user.is_superuser %}
-                                <form>
-                                    {% csrf_token %}
-
-
-                                </form>
-                            {% endif %}
                         </div>
                     {% empty %}
                         <p>No hay respuestas.</p>
