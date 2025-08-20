@@ -5,8 +5,6 @@ Django settings for dondeestudiar project.
 from pathlib import Path
 import os
 import dj_database_url
-from django.core.files.storage import storages
-
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,7 +34,7 @@ INSTALLED_APPS = [
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-2")  # tu región
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")  # tu región
 AWS_QUERYSTRING_AUTH = False  # Si querés URLs públicas sin tokens
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
