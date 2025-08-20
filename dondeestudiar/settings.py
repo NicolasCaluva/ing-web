@@ -5,15 +5,7 @@ Django settings for dondeestudiar project.
 from pathlib import Path
 import os
 import dj_database_url
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# Configuración Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-}
+from django.core.files.storage import storages
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,14 +24,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'cloudinary',
-    'cloudinary_storage',
     'app.base',
     'app.users',
     'app.denuncias',
     'app.schools',
     'app.panel',
+    'storages',
 ]
+
+# S3 Config
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-2")  # tu región
+AWS_QUERYSTRING_AUTH = False  # Si querés URLs públicas sin tokens
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
