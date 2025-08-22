@@ -3,14 +3,14 @@
 
 {% block panel_right %}
     <div class="container mt-5">
-        <h1 class="mb-4">Lista de Escuelas</h1>
+        <h1 class="mb-4">Lista de escuelas</h1>
         <table class="table table-striped">
             <thead>
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Fecha de Creación</th>
+                <th>Fecha de registro</th>
+                <th>Activa</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -19,8 +19,14 @@
                 <tr>
                     <td>{{ school.id }}</td>
                     <td>{{ school.name }}</td>
-                    <td>{{ school.description }}</td>
-                    <td>{{ school.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ school.user.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if school.user.is_active %}
+                            <span class="badge bg-success">SI</span>
+                        {% else %}
+                            <span class="badge bg-danger">NO</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="{% url 'panel:edit_school' school.id %}" class="btn btn-primary btn-sm">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
@@ -40,5 +46,9 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <a href="{% url 'panel:create_school' %}" class="btn btn-primary mb-3">
+            Crear nueva escuela
+        </a>
     </div>
 {% endblock %}

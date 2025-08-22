@@ -1,0 +1,23 @@
+{% extends 'panel/panel-admin.html' %}
+{% load static %}
+{% block panel_right %}
+    <div class="container mt-5">
+        <h1 class="mb-4">{{ title }}</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre de la Escuela</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ school.name }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email del Administrador</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ school.user.email }}"
+                       required>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+{% endblock %}
