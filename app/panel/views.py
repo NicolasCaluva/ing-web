@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from app.schools.models import School
 from app.users.models import UserBase
 
 
@@ -81,3 +82,18 @@ def upsert_user(request, pk=None):
 
     else:
         return render(request, 'panel/list-users.html', {'error': 'Invalid request method'})
+
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='base:login')
+def list_schools(request):
+    if request.method == 'GET':
+        schools = School.objects.all()
+        context = {
+            'schools': schools
+        }
+        return render(request, 'panel/list-schools.html', context)
+
+    else:
+        return render(request, 'panel/list-schools.html', {'error': 'Invalid request method'})

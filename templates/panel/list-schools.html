@@ -1,0 +1,44 @@
+{% extends 'panel/panel-admin.html' %}
+{% load static %}
+
+{% block panel_right %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Lista de Escuelas</h1>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Fecha de Creación</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for school in schools %}
+                <tr>
+                    <td>{{ school.id }}</td>
+                    <td>{{ school.name }}</td>
+                    <td>{{ school.description }}</td>
+                    <td>{{ school.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <a href="{% url 'panel:edit_school' school.id %}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </a>
+                        <form action="{% url 'panel:delete_school' school.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No hay escuelas registradas.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
