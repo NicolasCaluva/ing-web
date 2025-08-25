@@ -15,4 +15,4 @@ urlpatterns = [
     path('usuarios/', include('app.users.urls', namespace='users')),
     path('base/', include('app.base.urls', namespace='base')),
     path('panel/', include('app.panel.urls', namespace='panel'))
-]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
