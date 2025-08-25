@@ -99,26 +99,26 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# Archivos estáticos
+# Archivos estáticos y media
 # =========================
+
 STATIC_URL = '/static/'
-
-# Archivos que vos ponés en /static
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# Carpeta final donde collectstatic los junta
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# WhiteNoise: sirve los estáticos comprimidos en producción
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# =========================
-# Media (Cloudinary)
-# =========================
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    # Archivos subidos (media) -> Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    # Archivos estáticos -> WhiteNoise
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
