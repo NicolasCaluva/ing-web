@@ -32,11 +32,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'cloudinary',
-    'cloudinary_storage',
     'app.base',
     'app.users',
-    'app.denuncias',
+    'app.reports',
     'app.schools',
     'app.panel',
 ]
