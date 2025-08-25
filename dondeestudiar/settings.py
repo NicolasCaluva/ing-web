@@ -20,24 +20,34 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.postgres',
     'app.base',
     'app.users',
     'app.denuncias',
     'app.schools',
     'app.panel',
-    'storages',
+    'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
-# S3 Config
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")  # tu región
-AWS_QUERYSTRING_AUTH = False  # Si querés URLs públicas sin tokens
+STORAGES = {
+  'default': {
+    'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'
+  },
+  'staticfiles': {
+    'BACKEND': 'django.core.files.storage.FileSystemStorage'
+  },
+}
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+    'API_KEY': os.environ.get("API_KEY"),
+    'API_SECRET': os.environ.get("API_SECRET")
+}
+
+MEDIA_URL = '/media/'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
