@@ -16,6 +16,46 @@
                        required>
             </div>
 
+            <div class="mb-3">
+                <label for="address" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="address" name="address" value="{{ school.address }}"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number"
+                       value="{{ school.phone_number }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="profile_photo" class="form-label">Foto de perfil</label>
+                <input type="file" class="form-control" id="profile_photo" name="profile_photo">
+                {% if school.profile_photo %}
+                    <img src="{{ school.profile_photo.url }}" alt="Foto de perfil" class="mt-2"
+                         style="max-height: 100px;">
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="logo" class="form-label">Logo de la Escuela</label>
+                <input type="file" class="form-control" id="logo" name="logo">
+                {% if school.logo %}
+                    <img src="{{ school.logo.url }}" alt="Logo" class="mt-2" style="max-height: 100px;">
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="general_description" class="form-label">Descripción general</label>
+                <textarea class="form-control" id="general_description" name="general_description" rows="5"
+                          required>{{ school.general_description }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="income_description" class="form-label">Descripción resumida</label>
+                <textarea class="form-control" id="income_description" name="income_description" rows="3"
+                          required>{{ school.income_description }}</textarea>
+            </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
