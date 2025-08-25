@@ -5,15 +5,20 @@ Django settings for dondeestudiar project.
 from pathlib import Path
 import os
 import dj_database_url
-# Build paths inside the project
+
+# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY
+# =========================
+# Seguridad
+# =========================
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-default-key')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
-# Application definition
+# =========================
+# Aplicaciones
+# =========================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,36 +26,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.postgres',
+    'django.contrib.staticfiles',
+
+    # Apps propias
     'app.base',
     'app.users',
     'app.denuncias',
     'app.schools',
     'app.panel',
-    'django.contrib.staticfiles',
+
+    # Cloudinary
     'cloudinary_storage',
     'cloudinary',
 ]
 
-STORAGES = {
-  'default': {
-    'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'
-  },
-  'staticfiles': {
-    'BACKEND': 'django.core.files.storage.FileSystemStorage'
-  },
-}
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-    'API_KEY': os.environ.get("API_KEY"),
-    'API_SECRET': os.environ.get("API_SECRET")
-}
-
-MEDIA_URL = '/media/'
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise para estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,12 +70,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dondeestudiar.wsgi.application'
 
-# Database
+# =========================
+# Base de datos
+# =========================
 DATABASES = {
-    'default': dj_database_url.config(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}", conn_max_age=600)
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
 }
 
+# =========================
 # Password validation
+# =========================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -91,29 +90,52 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
+# =========================
+# Internacionalización
+# =========================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# =========================
+# Archivos estáticos
+# =========================
 STATIC_URL = '/static/'
 
+# Archivos que vos ponés en /static
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Carpeta final donde collectstatic los junta
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise: sirve los estáticos comprimidos en producción
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Default primary key
+# =========================
+# Media (Cloudinary)
+# =========================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+    'API_KEY': os.environ.get("API_KEY"),
+    'API_SECRET': os.environ.get("API_SECRET"),
+}
+
+# =========================
+# Primary key default
+# =========================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Ajustes para Render
+# =========================
+# Configuración para Render
+# =========================
 if 'RENDER' in os.environ:
-    print("USING RENDER.COM SETTINGS!")
+    print("⚡ USING RENDER.COM SETTINGS!")
     DEBUG = False
     ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
-    MIDDLEWARE.insert(
-        MIDDLEWARE.index('django.middleware.security.SecurityMiddleware') + 1,
-        'whitenoise.middleware.WhiteNoiseMiddleware'
-    )
