@@ -139,3 +139,8 @@ if 'RENDER' in os.environ:
     DEBUG = False
     ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
+try:
+    from .local_settings import *
+    print("⚡ Usando local_settings.py")
+except ImportError:
+    pass
