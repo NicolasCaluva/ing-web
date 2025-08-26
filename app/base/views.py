@@ -31,6 +31,9 @@ def login_view(request):
                 user = authenticate(username=email, password=password)
                 if user:
                     login(request, user)
+                    next_url = request.POST.get('next')
+                    if next_url:
+                        return redirect(next_url)
                     return redirect(reverse('home'))
                 else:
                     return render(request, 'base/login.html',
@@ -97,7 +100,7 @@ def register_user_view(request):
 
 def edit_user_view(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect(f"{reverse('login')}?next={request.path}")
 
     user = UserBase.objects.get(user=request.user)
 

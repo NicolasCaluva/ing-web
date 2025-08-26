@@ -4,6 +4,8 @@
     <div>
         <form action="{% url 'login' %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="text" class="form-control" id="email" name="email" required>
