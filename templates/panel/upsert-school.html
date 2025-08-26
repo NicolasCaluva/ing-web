@@ -7,25 +7,25 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label for="name" class="form-label">Nombre de la Escuela</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ school.name }}" required>
+                <input type="text" class="form-control" id="name" name="name" value="{{ school.name|default_if_none:'' }}" required>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email del Administrador</label>
                 <input type="email" class="form-control" id="email" name="email" value="{{ school.user.email }}"
-                       required>
+                       required {% if school %}disabled{% endif %}>
             </div>
 
             <div class="mb-3">
                 <label for="address" class="form-label">Dirección</label>
-                <input type="text" class="form-control" id="address" name="address" value="{{ school.address }}"
+                <input type="text" class="form-control" id="address" name="address" value="{{ school.address|default_if_none:'' }}"
                        required>
             </div>
 
             <div class="mb-3">
                 <label for="phone_number" class="form-label">Teléfono</label>
                 <input type="text" class="form-control" id="phone_number" name="phone_number"
-                       value="{{ school.phone_number }}" required>
+                       value="{{ school.phone_number|default_if_none:'' }}" required>
             </div>
 
             <div class="mb-3">
@@ -48,13 +48,13 @@
             <div class="mb-3">
                 <label for="general_description" class="form-label">Descripción general</label>
                 <textarea class="form-control" id="general_description" name="general_description" rows="5"
-                          required>{{ school.general_description }}</textarea>
+                          required>{{ school.general_description|default_if_none:'' }}</textarea>
             </div>
 
             <div class="mb-3">
                 <label for="income_description" class="form-label">Descripción resumida</label>
                 <textarea class="form-control" id="income_description" name="income_description" rows="3"
-                          required>{{ school.income_description }}</textarea>
+                          required>{{ school.income_description|default_if_none:'' }}</textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Guardar</button>

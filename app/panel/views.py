@@ -134,6 +134,8 @@ def upsert_school(request, pk=None):
         general_description = request.POST['general_description']
         income_description = request.POST['income_description']
         email = request.POST.get('email', None)
+        profile_photo = request.FILES.get('profile_photo', None)
+        logo = request.FILES.get('logo', None)
 
         if pk:
             school = School.objects.get(id=pk)
@@ -142,12 +144,15 @@ def upsert_school(request, pk=None):
             school.phone_number = phone_number
             school.general_description = general_description
             school.income_description = income_description
+            school.logo = logo
+            school.profile_photo = profile_photo
             school.save()
             messages.add_message(request, messages.SUCCESS, 'Escuela actualizada correctamente.')
         else:
             user = User.objects.create_user(username=email, email=email)
             school = School(user=user, name=name, address=address, phone_number=phone_number,
-                            general_description=general_description, income_description=income_description)
+                            general_description=general_description, income_description=income_description
+                            , profile_photo=profile_photo, logo=logo)
             school.save()
             messages.add_message(request, messages.INFO, 'Escuela creada correctamente.')
 
