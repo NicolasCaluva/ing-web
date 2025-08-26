@@ -143,4 +143,5 @@ try:
     from .local_settings import *
     print("⚡ Usando local_settings.py")
 except ImportError:
+    print("⚡ No se encontró local_settings.py")
     pass
