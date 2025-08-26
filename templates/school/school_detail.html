@@ -66,6 +66,9 @@
                         {% csrf_token %}
                         <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
                     </form>
+                    <form action="{% url 'reports:report_comment' school.id comment.id %}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-danger" type="submit">Reportar</button>
+                    </form>
                 {% endif %}
             <button class="btn btn-sm btn-primary reply-btn" onclick="toggleReply(this)">Responder</button>
                 <div class="reply-box mt-2" style="display:none;">
