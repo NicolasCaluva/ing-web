@@ -8,4 +8,4 @@ app_name = 'base'
 urlpatterns = [
     path('', register, name='register'),
     path('editar_perfil/', edit_user_view, name='edit_profile')
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
