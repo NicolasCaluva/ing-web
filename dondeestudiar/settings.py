@@ -152,3 +152,15 @@ try:
 except ImportError:
     print("⚡ No se encontró local_settings.py")
     pass
+
+# =========================
+# Configuración para envío de correos con Gmail
+# =========================
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
+EMAIL_HOST_PASSWORD = "srao ldtp ykxs pxnm"  # la de 16 caracteres
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

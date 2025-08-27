@@ -2,12 +2,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import password_changed
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.text import slugify
 
 from app.schools.models import School
 from app.users.models import UserBase
+from dondeestudiar import settings
 
 
 # Create your views here.
@@ -83,7 +85,24 @@ def register_user_view(request):
 
         user = User.objects.create_user(username=email, email=email, password=password,
                                         first_name=first_name, last_name=last_name)
-        UserBase.objects.create(user=user)
+        user.save()
+
+        userbase  = UserBase.objects.create(user=user)
+        userbase.email_verified = False
+        userbase.save()
+        code = userbase.generate_recovery_code()
+
+        verification_link = request.build_absolute_uri(
+            reverse("base:verify_email") + f"?code={code}"
+        )
+
+        send_mail(
+            subject="Verifica tu cuenta",
+            message=f"Hola {first_name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email],
+            fail_silently=False,
+        )
 
         user = authenticate(username=email, password=password)
         if user:
@@ -205,3 +224,23 @@ def register_school_view(request):
     else:
         messages.add_message(request, messages.INFO, 'Por favor, regístrese para continuar.')
         return redirect('users:register_school')
+
+
+def verify_email(request):
+    code = request.GET.get("code")
+    if not code:
+        return render(request, "base/verify_email.html", {"error": "Código inválido."})
+
+    try:
+        userbase = UserBase.objects.get(recovery_code=code)
+    except UserBase.DoesNotExist:
+        return render(request, "base/verify_email.html", {"error": "Código inválido o expirado."})
+
+    userbase.email_verified = True
+    userbase.recovery_code = None
+    userbase.user.is_active = True
+    userbase.user.save()
+    userbase.save()
+
+    messages.success(request, "Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.")
+    return redirect("login")

@@ -3,6 +3,7 @@ import string, random
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class UserBase(models.Model):
@@ -35,3 +36,20 @@ class WarningType(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class EmailVerificationCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def is_valid(self, code):
+        return (
+            self.code == code and
+            timezone.now() < self.expires_at
+        )
+
+    @staticmethod
+    def generate_code():
+        return str(random.randint(100000, 999999))  # código de 6 dígitos
