@@ -42,57 +42,85 @@
             </div>
         </div>
     {% endif %}
+{% for comment in comments %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p>{{ comment.description }}</p>
+            <small class="text-muted">Por: {{ comment.user }}</small>
+            <span class="ms-2">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= comment.score %}
+                        <i class="fa-solid fa-star text-warning"></i>
+                    {% else %}
+                        <i class="fa-regular fa-star text-warning"></i>
+                    {% endif %}
+                {% endfor %}
+                ({{ comment.score }})
+            </span>
 
-    {% for comment in comments %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <p>{{ comment.description }}</p>
-                <small class="text-muted">Por: {{ comment.user }}</small>
-                <span class="ms-2">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= comment.score %}
-                            <i class="fa-solid fa-star text-warning"></i>
-                        {% else %}
-                            <i class="fa-regular fa-star text-warning"></i>
-                        {% endif %}
-                    {% endfor %}
-                    ({{ comment.score }})
-                </span>
-                {% if request.user.is_authenticated and request.user.id == comment.user.user.id %}
-                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2">Editar</a>
-                {% endif %}
-                {% if request.user.is_staff or request.user.is_superuser %}
-                    <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" class="d-inline">
+            {% if request.user.is_authenticated and request.user.id == comment.user.user.id %}
+                <a href="#" class="btn btn-sm btn-outline-secondary ms-2">Editar</a>
+            {% endif %}
+
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
+                </form>
+            {% endif %}
+            {% if request.user.is_authenticated and request.user.id != comment.user.user.id %}
+                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#reportModal-{{ comment.id }}">
+                  Reportar
+                </button>
+                <div class="modal fade" id="reportModal-{{ comment.id }}" tabindex="-1" aria-labelledby="reportLabel-{{ comment.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form method="POST" action="{% url 'reports:report_comment' school.id comment.id %}">
                         {% csrf_token %}
-                        <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
-                    </form>
-                    <form action="{% url 'reports:report_comment' school.id comment.id %}" method="post" class="d-inline">
-                        <button class="btn btn-sm btn-danger" type="submit">Reportar</button>
-                    </form>
-                {% endif %}
-            <button class="btn btn-sm btn-primary reply-btn" onclick="toggleReply(this)">Responder</button>
-                <div class="reply-box mt-2" style="display:none;">
-                    <form action="{% url 'school:add_reply' school.id comment.id %}" method="post">
-                        {% csrf_token %}
-                        <textarea class="form-control mb-2" name="description" placeholder="Escribe tu respuesta..." required></textarea>
-                        <button class="btn btn-success btn-sm" type="submit">Enviar</button>
-                    </form>
-                </div>
-                <div class="ms-4 mt-3">
-                    {% for reply in comment.replies.all %}
-                        <div class="border rounded p-2 mb-2">
-                            <p>{{ reply.description }}</p>
-                            <small class="text-muted">Por: {{ reply.user }}</small>
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="reportLabel-{{ comment.id }}">Reportar comentario</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
-                    {% empty %}
-                        <p>No hay respuestas.</p>
-                    {% endfor %}
+                        <div class="modal-body">
+                          {% for cid, form in report_forms.items %}
+                              {% if cid == comment.id %}
+                                  {{ form.reason }}
+                              {% endif %}
+                          {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                          <button type="submit" class="btn btn-danger">Enviar reporte</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
+            {% endif %}
+            <button class="btn btn-sm btn-primary reply-btn" onclick="toggleReply(this)">Responder</button>
+            <div class="reply-box mt-2" style="display:none;">
+                <form action="{% url 'school:add_reply' school.id comment.id %}" method="post">
+                    {% csrf_token %}
+                    <textarea class="form-control mb-2" name="description" placeholder="Escribe tu respuesta..." required></textarea>
+                    <button class="btn btn-success btn-sm" type="submit">Enviar</button>
+                </form>
+            </div>
+            <div class="ms-4 mt-3">
+                {% for reply in comment.replies.all %}
+                    <div class="border rounded p-2 mb-2">
+                        <p>{{ reply.description }}</p>
+                        <small class="text-muted">Por: {{ reply.user }}</small>
+                    </div>
+                {% empty %}
+                    <p>No hay respuestas.</p>
+                {% endfor %}
             </div>
         </div>
-    {% empty %}
-        <p>No hay comentarios.</p>
-    {% endfor %}
+    </div>
+{% empty %}
+    <p>No hay comentarios.</p>
+{% endfor %}
+
 </div>
 {% endblock %}
 

@@ -116,22 +116,22 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
-#STORAGES = {
-#    # Archivos subidos (media) -> Cloudinary
-#    "default": {
-#        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-#    },
+STORAGES = {
+    # Archivos subidos (media) -> Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
     # Archivos estáticos -> WhiteNoise
-#    "staticfiles": {
-#        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-#    },
-#}
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
-# CLOUDINARY_STORAGE = {
-#    'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-#    'API_KEY': os.environ.get("API_KEY"),
-#    'API_SECRET': os.environ.get("API_SECRET"),
-#}
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+    'API_KEY': os.environ.get("API_KEY"),
+    'API_SECRET': os.environ.get("API_SECRET"),
+}
 
 # =========================
 # Primary key default

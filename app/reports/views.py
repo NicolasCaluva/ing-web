@@ -1,18 +1,25 @@
-from django.shortcuts import render, get_object_or_404, redirect
-
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .forms import ReportForm
-from ..schools.models import Comment
 from .models import Report
+from ..schools.models import Comment
+from ..users.models import UserBase
+
 
 def report_comment(request, pk, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id, school_id=pk)
+
     if request.method == "POST":
         form = ReportForm(request.POST)
         if form.is_valid():
-            report = form.save(commit=False)
-            report.user = request.user
-            report.comment_id = comment_id
-            report.save()
-            return redirect('school:school_detail', pk=pk)
-    else:
-        form = ReportForm()
-    return render(request, 'report_comment.html', {'form': form})
+            reason = form.cleaned_data['reason']
+            obj, created = Report.objects.get_or_create(
+                user = UserBase.objects.get(user=request.user),
+                comment=comment,
+                defaults={'reason': reason}
+            )
+            if not created:
+                obj.reason = reason
+                obj.save()
+    return redirect('school:school_detail', pk=pk)
