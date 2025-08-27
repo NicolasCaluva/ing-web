@@ -90,7 +90,7 @@ def register_user_view(request):
         userbase  = UserBase.objects.create(user=user)
         userbase.email_verified = False
         userbase.save()
-        code = userbase.generate_recovery_code()
+        code = userbase.generate_auth_code()
 
         verification_link = request.build_absolute_uri(
             reverse("base:verify_email") + f"?code={code}"
@@ -210,10 +210,27 @@ def register_school_view(request):
 
         user = User.objects.create_user(username=email, email=email, password=password)
         slug = slugify(name)
-        School.objects.create(user=user, name=name, slug=slug)
+        school = School.objects.create(user=user, name=name, slug=slug)
+        school.email_verified = False
+        school.save()
+
+        code=school.user.userbase.generate_auth_code()
 
         # TODO: No se debe autenticar automáticamente a la escuela, primero se debe enviar un correo y que valide su cuenta desde el link que se le envió.
         user = authenticate(username=email, password=password)
+
+        verification_link = request.build_absolute_uri(
+            reverse("base:verify_email") + f"?code={code}"
+        )
+
+        send_mail(
+            subject="Verifica tu cuenta de escuela",
+            message=f"Hola {name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
         if user:
             login(request, user)
             return redirect(reverse('home'))

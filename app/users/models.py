@@ -15,7 +15,7 @@ class UserBase(models.Model):
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
 
-    def generate_recovery_code(self):
+    def generate_auth_code(self):
         code = string.ascii_letters + string.digits
         while True:
             new_code = ''.join(random.choice(code) for _ in range(10))

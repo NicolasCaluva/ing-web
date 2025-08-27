@@ -18,6 +18,7 @@ class School(models.Model):
     general_description = models.TextField(null=True, blank=True)
     income_description = models.TextField(null=True, blank=True)
     recovery_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    email_verified = models.BooleanField(default=False)
 
 
     def __str__(self):
