@@ -4,6 +4,8 @@
     <div>
         <form action="{% url 'login' %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="text" class="form-control" id="email" name="email" required>
@@ -15,7 +17,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-            <a href="{% url 'base:index' %}" class="btn btn-secondary">Registrarse</a>
+            <a href="{% url 'base:register' %}" class="btn btn-secondary">Registrarse</a>
         </form>
     </div>
 {% endblock %}

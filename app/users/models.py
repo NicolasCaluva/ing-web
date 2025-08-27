@@ -3,17 +3,19 @@ import string, random
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class UserBase(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userbase')
     recovery_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
     email_verified = models.BooleanField(default=False)
+    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
 
-    def generate_recovery_code(self):
+    def generate_auth_code(self):
         code = string.ascii_letters + string.digits
         while True:
             new_code = ''.join(random.choice(code) for _ in range(10))
@@ -34,3 +36,20 @@ class WarningType(models.Model):
 
     def __str__(self):
         return self.description
+
+
+class EmailVerificationCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def is_valid(self, code):
+        return (
+            self.code == code and
+            timezone.now() < self.expires_at
+        )
+
+    @staticmethod
+    def generate_code():
+        return str(random.randint(100000, 999999))  # código de 6 dígitos
