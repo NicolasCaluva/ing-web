@@ -67,34 +67,6 @@
                                 <input class="form-control" type="text" name="last_name" value="{{ user.user.last_name }}">
                             </div>
                         </div>
-
-                        <!-- Email actual y nuevo -->
-                        <div class="mb-3">
-                            <label class="small mb-1">Correo actual</label>
-                            <input class="form-control" type="email" value="{{ user.user.email }}" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="small mb-1">Nuevo correo (opcional)</label>
-                            <input class="form-control" type="email" name="new_email" placeholder="Ingrese un nuevo correo si desea cambiarlo">
-                        </div>
-
-                        <!-- Contraseña actual -->
-                        <div class="mb-3">
-                            <label class="small mb-1">Contraseña actual <span class="text-danger">*</span></label>
-                            <input class="form-control" type="password" name="current_password" placeholder="Ingrese su contraseña actual">
-                        </div>
-
-                        <!-- Nueva contraseña -->
-                        <div class="mb-3">
-                            <label class="small mb-1">Nueva contraseña (opcional)</label>
-                            <input class="form-control" type="password" name="new_password" placeholder="Ingrese la nueva contraseña si desea cambiarla">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="small mb-1">Repetir Nueva contraseña (opcional)</label>
-                            <input class="form-control" type="password" name="repeat_password" placeholder="Repita la contraseña si desea cambiarla">
-                        </div>
-
                         <button class="btn btn-primary" type="submit">Guardar cambios</button>
                 </div>
             </div>

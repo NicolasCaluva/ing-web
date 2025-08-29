@@ -124,52 +124,13 @@ def edit_user_view(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
-        new_email = request.POST.get('new_email', '').strip()
-        current_password = request.POST.get('current_password', '').strip()
-        new_password = request.POST.get('new_password', '').strip()
-        repeat_password = request.POST.get('repeat_password', '').strip()
         profile_photo = request.FILES.get('profile_image')
         if profile_photo:
             user.profile_photo = profile_photo
-
-
-        if any([first_name, last_name, new_email, new_password]) and not current_password:
-            return render(request, 'base/edit_profile.html', {
-                'error': "Debe ingresar su contraseña actual para realizar cambios.",
-                'user': user
-            })
-
-        if current_password and not user.user.check_password(current_password):
-            return render(request, 'base/edit_profile.html', {
-                'error': "Contraseña actual incorrecta.",
-                'user': user
-            })
-
         if first_name:
             user.user.first_name = first_name
         if last_name:
             user.user.last_name = last_name
-
-        if new_email:
-            if User.objects.filter(email=new_email).exclude(id=user.user.id).exists():
-                return render(request, 'base/edit_profile.html', {
-                    'error': "El nuevo correo electrónico ya está registrado.",
-                    'user': user
-                })
-            user.user.email = new_email
-            user.user.username = new_email
-
-        if new_password or repeat_password:
-            if not new_password or not repeat_password:
-                return render(request, 'base/edit_profile.html', {
-                    'error': "Debe completar ambos campos de la nueva contraseña.",
-                    'user': user
-                })
-            if new_password != repeat_password:
-                return render(request, 'base/edit_profile.html', {
-                    'error': "Las nuevas contraseñas no coinciden.",
-                    'user': user
-                })
         user.save()
         user.user.save()
         messages.success(request, "Perfil actualizado correctamente.")

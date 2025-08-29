@@ -9,10 +9,14 @@ from ..users.models import UserBase
 
 
 # Create your views here.
+
 def school_list(request):
     query = request.GET.get("search", "").strip()
+    turno = request.GET.get("turno")
+
     schools = School.objects.all()
 
+    # --- filtros ---
     if query:
         schools = schools.filter(
             Q(name__icontains=query) |
@@ -20,14 +24,23 @@ def school_list(request):
             Q(careers__name__icontains=query) |
             Q(tag__name__icontains=query)
         ).distinct()
-    turno = request.GET.get("turno")
+
     if turno:
         schools = schools.filter(shifts__contains=turno)
+
+    # --- context unificado ---
+    context = {
+        "schools": schools,
+        "user": request.user,
+        "query": query,
+        "turno": turno,
+    }
+
+    # --- respuesta con HTMX ---
     if request.headers.get("HX-Request") == "true":
-        html = render_to_string("school/../../templates/base/partials/school_cards.html", {"schools": schools})
-        return HttpResponse(html)
-    html = render_to_string('base/index.html', {"schools": schools})
-    return HttpResponse(html)
+        return render(request, "base/partials/school_cards.html", context)
+
+    return render(request, "base/index.html", context)
 def school_detail(request, pk):
     school = get_object_or_404(School, pk=pk)
     comments = Comment.objects.filter(school=school).order_by('-created_at')
