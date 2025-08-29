@@ -1,4 +1,7 @@
+from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 
 from .forms import CommentForm, ReplyForm
 from .models import School, Comment, Reply
@@ -106,3 +109,18 @@ def add_reply(request, pk, idComentario):
         form = ReplyForm()
 
     return render(request, 'school/school_detail.html', {'form': form, 'comment': comment})
+
+
+def school_search(request):
+    query = request.GET.get("q", "").strip()
+    schools = School.objects.all()
+
+    if query:
+        schools = schools.filter(
+            Q(name__icontains=query) |
+            Q(address__icontains=query) |
+            Q(careers__name__icontains=query)
+        ).distinct()
+
+    html = render_to_string("school/../../templates/base/partials/school_cards.html", {"schools": schools})
+    return HttpResponse(html)
