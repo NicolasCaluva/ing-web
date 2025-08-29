@@ -48,65 +48,21 @@
     <!-- Section-->
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
-            <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
-                {% for school in schools %}
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Imagen de la escuela -->
-                        {% if school.profile_photo %}
-                            <img class="card-img-top" src="{{ school.profile_photo.url }}" alt="{{ school.name }}">
-                        {% else %}
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Sin foto">
-                        {% endif %}
-
-                        <!-- Detalles -->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Nombre -->
-                                <h5 class="fw-bolder">{{ school.name }}</h5>
-
-                                <!-- Estrellas -->
-                                {% if school.average_valoration %}
-                                    <div class="d-flex justify-content-center small text-warning mb-2">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= school.average_valoration %}
-                                                <div class="bi-star-fill"></div>
-                                            {% else %}
-                                                <div class="bi-star"></div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <p><small>Sin valoraciones</small></p>
-                                {% endif %}
-
-                                <!-- Dirección -->
-                                <p>{{ school.address }}</p>
-
-                                <!-- Carreras -->
-                                {% if school.careers.all %}
-                                    <ul class="list-unstyled">
-                                        {% for career in school.careers.all %}
-                                            <li>- {{ career.name }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    <p><em>No hay carreras registradas</em></p>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Botón -->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center">
-                                <a class="btn btn-outline-dark mt-auto" href="{% url 'school:school_detail' school.id %}">
-                                    Ver escuela
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+            <!-- Barra de búsqueda -->
+            <div class="mb-4">
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Buscar por nombre, carrera o direccion..."
+                    hx-get="{% url 'school:school_search' %}"
+                    hx-target="#school-list"
+                    hx-trigger="keyup changed delay:300ms"
+                    name="q"
+                >
+            </div>
+            <!-- Contenedor dinámico con resultados -->
+            <div id="school-list" class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+                {% include "base/partials/school_cards.html" with schools=schools %}
             </div>
         </div>
     </section>
@@ -116,5 +72,6 @@
         <div class="container"><p class="m-0 text-center text-white">&copy; Proyecto Escuelas 2025</p></div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </body>
 </html>

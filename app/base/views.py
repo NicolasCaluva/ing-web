@@ -85,10 +85,8 @@ def register_user_view(request):
 
         user = User.objects.create_user(username=email, email=email, password=password,
                                         first_name=first_name, last_name=last_name)
-        user.save()
 
         userbase  = UserBase.objects.create(user=user)
-        userbase.email_verified = False
         userbase.save()
         code = userbase.generate_auth_code()
 
