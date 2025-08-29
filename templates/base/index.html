@@ -10,6 +10,7 @@
     <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -44,69 +45,97 @@
             </div>
         </div>
     </header>
-
+    <form
+        hx-get="{% url 'home' %}"
+        hx-target="#school-list"
+        hx-trigger="submit"
+        class="row g-3 mb-4"
+    >
+        <div class="col-md-4">
+            <input type="text" name="name" class="form-control" placeholder="Buscar por nombre">
+        </div>
+        <div class="col-md-4">
+    <select name="shift" class="form-control">
+        <option value="">Buscar por turno</option>
+        <option value="Mañana">Mañana</option>
+        <option value="Tarde">Tarde</option>
+        <option value="Noche">Noche</option>
+    </select>
+    <select name="tag" class="form-control" multiple>
+        <option value="">Buscar por tag</option>
+        {% for tag in tags %}
+            <option value="{{ tag.name }}">{{ tag.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
     <!-- Section-->
     <section class="py-5">
         <div class="container px-4 px-lg-5 mt-5">
-            <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
-                {% for school in schools %}
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Imagen de la escuela -->
-                        {% if school.profile_photo %}
-                            <img class="card-img-top" src="{{ school.profile_photo.url }}" alt="{{ school.name }}">
-                        {% else %}
-                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Sin foto">
-                        {% endif %}
+            <div id="school-list">
+                <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+                    {% for school in schools %}
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Imagen de la escuela -->
+                            {% if school.profile_photo %}
+                                <img class="card-img-top" src="{{ school.profile_photo.url }}" alt="{{ school.name }}">
+                            {% else %}
+                                <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Sin foto">
+                            {% endif %}
 
-                        <!-- Detalles -->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Nombre -->
-                                <h5 class="fw-bolder">{{ school.name }}</h5>
+                            <!-- Detalles -->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Nombre -->
+                                    <h5 class="fw-bolder">{{ school.name }}</h5>
 
-                                <!-- Estrellas -->
-                                {% if school.average_valoration %}
-                                    <div class="d-flex justify-content-center small text-warning mb-2">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= school.average_valoration %}
-                                                <div class="bi-star-fill"></div>
-                                            {% else %}
-                                                <div class="bi-star"></div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <p><small>Sin valoraciones</small></p>
-                                {% endif %}
+                                    <!-- Estrellas -->
+                                    {% if school.average_valoration %}
+                                        <div class="d-flex justify-content-center small text-warning mb-2">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= school.average_valoration %}
+                                                    <div class="bi-star-fill"></div>
+                                                {% else %}
+                                                    <div class="bi-star"></div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p><small>Sin valoraciones</small></p>
+                                    {% endif %}
 
-                                <!-- Dirección -->
-                                <p>{{ school.address }}</p>
+                                    <!-- Dirección -->
+                                    <p>{{ school.address }}</p>
 
-                                <!-- Carreras -->
-                                {% if school.careers.all %}
-                                    <ul class="list-unstyled">
-                                        {% for career in school.careers.all %}
-                                            <li>- {{ career.name }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    <p><em>No hay carreras registradas</em></p>
-                                {% endif %}
+                                    <!-- Carreras -->
+                                    {% if school.careers.all %}
+                                        <ul class="list-unstyled">
+                                            {% for career in school.careers.all %}
+                                                <li>- {{ career.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p><em>No hay carreras registradas</em></p>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Botón -->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center">
-                                <a class="btn btn-outline-dark mt-auto" href="{% url 'school:school_detail' school.id %}">
-                                    Ver escuela
-                                </a>
+                            <!-- Botón -->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center">
+                                    <a class="btn btn-outline-dark mt-auto" href="{% url 'school:school_detail' school.id %}">
+                                        Ver escuela
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </section>

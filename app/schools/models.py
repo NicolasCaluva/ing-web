@@ -3,8 +3,21 @@ import string
 
 from django.db import models
 from django.contrib.auth.models import User
-
+from multiselectfield import MultiSelectField
 from app.users.models import UserBase
+
+SHIFT_CHOICES = (
+    ('Mañana', 'Mañana'),
+    ('Tarde', 'Tarde'),
+    ('Noche', 'Noche'),
+)
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class School(models.Model):
@@ -18,6 +31,8 @@ class School(models.Model):
     general_description = models.TextField(null=True, blank=True)
     income_description = models.TextField(null=True, blank=True)
     recovery_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    shift = MultiSelectField(choices=SHIFT_CHOICES, max_choices=2, max_length=20, null=True, blank=True, default=list)
+    tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True, related_name='schools')
 
 
     def __str__(self):
@@ -77,4 +92,5 @@ class Reply(BaseComment):
 
     def __str__(self):
         return f'{self.user} {self.description[:10]}...'
+
 

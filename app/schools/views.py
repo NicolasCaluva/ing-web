@@ -8,10 +8,26 @@ from ..users.models import UserBase
 # Create your views here.
 def school_list(request):
     schools = School.objects.all()
+    name = request.GET.get('name')
+    if name:
+        schools = schools.filter(name__icontains=name)
+    shift = request.GET.get('shift')
+    if shift:
+        schools = schools.filter(shift__icontains=shift)
+    tag = request.GET.get('tag')
+    if tag:
+        schools = schools.filter(tag__name__icontains=tag)
     context = {
         'schools': schools,
-        'user': request.user
+        'user': request.user,
+        'name': name,
+        'shift': shift,
+        'tag': tag
     }
+    if request.headers.get("HX-Request") == "true":
+        return render(request, "partials/school_list.html", context)
+
+
     return render(request, 'base/index.html', context)
 
 def school_detail(request, pk):
