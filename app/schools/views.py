@@ -1,8 +1,9 @@
+from os import error
+
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import CommentForm, ReplyForm
 from .models import School, Comment, Reply
-from ..reports.forms import ReportForm
 from ..reports.views import report_comment
 from ..users.models import UserBase
 
@@ -19,21 +20,11 @@ def school_list(request):
 def school_detail(request, pk):
     school = get_object_or_404(School, pk=pk)
     comments = Comment.objects.filter(school=school).order_by('-created_at')
-    report_forms = {}
-    for comment in comments:
-        form = ReportForm()
-        form.fields['reason'].widget.attrs.update({
-            'id': f'reason-{comment.id}',
-            'class': 'form-control',
-            'placeholder': 'Explica la razón del reporte...'
-        })
-        report_forms[comment.id] = form
 
     if request.method == "GET":
         context = {
             'school': school,
             'comments': comments,
-            'report_forms': report_forms,
         }
 
         return render(request, 'school/school_detail.html', context)
@@ -102,11 +93,13 @@ def delete_reply(request, pk, idComentario, idRespuesta):
         return render(request, 'school/school_detail.html', {
             'school': reply.school,
             'comments': Comment.objects.filter(school=reply.school),
+            'error': 'Debes iniciar sesión para eliminar una respuesta.'
         })
     if not (request.user.is_superuser or request.user.is_staff):
         return render(request, 'school/school_detail.html', {
             'school': reply.school,
             'comments': Comment.objects.filter(school=reply.school),
+            'error': 'No tienes permisos para eliminar esta respuesta.'
         })
     reply.delete()
     return redirect('school:school_detail', pk=pk)

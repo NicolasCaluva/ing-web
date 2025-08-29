@@ -82,11 +82,10 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
-                          {% for cid, form in report_forms.items %}
-                              {% if cid == comment.id %}
-                                  {{ form.reason }}
-                              {% endif %}
-                          {% endfor %}
+                          <div class="mb-3">
+                              <label for="reason-{{ comment.id }}" class="form-label">Motivo del reporte</label>
+                              <textarea class="form-control" id="reason-{{ comment.id }}" name="reason" rows="3" required></textarea>
+                          </div>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
