@@ -3,11 +3,24 @@ import string
 
 from django.db import models
 from django.contrib.auth.models import User
+from multiselectfield import MultiSelectField
 
 from app.users.models import UserBase
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class School(models.Model):
+    SHIFT_CHOICES = (
+        ('MANANA', 'Mañana'),
+        ('TARDE', 'Tarde'),
+        ('NOCHE', 'Noche'),
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schools', null=True, blank=True)
     name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     slug = models.SlugField(max_length=100, unique=True, null=True, blank=True)
@@ -19,7 +32,8 @@ class School(models.Model):
     income_description = models.TextField(null=True, blank=True)
     recovery_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
     email_verified = models.BooleanField(default=False)
-
+    shifts = MultiSelectField(choices=SHIFT_CHOICES,max_length=50, null=True, blank=True)
+    tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True, related_name='schools')
 
     def __str__(self):
         return self.name

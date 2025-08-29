@@ -47,19 +47,48 @@
 
     <!-- Section-->
     <section class="py-5">
-        <div class="container px-4 px-lg-5 mt-5">
+        <div class="container px-4 px-lg-5 ">
             <!-- Barra de búsqueda -->
-            <div class="mb-4">
+            <div class="card mb-4">
+    <div class="card-body bg-light border rounded p-3">
+        <div class="row g-3">
+            <!-- Buscador -->
+            <div class="col-md-8">
+                <label for="search" class="form-label fw-bold">Buscador</label>
                 <input
+                    id="search"
                     type="text"
                     class="form-control"
-                    placeholder="Buscar por nombre, carrera o direccion..."
-                    hx-get="{% url 'school:school_search' %}"
+                    placeholder="Por nombre, carrera o tag (ej: técnica, sociales)..."
+                    name="search"
+                    hx-get="{% url 'home' %}"
                     hx-target="#school-list"
-                    hx-trigger="keyup changed delay:300ms"
-                    name="q"
-                >
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-include="#turno"
+                />
             </div>
+            <!-- Turno -->
+            <div class="col-md-4">
+                <label for="turno" class="form-label fw-bold">Turno</label>
+                <select
+                    id="turno"
+                    class="form-select"
+                    name="turno"
+                    hx-get="{% url 'home' %}"
+                    hx-target="#school-list"
+                    hx-trigger="change"
+                    hx-include="#search"
+                >
+                    <option value="">Todos</option>
+                    <option value="MANANA">Mañana</option>
+                    <option value="TARDE">Tarde</option>
+                    <option value="NOCHE">Noche</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
             <!-- Contenedor dinámico con resultados -->
             <div id="school-list" class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
                 {% include "base/partials/school_cards.html" with schools=schools %}
