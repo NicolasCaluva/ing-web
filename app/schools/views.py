@@ -63,11 +63,13 @@ def delete_comment(request, pk, idComentario):
         return render(request, 'school/school_detail.html', {
             'school': comment.school,
             'comments': Comment.objects.filter(school=comment.school),
+            'error': 'Debes iniciar sesión para eliminar un comentario.'
         })
     if not (request.user.is_superuser or request.user.is_staff):
         return render(request, 'school/school_detail.html', {
             'school': comment.school,
             'comments': Comment.objects.filter(school=comment.school),
+            'error': 'No tienes permisos para eliminar este comentario.'
         })
     comment.delete()
     return redirect('school:school_detail', pk=pk)
