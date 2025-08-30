@@ -1,6 +1,10 @@
+from django.db.models import Q
+from django.http import HttpResponse
+
 from os import error
 
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 
 from .forms import CommentForm, ReplyForm
 from .models import School, Comment, Reply
@@ -9,14 +13,38 @@ from ..users.models import UserBase
 
 
 # Create your views here.
-def school_list(request):
-    schools = School.objects.all()
-    context = {
-        'schools': schools,
-        'user': request.user
-    }
-    return render(request, 'base/index.html', context)
 
+def school_list(request):
+    query = request.GET.get("search", "").strip()
+    turno = request.GET.get("turno")
+
+    schools = School.objects.all()
+
+    # --- filtros ---
+    if query:
+        schools = schools.filter(
+            Q(name__icontains=query) |
+            Q(address__icontains=query) |
+            Q(careers__name__icontains=query) |
+            Q(tag__name__icontains=query)
+        ).distinct()
+
+    if turno:
+        schools = schools.filter(shifts__contains=turno)
+
+    # --- context unificado ---
+    context = {
+        "schools": schools,
+        "user": request.user,
+        "query": query,
+        "turno": turno,
+    }
+
+    # --- respuesta con HTMX ---
+    if request.headers.get("HX-Request") == "true":
+        return render(request, "base/partials/school_cards.html", context)
+
+    return render(request, "base/index.html", context)
 def school_detail(request, pk):
     school = get_object_or_404(School, pk=pk)
     comments = Comment.objects.filter(school=school).order_by('-created_at')
@@ -132,3 +160,18 @@ def add_reply(request, pk, idComentario):
         form = ReplyForm()
 
     return render(request, 'school/school_detail.html', {'form': form, 'comment': comment})
+
+
+def school_search(request):
+    query = request.GET.get("q", "").strip()
+    schools = School.objects.all()
+
+    if query:
+        schools = schools.filter(
+            Q(name__icontains=query) |
+            Q(address__icontains=query) |
+            Q(careers__name__icontains=query)
+        ).distinct()
+
+    html = render_to_string("school/../../templates/base/partials/school_cards.html", {"schools": schools})
+    return HttpResponse(html)

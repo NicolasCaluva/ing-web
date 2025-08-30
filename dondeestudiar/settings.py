@@ -1,3 +1,7 @@
+"""
+Django settings for dondeestudiar project.
+"""
+
 from pathlib import Path
 import os
 import dj_database_url
@@ -80,29 +84,18 @@ DATABASES = {
 # Password validation
 # =========================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # =========================
 # Internacionalización
 # =========================
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # =========================
@@ -116,22 +109,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
-STORAGES = {
-    # Archivos subidos (media) -> Cloudinary
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    # Archivos estáticos -> WhiteNoise
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-    'API_KEY': os.environ.get("API_KEY"),
-    'API_SECRET': os.environ.get("API_SECRET"),
-}
 
 # =========================
 # Primary key default
@@ -152,3 +129,20 @@ try:
 except ImportError:
     print("⚡ No se encontró local_settings.py")
     pass
+if not DEBUG:
+    STORAGES = {
+        # Archivos subidos (media) -> Cloudinary
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        # Archivos estáticos -> WhiteNoise
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+        'API_KEY': os.environ.get("API_KEY"),
+        'API_SECRET': os.environ.get("API_SECRET"),
+    }

@@ -1,0 +1,53 @@
+{% for school in schools %}
+<div class="col mb-5">
+    <div class="card h-100">
+        {% if school.profile_photo %}
+            <img class="card-img-top" src="{{ school.profile_photo.url }}" alt="{{ school.name }}">
+        {% else %}
+            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="Sin foto">
+        {% endif %}
+
+        <div class="card-body p-4">
+            <div class="text-center">
+                <h5 class="fw-bolder">{{ school.name }}</h5>
+
+                {% if school.average_valoration %}
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= school.average_valoration %}
+                                <div class="bi-star-fill"></div>
+                            {% else %}
+                                <div class="bi-star"></div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p><small>Sin valoraciones</small></p>
+                {% endif %}
+
+                <p>{{ school.address }}</p>
+
+                {% if school.careers.all %}
+                    <ul class="list-unstyled">
+                        {% for career in school.careers.all %}
+                            <li>- {{ career.name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p><em>No hay carreras registradas</em></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center">
+                <a class="btn btn-outline-dark mt-auto" href="{% url 'school:school_detail' school.id %}">
+                    Ver escuela
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<p class="text-center"><em>No se encontraron resultados</em></p>
+{% endfor %}
