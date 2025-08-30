@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from app.schools.models import School
 from app.users.models import UserBase
 
 
@@ -81,3 +82,81 @@ def upsert_user(request, pk=None):
 
     else:
         return render(request, 'panel/list-users.html', {'error': 'Invalid request method'})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='base:login')
+def list_schools(request):
+    if request.method == 'GET':
+        schools = School.objects.all()
+        context = {
+            'schools': schools
+        }
+        return render(request, 'panel/list-schools.html', context)
+
+    else:
+        return render(request, 'panel/list-schools.html', {'error': 'Invalid request method'})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='base:login')
+def delete_school(request, pk):
+    if request.method == 'POST':
+        if pk:
+            school = School.objects.get(id=pk)
+            school.user.is_active = False
+            school.user.save()
+            messages.add_message(request, messages.SUCCESS, 'Escuela eliminada correctamente.')
+            return redirect(reverse('panel:list_schools'))
+        else:
+            messages.add_message(request, messages.ERROR, 'El ID es requerido para eliminar una escuela.')
+            return redirect(reverse('panel:list_schools'))
+    else:
+        return render(request, 'panel/list-schools.html', {'error': 'Invalid request method'})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='base:login')
+def upsert_school(request, pk=None):
+    if request.method == 'GET':
+        context = {}
+        if pk:
+            context['school'] = School.objects.get(id=pk)
+        else:
+            context['school'] = None
+
+        return render(request, 'panel/upsert-school.html', context)
+
+    elif request.method == 'POST':
+        name = request.POST['name']
+        address = request.POST['address']
+        phone_number = request.POST['phone_number']
+        general_description = request.POST['general_description']
+        income_description = request.POST['income_description']
+        email = request.POST.get('email', None)
+        profile_photo = request.FILES.get('profile_photo', None)
+        logo = request.FILES.get('logo', None)
+
+        if pk:
+            school = School.objects.get(id=pk)
+            school.name = name
+            school.address = address
+            school.phone_number = phone_number
+            school.general_description = general_description
+            school.income_description = income_description
+            school.logo = logo
+            school.profile_photo = profile_photo
+            school.save()
+            messages.add_message(request, messages.SUCCESS, 'Escuela actualizada correctamente.')
+        else:
+            user = User.objects.create_user(username=email, email=email)
+            school = School(user=user, name=name, address=address, phone_number=phone_number,
+                            general_description=general_description, income_description=income_description
+                            , profile_photo=profile_photo, logo=logo)
+            school.save()
+            messages.add_message(request, messages.INFO, 'Escuela creada correctamente.')
+
+        return redirect(reverse('panel:list_schools'))
+
+    else:
+        return render(request, 'panel/list-schools.html', {'error': 'Invalid request method'})

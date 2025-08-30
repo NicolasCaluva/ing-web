@@ -5,6 +5,7 @@
         <div class="col-md-2 d-flex flex-column">
             <a href="">Inicio</a>
             <a href="{% url 'panel:list_users' %}">Usuarios</a>
+            <a href="{% url 'panel:list_schools' %}">Escuelas</a>
         </div>
         <div class="col-md-10">
             {% block panel_right %}{% endblock %}

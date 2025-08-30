@@ -38,6 +38,11 @@ class School(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self.name.lower().replace(' ', '-')
+        super(School, self).save(*args, **kwargs)
+
     @property
     def average_valoration(self):
         comentarios = self.school_comments.all()
