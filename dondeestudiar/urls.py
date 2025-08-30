@@ -16,5 +16,6 @@ urlpatterns = [
     path('base/', include('app.base.urls', namespace='base')),
     path('panel/', include('app.panel.urls', namespace='panel')),
     path('reportes/', include(('app.reports.urls', 'reports'), namespace='reports')),
+    path('comentarios/', include(('app.comments.urls', 'comments'), namespace='comments')),
 
 ]

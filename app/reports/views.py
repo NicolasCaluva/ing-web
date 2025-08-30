@@ -2,7 +2,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Report
-from ..schools.models import Comment
 from ..users.models import UserBase
 
 @login_required

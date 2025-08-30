@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
     # Apps propias
     'app.base',
+    'app.comments',
     'app.users',
     'app.reports',
     'app.schools',
@@ -109,7 +110,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 # =========================
 # Primary key default
 # =========================
@@ -125,10 +125,12 @@ if 'RENDER' in os.environ:
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
 try:
     from .local_settings import *
+
     print("⚡ Usando local_settings.py")
 except ImportError:
     print("⚡ No se encontró local_settings.py")
     pass
+
 if not DEBUG:
     STORAGES = {
         # Archivos subidos (media) -> Cloudinary

@@ -18,6 +18,7 @@ from dondeestudiar import settings
 def register(request):
     return render(request, 'base/register.html')
 
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -79,7 +80,7 @@ def register_user_view(request):
             error_message = "Las contraseñas no coinciden."
             return render(request, 'base/register_user.html', {'error': error_message})
 
-        if User.objects.filter(username=email).exists():
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             error_message = "El correo electrónico ya está registrado."
             return render(request, 'base/register_user.html', {'error': error_message})
 
@@ -115,29 +116,6 @@ def register_user_view(request):
         return redirect('users:register')
 
 
-def edit_user_view(request):
-    if not request.user.is_authenticated:
-        return redirect(f"{reverse('login')}?next={request.path}")
-
-    user = UserBase.objects.get(user=request.user)
-
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-        profile_photo = request.FILES.get('profile_image')
-        if profile_photo:
-            user.profile_photo = profile_photo
-        if first_name:
-            user.user.first_name = first_name
-        if last_name:
-            user.user.last_name = last_name
-        user.save()
-        user.user.save()
-        messages.success(request, "Perfil actualizado correctamente.")
-        return redirect(reverse('home'))
-
-    return render(request, 'base/edit_profile.html', {'user': user})
-
 def register_school_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -163,7 +141,7 @@ def register_school_view(request):
             error_message = "El correo electrónico debe terminar con @santafe.edu.ar."
             return render(request, 'base/register_school.html', {'error': error_message})
 
-        if User.objects.filter(username=email).exists():
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             error_message = "El correo electrónico ya está registrado."
             return render(request, 'base/register_school.html', {'error': error_message})
 
