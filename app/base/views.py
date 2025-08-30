@@ -173,7 +173,7 @@ def register_school_view(request):
         school.email_verified = False
         school.save()
 
-        code=school.user.userbase.generate_auth_code()
+        code = school.user.userbase.generate_auth_code()
 
         # TODO: No se debe autenticar automáticamente a la escuela, primero se debe enviar un correo y que valide su cuenta desde el link que se le envió.
         user = authenticate(username=email, password=password)
