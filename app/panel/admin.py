@@ -2,12 +2,12 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Report
+from app.reports.models import Report
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'comment', 'reason', 'created_at', 'reviewed')
-    list_filter = ('reviewed', 'created_at')
+    list_display = ['user', 'comment', 'reason', 'created_at', 'is_reviewed']
+    list_filter = ['is_reviewed']
     search_fields = ('user__username', 'comment__description', 'reason')
     actions = ['mark_as_reviewed']
 
