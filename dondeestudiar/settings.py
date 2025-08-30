@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     # Apps propias
     'app.base',
     'app.users',
-    'app.denuncias',
+    'app.reports',
     'app.schools',
     'app.panel',
 

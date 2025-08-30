@@ -1,10 +1,14 @@
 from django.db.models import Q
 from django.http import HttpResponse
+
+from os import error
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 
 from .forms import CommentForm, ReplyForm
 from .models import School, Comment, Reply
+from ..reports.views import report_comment
 from ..users.models import UserBase
 
 
@@ -48,7 +52,7 @@ def school_detail(request, pk):
     if request.method == "GET":
         context = {
             'school': school,
-            'comments': comments
+            'comments': comments,
         }
 
         return render(request, 'school/school_detail.html', context)
@@ -81,9 +85,20 @@ def edit_comment(request, pk):
         form = CommentForm(instance=comment)
     return render(request, 'edit_comment.html', {'form': form})
 
-
 def delete_comment(request, pk, idComentario):
     comment = get_object_or_404(Comment, pk=idComentario)
+    if not request.user.is_authenticated:
+        return render(request, 'school/school_detail.html', {
+            'school': comment.school,
+            'comments': Comment.objects.filter(school=comment.school),
+            'error': 'Debes iniciar sesión para eliminar un comentario.'
+        })
+    if not (request.user.is_superuser or request.user.is_staff):
+        return render(request, 'school/school_detail.html', {
+            'school': comment.school,
+            'comments': Comment.objects.filter(school=comment.school),
+            'error': 'No tienes permisos para eliminar este comentario.'
+        })
     comment.delete()
     return redirect('school:school_detail', pk=pk)
 
@@ -104,6 +119,18 @@ def edit_reply(request, pk):
 
 def delete_reply(request, pk, idComentario, idRespuesta):
     reply = get_object_or_404(Reply, pk=idRespuesta)
+    if not request.user.is_authenticated:
+        return render(request, 'school/school_detail.html', {
+            'school': reply.school,
+            'comments': Comment.objects.filter(school=reply.school),
+            'error': 'Debes iniciar sesión para eliminar una respuesta.'
+        })
+    if not (request.user.is_superuser or request.user.is_staff):
+        return render(request, 'school/school_detail.html', {
+            'school': reply.school,
+            'comments': Comment.objects.filter(school=reply.school),
+            'error': 'No tienes permisos para eliminar esta respuesta.'
+        })
     reply.delete()
     return redirect('school:school_detail', pk=pk)
 
