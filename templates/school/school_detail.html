@@ -1,128 +1,47 @@
-<!-- templates/school/school_detail.html -->
 {% extends 'base.html' %}
+{% load static %}
 {% block container %}
-<div class="container mt-4">
-    <div class="card mb-4">
-        <div class="card-body">
-            <h1 class="card-title">{{ school.name }}</h1>
-            <p class="card-text">
-                <strong>Valoración promedio:</strong>
-                {% if school.average_valoration %}
-                    <span class="badge bg-success">{{ school.average_valoration }}</span>
-                {% else %}
-                    <span class="badge bg-secondary">Sin valoraciones</span>
-                {% endif %}
-            </p>
-            <p><strong>Dirección:</strong> {{ school.address }}</p>
-            <p><strong>Teléfono:</strong> {{ school.phone_number }}</p>
-            <p><strong>Email:</strong> {{ school.email }}</p>
-        </div>
-    </div>
-    <h2>Comentarios</h2>
-    {% if user.is_authenticated %}
-        <div class="card mb-3">
+    <div class="container-fluid mt-4">
+        <div class="card mb-4">
             <div class="card-body">
-                <form action="{% url 'school:school_detail' school.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="mb-2">
-                        <textarea class="form-control" name="description" placeholder="Escribe tu comentario aquí..." required></textarea>
-                    </div>
-                    <div class="mb-2">
-                       <div class="star-rating">
-                            {% for i in "54321" %}
-                                <input type="radio" id="star{{ i }}" name="score" value="{{ i }}" required>
-                                <label for="star{{ i }}" title="{{ i }} estrellas">
-                                    <i class="fa-solid fa-star"></i>
-                                </label>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" type="submit">Agregar Comentario</button>
-                </form>
-            </div>
-        </div>
-    {% endif %}
-{% for comment in comments %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <p>{{ comment.description }}</p>
-            <small class="text-muted">Por: {{ comment.user }}</small>
-            <span class="ms-2">
-                {% for i in "12345" %}
-                    {% if forloop.counter <= comment.score %}
-                        <i class="fa-solid fa-star text-warning"></i>
+                <h1 class="card-title">{{ school.name }}</h1>
+                <p class="card-text">
+                    <strong>Valoración promedio:</strong>
+                    {% if school.average_valoration %}
+                        <span class="badge bg-success">{{ school.average_valoration }}</span>
                     {% else %}
-                        <i class="fa-regular fa-star text-warning"></i>
+                        <span class="badge bg-secondary">Sin valoraciones</span>
                     {% endif %}
-                {% endfor %}
-                ({{ comment.score }})
-            </span>
-
-            {% if request.user.is_authenticated and request.user.id == comment.user.user.id %}
-                <a href="#" class="btn btn-sm btn-outline-secondary ms-2">Editar</a>
-            {% endif %}
-
-            {% if request.user.is_staff or request.user.is_superuser %}
-                <form action="{% url 'school:delete_comment' school.id comment.id %}" method="post" class="d-inline">
-                    {% csrf_token %}
-                    <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
-                </form>
-            {% endif %}
-            {% if request.user.is_authenticated and request.user.id != comment.user.user.id %}
-                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#reportModal-{{ comment.id }}">
-                  Reportar
-                </button>
-                <div class="modal fade" id="reportModal-{{ comment.id }}" tabindex="-1" aria-labelledby="reportLabel-{{ comment.id }}" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <form method="POST" action="{% url 'reports:report_comment' school.id comment.id %}">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="reportLabel-{{ comment.id }}">Reportar comentario</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                          <div class="mb-3">
-                              <label for="reason-{{ comment.id }}" class="form-label">Motivo del reporte</label>
-                              <textarea class="form-control" id="reason-{{ comment.id }}" name="reason" rows="3" required></textarea>
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                          <button type="submit" class="btn btn-danger">Enviar reporte</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-            {% endif %}
-            <button class="btn btn-sm btn-primary reply-btn" onclick="toggleReply(this)">Responder</button>
-            <div class="reply-box mt-2" style="display:none;">
-                <form action="{% url 'school:add_reply' school.id comment.id %}" method="post">
-                    {% csrf_token %}
-                    <textarea class="form-control mb-2" name="description" placeholder="Escribe tu respuesta..." required></textarea>
-                    <button class="btn btn-success btn-sm" type="submit">Enviar</button>
-                </form>
+                </p>
+                <p><strong>Dirección:</strong> {{ school.address }}</p>
+                <p><strong>Teléfono:</strong> {{ school.phone_number }}</p>
+                <p><strong>Email:</strong> {{ school.email }}</p>
             </div>
-            <div class="ms-4 mt-3">
-                {% for reply in comment.replies.all %}
-                    <div class="border rounded p-2 mb-2">
-                        <p>{{ reply.description }}</p>
-                        <small class="text-muted">Por: {{ reply.user }}</small>
-                    </div>
-                {% empty %}
-                    <p>No hay respuestas.</p>
-                {% endfor %}
+
+            <div class="row d-flex w-100">
+                <div class="col-3">
+                    <button hx-get="{% url 'comments:comments_list' school.id %}" hx-target="#section"
+                            hx-swap="innerHTML">
+                        Opiniones
+                    </button>
+                </div>
+
+                <div class="col-3">
+                    <button hx-get="{% url 'school:careers_list' school.id %}" hx-target="#section"
+                            hx-swap="innerHTML">
+                        Carreras
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-{% empty %}
-    <p>No hay comentarios.</p>
-{% endfor %}
 
-</div>
+        <div id="section">
+
+        </div>
+
+    </div>
 {% endblock %}
 
 {% block js %}
-<script src="/static/js/replyBox.js"></script>
+    <script src="/static/js/replyBox.js"></script>
 {% endblock %}
