@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block container %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h4 class="mb-3">¡Verifica tu correo!</h4>
+                <p>Te hemos enviado un enlace de verificación a tu correo electrónico.<br>
+                Por favor revisa tu bandeja de entrada y sigue las instrucciones para activar tu cuenta.</p>
+                <a href="{% url 'login' %}" class="btn btn-primary mt-3">Iniciar Sesion</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
