@@ -1,0 +1,14 @@
+<h2>Información general</h2>
+
+<h1 class="card-title">{{ school.name }}</h1>
+<p class="card-text">
+    <strong>Valoración promedio:</strong>
+    {% if school.average_valoration %}
+        <span class="badge bg-success">{{ school.average_valoration }}</span>
+    {% else %}
+        <span class="badge bg-secondary">Sin valoraciones</span>
+    {% endif %}
+</p>
+<p><strong>Dirección:</strong> {{ school.address }}</p>
+<p><strong>Teléfono:</strong> {{ school.phone_number }}</p>
+<p><strong>Email:</strong> {{ school.email }}</p>

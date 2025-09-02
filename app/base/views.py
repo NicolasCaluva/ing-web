@@ -18,6 +18,7 @@ from dondeestudiar import settings
 def register(request):
     return render(request, 'base/register.html')
 
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -79,7 +80,7 @@ def register_user_view(request):
             error_message = "Las contraseñas no coinciden."
             return render(request, 'base/register_user.html', {'error': error_message})
 
-        if User.objects.filter(username=email).exists():
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             error_message = "El correo electrónico ya está registrado."
             return render(request, 'base/register_user.html', {'error': error_message})
 
@@ -105,7 +106,7 @@ def register_user_view(request):
         user = authenticate(username=email, password=password)
         if user:
             login(request, user)
-            return redirect(reverse('home'))
+            return redirect(reverse('base:verification_mail_sent'))
         else:
             return render(request, 'base/register_user.html',
                           {'error': "Hubo un problema al crear su cuenta. Por favor, inténtelo de nuevo."})
@@ -114,29 +115,6 @@ def register_user_view(request):
         messages.add_message(request, messages.INFO, 'Por favor, regístrese para continuar.')
         return redirect('users:register')
 
-
-def edit_user_view(request):
-    if not request.user.is_authenticated:
-        return redirect(f"{reverse('login')}?next={request.path}")
-
-    user = UserBase.objects.get(user=request.user)
-
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-        profile_photo = request.FILES.get('profile_image')
-        if profile_photo:
-            user.profile_photo = profile_photo
-        if first_name:
-            user.user.first_name = first_name
-        if last_name:
-            user.user.last_name = last_name
-        user.save()
-        user.user.save()
-        messages.success(request, "Perfil actualizado correctamente.")
-        return redirect(reverse('home'))
-
-    return render(request, 'base/edit_profile.html', {'user': user})
 
 def register_school_view(request):
     if request.user.is_authenticated:
@@ -163,7 +141,7 @@ def register_school_view(request):
             error_message = "El correo electrónico debe terminar con @santafe.edu.ar."
             return render(request, 'base/register_school.html', {'error': error_message})
 
-        if User.objects.filter(username=email).exists():
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             error_message = "El correo electrónico ya está registrado."
             return render(request, 'base/register_school.html', {'error': error_message})
 
@@ -175,7 +153,6 @@ def register_school_view(request):
 
         code = school.user.userbase.generate_auth_code()
 
-        # TODO: No se debe autenticar automáticamente a la escuela, primero se debe enviar un correo y que valide su cuenta desde el link que se le envió.
         user = authenticate(username=email, password=password)
 
         verification_link = request.build_absolute_uri(
@@ -183,7 +160,7 @@ def register_school_view(request):
         )
 
         send_mail(
-            subject="Verifica tu cuenta de escuela",
+            subject="DondeEstudiar - Verifica tu escuela",
             message=f"Hola {name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[email],
@@ -192,7 +169,7 @@ def register_school_view(request):
 
         if user:
             login(request, user)
-            return redirect(reverse('home'))
+            return redirect(reverse('base:verification_mail_sent'))
         else:
             return render(request, 'base/register_school.html',
                           {'error': "Hubo un problema al crear su cuenta. Por favor, inténtelo de nuevo."})
@@ -220,3 +197,6 @@ def verify_email(request):
 
     messages.success(request, "Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.")
     return redirect("login")
+
+def verification_mail_sent(request):
+    return render(request, 'base/verify_email_sent.html')

@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
     # Apps propias
     'app.base',
+    'app.comments',
     'app.users',
     'app.reports',
     'app.schools',
@@ -109,7 +110,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 # =========================
 # Primary key default
 # =========================
@@ -125,10 +125,12 @@ if 'RENDER' in os.environ:
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
 try:
     from .local_settings import *
+
     print("⚡ Usando local_settings.py")
 except ImportError:
     print("⚡ No se encontró local_settings.py")
     pass
+
 if not DEBUG:
     STORAGES = {
         # Archivos subidos (media) -> Cloudinary
@@ -146,3 +148,16 @@ if not DEBUG:
         'API_KEY': os.environ.get("API_KEY"),
         'API_SECRET': os.environ.get("API_SECRET"),
     }
+
+
+# =========================
+# Configuración para envío de correos con Gmail
+# =========================
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

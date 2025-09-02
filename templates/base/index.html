@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Escuelas</title>
-    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
-</head>
-<body>
+{% extends 'base.html' %}
+{% block container %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container px-4 px-lg-5">
             <a class="navbar-brand" href="#">Escuelas</a>
@@ -19,12 +7,18 @@
             <div class="ms-auto">
                 {% if user.is_authenticated %}
                     <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userMenu"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                             {{ user.username }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <li><a class="dropdown-item" href="{% url 'base:edit_profile' %}">Editar perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">Editar perfil</a></li>
+                            {% if request.user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'panel:list_users' %}" target="_blank">Panel</a></li>
+                            {% endif %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Cerrar sesión</a></li>
                         </ul>
                     </div>
@@ -45,62 +39,60 @@
         </div>
     </header>
 
-    <!-- Section-->
+    <!-- Section -->
     <section class="py-5">
-        <div class="container px-4 px-lg-5 ">
+        <div class="container-fluid px-4 px-lg-5 row">
             <!-- Barra de búsqueda -->
-            <div class="card mb-4">
-    <div class="card-body bg-light border rounded p-3">
-        <div class="row g-3">
-            <!-- Buscador -->
-            <div class="col-md-8">
-                <label for="search" class="form-label fw-bold">Buscador</label>
-                <input
-                    id="search"
-                    type="text"
-                    class="form-control"
-                    placeholder="Por nombre, carrera o tag (ej: técnica, sociales)..."
-                    name="search"
-                    hx-get="{% url 'home' %}"
-                    hx-target="#school-list"
-                    hx-trigger="keyup changed delay:500ms"
-                    hx-include="#turno"
-                />
+            <div class="card mb-4 offset-3   col-6 p-0">
+                <div class="card-body bg-light border rounded p-3">
+                    <div class="row g-3">
+                        <!-- Buscador -->
+                        <div class="col-md-8">
+                            <label for="search" class="form-label fw-bold">Buscador</label>
+                            <input
+                                    id="search"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Por nombre, carrera o tag (ej: técnica, sociales)..."
+                                    name="search"
+                                    hx-get="{% url 'home' %}"
+                                    hx-target="#school-list"
+                                    hx-trigger="keyup changed delay:500ms"
+                                    hx-include="#turno"
+                            />
+                        </div>
+                        <!-- Turno -->
+                        <div class="col-md-4">
+                            <label for="turno" class="form-label fw-bold">Turno</label>
+                            <select
+                                    id="turno"
+                                    class="form-select"
+                                    name="turno"
+                                    hx-get="{% url 'home' %}"
+                                    hx-target="#school-list"
+                                    hx-trigger="change"
+                                    hx-include="#search"
+                            >
+                                <option value="">Todos</option>
+                                <option value="MANANA">Mañana</option>
+                                <option value="TARDE">Tarde</option>
+                                <option value="NOCHE">Noche</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Turno -->
-            <div class="col-md-4">
-                <label for="turno" class="form-label fw-bold">Turno</label>
-                <select
-                    id="turno"
-                    class="form-select"
-                    name="turno"
-                    hx-get="{% url 'home' %}"
-                    hx-target="#school-list"
-                    hx-trigger="change"
-                    hx-include="#search"
-                >
-                    <option value="">Todos</option>
-                    <option value="MANANA">Mañana</option>
-                    <option value="TARDE">Tarde</option>
-                    <option value="NOCHE">Noche</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
 
             <!-- Contenedor dinámico con resultados -->
-            <div id="school-list" class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+            <div id="school-list"
+                 class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 {% include "base/partials/school_cards.html" with schools=schools %}
             </div>
         </div>
     </section>
 
-    <!-- Footer-->
+    <!-- Footer -->
     <footer class="py-5 bg-dark">
         <div class="container"><p class="m-0 text-center text-white">&copy; Proyecto Escuelas 2025</p></div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-</body>
-</html>
+{% endblock %}
