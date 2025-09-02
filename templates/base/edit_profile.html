@@ -19,6 +19,12 @@
             {% endfor %}
         {% endif %}
 
+        <div class="mb-3">
+            <a class="text-decoration-none" href="{% url 'home' %}">
+                <i class="fa-solid fa-arrow-left"></i> Volver al listado de escuelas
+            </a>
+        </div>
+
         {% if error %}
             <div class="alert alert-danger">{{ error }}</div>
         {% endif %}

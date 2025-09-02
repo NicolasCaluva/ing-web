@@ -13,6 +13,9 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                             <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">Editar perfil</a></li>
+                            {% if request.user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'panel:list_users' %}" target="_blank">Panel</a></li>
+                            {% endif %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -38,9 +41,9 @@
 
     <!-- Section -->
     <section class="py-5">
-        <div class="container px-4 px-lg-5 ">
+        <div class="container-fluid px-4 px-lg-5 row">
             <!-- Barra de búsqueda -->
-            <div class="card mb-4">
+            <div class="card mb-4 offset-3   col-6 p-0">
                 <div class="card-body bg-light border rounded p-3">
                     <div class="row g-3">
                         <!-- Buscador -->
@@ -82,7 +85,7 @@
 
             <!-- Contenedor dinámico con resultados -->
             <div id="school-list"
-                 class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+                 class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 {% include "base/partials/school_cards.html" with schools=schools %}
             </div>
         </div>
