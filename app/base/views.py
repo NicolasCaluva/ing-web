@@ -161,7 +161,7 @@ def register_school_view(request):
         )
 
         send_mail(
-            subject="Verifica tu cuenta de escuela",
+            subject="DondeEstudiar - Verifica tu escuela",
             message=f"Hola {name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[email],

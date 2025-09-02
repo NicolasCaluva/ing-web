@@ -1,0 +1,86 @@
+@charset "UTF-8";
+
+.flap {
+    height: 50px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.flap-button {
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-size: 18px;
+}
+
+.cover-photo {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background-color: #ddd;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.profile-photo {
+    position: absolute;
+    bottom: 30%;
+    left: 3.5%;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid white;
+    background-color: #bbb;
+    background-size: cover;
+    background-position: center;
+}
+
+/* ----- Estilos para login ----- */
+.rounded-t-5 {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+@media (min-width: 992px) {
+    .rounded-tr-lg-0 {
+        border-top-right-radius: 0;
+    }
+
+    .rounded-bl-lg-5 {
+        border-bottom-left-radius: 0.5rem;
+    }
+}
+
+.background-dark {
+    background-color: #424242;
+}
+
+.background-gradient-primary {
+    background: #B08E6B;
+    background: linear-gradient(90deg, rgba(176, 142, 107, 1) 0%, rgba(26, 37, 115, 1) 70%, rgba(66, 66, 66, 1) 100%);
+}
+
+.custom-card {
+    width: 75%;
+    height: 60%;
+    align-self: center;
+    justify-self: center;
+}
+
+.fc-white {
+    color: white !important;
+}
+
+.fc-gradient {
+    background: linear-gradient(90deg, rgba(176, 142, 107, 1) 0%, rgba(26, 37, 115, 1) 70%, rgba(66, 66, 66, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-size: 72px;
+}
+
+.custom-input-effect {
+    border: 1px solid white !important;
+}

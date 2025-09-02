@@ -83,3 +83,13 @@ def careers_list(request, pk):
     }
 
     return render(request, 'school/partial/careers.html', context)
+
+
+def general_information(request, pk):
+    school = get_object_or_404(School, pk=pk)
+
+    context = {
+        'school': school,
+    }
+
+    return render(request, 'school/partial/general_information.html', context)

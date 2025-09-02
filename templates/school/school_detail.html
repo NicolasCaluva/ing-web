@@ -2,41 +2,54 @@
 {% load static %}
 {% block container %}
     <div class="container-fluid mt-4">
-        <div class="card mb-4">
+        <div class="card mb-4 border-bottom-0">
             <div class="card-body">
-                <h1 class="card-title">{{ school.name }}</h1>
-                <p class="card-text">
-                    <strong>Valoración promedio:</strong>
-                    {% if school.average_valoration %}
-                        <span class="badge bg-success">{{ school.average_valoration }}</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Sin valoraciones</span>
-                    {% endif %}
-                </p>
-                <p><strong>Dirección:</strong> {{ school.address }}</p>
-                <p><strong>Teléfono:</strong> {{ school.phone_number }}</p>
-                <p><strong>Email:</strong> {{ school.email }}</p>
+                <div class="cover-photo"
+                        {% if school.cover_photo %}
+                     style="background-image: url('{{ school.cover_photo.url }}');"
+                        {% endif %}
+                >
+                </div>
+
+                <div class="profile-photo"
+                        {% if school.profile_photo %}
+                     style="background-image: url('{{ school.profile_photo.url }}');"
+                        {% else %}
+                     style="background-image: url('{% static 'img/profile_default.png' %}');"
+                        {% endif %}
+                ></div>
             </div>
 
-            <div class="row d-flex w-100">
-                <div class="col-3">
+            <div class="row d-flex w-100 ms-0">
+                <div class="col-4 flap">
+                    <button hx-get="{% url 'school:general_information' school.id %}" hx-target="#section"
+                            hx-swap="innerHTML" class="flap-button">
+                        Información general
+                    </button>
+                </div>
+
+                <div class="col-4 flap">
                     <button hx-get="{% url 'comments:comments_list' school.id %}" hx-target="#section"
-                            hx-swap="innerHTML">
+                            hx-swap="innerHTML" class="flap-button">
                         Opiniones
                     </button>
                 </div>
 
-                <div class="col-3">
+                <div class="col-4 flap">
                     <button hx-get="{% url 'school:careers_list' school.id %}" hx-target="#section"
-                            hx-swap="innerHTML">
+                            hx-swap="innerHTML" class="flap-button">
                         Carreras
                     </button>
                 </div>
             </div>
+
+            <div>
+                <a href="{% url 'home' %}">Volver al listado de escuelas</a>
+            </div>
         </div>
 
         <div id="section">
-
+            {% include 'school/partial/general_information.html' %}
         </div>
 
     </div>
