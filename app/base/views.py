@@ -106,7 +106,7 @@ def register_user_view(request):
         user = authenticate(username=email, password=password)
         if user:
             login(request, user)
-            return redirect(reverse('home'))
+            return redirect(reverse('base:verification_mail_sent'))
         else:
             return render(request, 'base/register_user.html',
                           {'error': "Hubo un problema al crear su cuenta. Por favor, inténtelo de nuevo."})
@@ -153,7 +153,6 @@ def register_school_view(request):
 
         code = school.user.userbase.generate_auth_code()
 
-        # TODO: No se debe autenticar automáticamente a la escuela, primero se debe enviar un correo y que valide su cuenta desde el link que se le envió.
         user = authenticate(username=email, password=password)
 
         verification_link = request.build_absolute_uri(
@@ -170,7 +169,7 @@ def register_school_view(request):
 
         if user:
             login(request, user)
-            return redirect(reverse('home'))
+            return redirect(reverse('base:verification_mail_sent'))
         else:
             return render(request, 'base/register_school.html',
                           {'error': "Hubo un problema al crear su cuenta. Por favor, inténtelo de nuevo."})
@@ -198,3 +197,6 @@ def verify_email(request):
 
     messages.success(request, "Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.")
     return redirect("login")
+
+def verification_mail_sent(request):
+    return render(request, 'base/verify_email_sent.html')
