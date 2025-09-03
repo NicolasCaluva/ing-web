@@ -1,5 +1,7 @@
 <h2>Información general</h2>
-
+{% if school.general_description %}
+    <p>{{ school.general_description }}</p>
+{% endif %}
 <h1 class="card-title">{{ school.name }}</h1>
 <p class="card-text">
     <strong>Valoración promedio:</strong>
