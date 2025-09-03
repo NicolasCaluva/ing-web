@@ -5,15 +5,15 @@
         <div class="card mb-4 border-bottom-0">
             <div class="card-body">
                 <div class="cover-photo"
-                        {% if school.cover_photo %}
-                     style="background-image: url('{{ school.cover_photo.url }}');"
+                        {% if school.profile_photo %}
+                     style="background-image: url('{{ school.profile_photo.url }}');"
                         {% endif %}
                 >
                 </div>
 
                 <div class="profile-photo"
-                        {% if school.profile_photo %}
-                     style="background-image: url('{{ school.profile_photo.url }}');"
+                        {% if school.logo %}
+                     style="background-image: url('{{ school.logo.url }}');"
                         {% else %}
                      style="background-image: url('{% static 'img/profile_default.png' %}');"
                         {% endif %}
