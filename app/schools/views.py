@@ -32,7 +32,10 @@ def school_list(request):
         "user": request.user,
         "query": query,
         "turno": turno,
+        "is_school": False,
     }
+    if School.user == request.user:
+        context["is_school"] = True
 
     # --- respuesta con HTMX ---
     if request.headers.get("HX-Request") == "true":
