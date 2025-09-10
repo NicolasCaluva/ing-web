@@ -13,7 +13,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                             {% if is_school %}
-                                <li><a class="dropdown-item" href="{% url 'schools:edit_school' %}">Editar escuela</a></li>
+                                <li><a class="dropdown-item" href="{% url 'school:edit_school' %}">Editar escuela</a></li>
                             {% else %}
                                 <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">Editar perfil</a></li>
                             {% endif %}

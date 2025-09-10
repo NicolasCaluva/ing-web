@@ -72,16 +72,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'dondeestudiar.wsgi.application'
 
 # =========================
-# Base de datos
-# =========================
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600
-    )
-}
-
-# =========================
 # Password validation
 # =========================
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,7 +104,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Primary key default
 # =========================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # =========================
 # Configuración para Render
 # =========================
@@ -123,6 +112,11 @@ if 'RENDER' in os.environ:
     DEBUG = False
     ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
+        'API_KEY': os.environ.get("API_KEY"),
+        'API_SECRET': os.environ.get("API_SECRET"),
+    }
 try:
     from .local_settings import *
 
@@ -142,13 +136,6 @@ if not DEBUG:
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
-
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get("CLOUD_NAME"),
-        'API_KEY': os.environ.get("API_KEY"),
-        'API_SECRET': os.environ.get("API_SECRET"),
-    }
-
 
 # =========================
 # Configuración para envío de correos con Gmail
