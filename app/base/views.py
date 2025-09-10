@@ -85,7 +85,7 @@ def register_user_view(request):
             return render(request, 'base/register_user.html', {'error': error_message})
 
         user = User.objects.create_user(username=email, email=email, password=password,
-                                        first_name=first_name, last_name=last_name)
+                                        first_name=first_name, last_name=last_name, is_active=False)
 
         userbase = UserBase.objects.create(user=user)
         userbase.save()
@@ -103,13 +103,7 @@ def register_user_view(request):
             fail_silently=False,
         )
 
-        user = authenticate(username=email, password=password)
-        if user:
-            login(request, user)
-            return redirect(reverse('base:verification_mail_sent'))
-        else:
-            return render(request, 'base/register_user.html',
-                          {'error': "Hubo un problema al crear su cuenta. Por favor, inténtelo de nuevo."})
+        return redirect(reverse('base:verification_mail_sent'))
 
     else:
         messages.add_message(request, messages.INFO, 'Por favor, regístrese para continuar.')
@@ -145,15 +139,13 @@ def register_school_view(request):
             error_message = "El correo electrónico ya está registrado."
             return render(request, 'base/register_school.html', {'error': error_message})
 
-        user = User.objects.create_user(username=email, email=email, password=password)
+        user = User.objects.create_user(username=email, email=email, password=password, is_active=False)
         slug = slugify(name)
         school = School.objects.create(user=user, name=name, slug=slug)
         school.email_verified = False
         school.save()
 
         code = school.user.userbase.generate_auth_code()
-
-        user = authenticate(username=email, password=password)
 
         verification_link = request.build_absolute_uri(
             reverse("base:verify_email") + f"?code={code}"
@@ -167,12 +159,7 @@ def register_school_view(request):
             fail_silently=False,
         )
 
-        if user:
-            login(request, user)
-            return redirect(reverse('base:verification_mail_sent'))
-        else:
-            return render(request, 'base/register_school.html',
-                          {'error': "Hubo un problema al crear su cuenta. Por favor, inténtelo de nuevo."})
+        return redirect(reverse('base:verification_mail_sent'))
 
     else:
         messages.add_message(request, messages.INFO, 'Por favor, regístrese para continuar.')
@@ -197,6 +184,7 @@ def verify_email(request):
 
     messages.success(request, "Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.")
     return redirect("login")
+
 
 def verification_mail_sent(request):
     return render(request, 'base/verify_email_sent.html')
