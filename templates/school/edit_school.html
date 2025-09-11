@@ -40,10 +40,9 @@
                                       http://bootdey.com/img/Content/avatar/avatar1.png
                                   {% endif %}"
                              alt="Perfil"
-                             style="height:250px; object-fit:cover; border-radius:0;">
+                             style="height:250px; object-fit:fill; border-radius:0;">
 
                         <div class="small font-italic text-muted mb-4"></div>
-
                         <input type="file" id="imageUpload" name="profile_photo" accept="image/*"
                                style="display:none;">
 
@@ -80,34 +79,42 @@
                 </div>
 
                 <div class="col-xl-8">
-                    <div class="card mb-4">
+                    <div class="card mb-2">
                         <div class="card-header">Detalles de la escuela</div>
                         <div class="card-body">
                             <div class="row gx-3 mb-3">
-                                <div class="">
+                                <div class="mt-1">
                                     <label class="small mb-1">Nombre</label>
                                     <input class="form-control" type="text" name="name"
                                            value="{{ school.name}}">
                                 </div>
-                                <div class="">
+                                <div class="mt-1">
                                     <label class="small mb-1">Dirección</label>
                                     <input class="form-control" type="text" name="address"
                                            value="{{ school.address }}">
                                 </div>
-                                <div class="">
+                                <div class="mt-1">
                                     <label class="small mb-1">Numero de teléfono</label>
-                                    <input class="form-control" type="text" name="phone_number"
+                                    <input class="form-control" type="number" name="phone_number"
                                            value="{{ school.phone_number }}">
                                 </div>
-                                <div class="">
+                                <div class="mt-1">
                                     <label class="small mb-1">Descripción general</label>
                                     <input class="form-control" type="text" name="general_description"
                                            value="{{ school.general_description }}">
                                 </div>
-                                <div class="">
+                                <div class="mt-1">
                                     <label class="small mb-1">Descripción de ingreso</label>
                                     <input class="form-control" type="text" name="income_description"
                                            value="{{ school.income_description }}">
+                                </div>
+                                <div class="mt-1 mb-3">
+                                    <label class="small">Turnos (puede seleccionar varios, usando Ctrl)</label>
+                                    <select class="form-control" name="shifts" multiple>
+                                        <option value="Mañana" {% if "Mañana" in school.shifts %}selected{% endif %}>Mañana</option>
+                                        <option value="Tarde" {% if "Tarde" in school.shifts %}selected{% endif %}>Tarde</option>
+                                        <option value="Noche" {% if "Noche" in school.shifts %}selected{% endif %}>Noche</option>
+                                    </select>
                                 </div>
                             </div>
                             <button class="btn btn-primary float-end" type="submit">Guardar cambios</button>

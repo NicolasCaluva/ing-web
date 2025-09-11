@@ -116,6 +116,7 @@ def edit_school(request):
         logo = request.FILES.get('logo')
         general_description = request.POST.get('general_description', '').strip()
         income_description = request.POST.get('income_description', '').strip()
+        shift = request.POST.getlist('shifts')
 
         if profile_photo:
             school.profile_photo = profile_photo
@@ -131,6 +132,8 @@ def edit_school(request):
             school.general_description = general_description
         if income_description:
             school.income_description = income_description
+        if shift:
+            school.shifts = shift
         for i, career in enumerate(careers, start=1):
             career.name = request.POST.get(f"career_name_{i}", career.name)
             career.scope = request.POST.get(f"career_scope_{i}", career.scope)
