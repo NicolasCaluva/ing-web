@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block custom_styles %}
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block container %}
+    <div class="container-xl px-4 mt-4">
+        <nav class="nav nav-borders">
+            <a class="nav-link active ms-0" href="#">Editar Perfil de la Escuela</a>
+        </nav>
+        <hr class="mt-0 mb-4">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="mb-3">
+            <a class="text-decoration-none" href="{% url 'home' %}">
+                <i class="fa-solid fa-arrow-left"></i> Volver al listado de escuelas
+            </a>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-2">
+                <div class="card mb-4 mb-xl-0">
+                    <div class="card-header text-center ">Foto de Portada</div>
+                    <div class="card-body text-center">
+                        <img id="profileImage"
+                             class="img-account-profile w-100"
+                             src="{% if school.profile_photo %}
+                                      {{ school.profile_photo.url }}
+                                  {% else %}
+                                      http://bootdey.com/img/Content/avatar/avatar1.png
+                                  {% endif %}"
+                             alt="Perfil"
+                             style="height:250px; object-fit:fill; border-radius:0;">
+
+                        <div class="small font-italic text-muted mb-4"></div>
+                        <input type="file" id="imageUpload" name="profile_photo" accept="image/*"
+                               style="display:none;">
+
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary" type="button"
+                                    onclick="document.getElementById('imageUpload').click();">
+                                Subir nueva imagen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-4">
+                    <div class="card mb-4 mb-xl-0">
+                        <div class="card-header text-center">Logo</div>
+                        <div class="card-body text-center">
+                            <img id="logoImage" class="img-account-profile rounded-circle mb-2"
+                                 src="{% if school.logo %}{{ school.logo.url }}{% else %}
+                             http://bootdey.com/img/Content/avatar/avatar1.png{% endif %}"
+                                 alt="Perfil" style="width:150px; height:150px; object-fit:cover;">
+
+                            <div class="small font-italic text-muted mb-4">JPG o PNG no mayor a 5 MB</div>
+
+                            <input type="file" id="imageUploadLogo" name="logo" accept="image/*"
+                                   style="display:none;">
+
+                            <button class="btn btn-primary" type="button"
+                                    onclick="document.getElementById('imageUploadLogo').click();">
+                                Subir nueva imagen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-8">
+                    <div class="card mb-2">
+                        <div class="card-header">Detalles de la escuela</div>
+                        <div class="card-body">
+                            <div class="row gx-3 mb-3">
+                                <div class="mt-1">
+                                    <label class="small mb-1">Nombre</label>
+                                    <input class="form-control" type="text" name="name"
+                                           value="{{ school.name}}">
+                                </div>
+                                <div class="mt-1">
+                                    <label class="small mb-1">Dirección</label>
+                                    <input class="form-control" type="text" name="address"
+                                           value="{{ school.address }}">
+                                </div>
+                                <div class="mt-1">
+                                    <label class="small mb-1">Numero de teléfono</label>
+                                    <input class="form-control" type="number" name="phone_number"
+                                           value="{{ school.phone_number }}">
+                                </div>
+                                <div class="mt-1">
+                                    <label class="small mb-1">Descripción general</label>
+                                    <input class="form-control" type="text" name="general_description"
+                                           value="{{ school.general_description }}">
+                                </div>
+                                <div class="mt-1">
+                                    <label class="small mb-1">Descripción de ingreso</label>
+                                    <input class="form-control" type="text" name="income_description"
+                                           value="{{ school.income_description }}">
+                                </div>
+                                <div class="mt-1 mb-3">
+                                    <label class="small">Turnos (puede seleccionar varios, usando Ctrl)</label>
+                                    <select class="form-control" name="shifts" multiple>
+                                        <option value="Mañana" {% if "Mañana" in school.shifts %}selected{% endif %}>Mañana</option>
+                                        <option value="Tarde" {% if "Tarde" in school.shifts %}selected{% endif %}>Tarde</option>
+                                        <option value="Noche" {% if "Noche" in school.shifts %}selected{% endif %}>Noche</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary float-end" type="submit">Guardar cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class = "card">
+            <div class="card-header">Carreras</div>
+            <ul class="list-group">
+                {% for career in careers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ career.name }}
+                        <button class="btn btn-sm btn-primary"
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#careerModal{{ forloop.counter }}">
+                            Editar
+                        </button>
+                    </li>
+                    <div class="modal fade" id="careerModal{{ forloop.counter }}" tabindex="-1"
+                         aria-labelledby="careerModalLabel{{ forloop.counter }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="careerModalLabel{{ forloop.counter }}">
+                                        Detalles de la carrera {{ forloop.counter }}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="small mb-1">Nombre de la carrera</label>
+                                        <input class="form-control" type="text" name="career_name_{{ forloop.counter }}" value="{{ career.name }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1">Descripción de la carrera</label>
+                                        <input class="form-control" type="text" name="career_scope_{{ forloop.counter }}" value="{{ career.scope }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1">Duración de la carrera</label>
+                                        <input class="form-control" type="text" name="career_duration_{{ forloop.counter }}" value="{{ career.duration }}">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar cambios</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/edit_school.js' %}"></script>
+{% endblock %}

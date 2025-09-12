@@ -21,7 +21,7 @@ class School(models.Model):
         ('TARDE', 'Tarde'),
         ('NOCHE', 'Noche'),
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schools', null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='schools', null=True, blank=True)
     name = models.CharField(max_length=100, unique=True, null=True, blank=True)
     slug = models.SlugField(max_length=100, unique=True, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
