@@ -12,7 +12,11 @@
                             {{ user.username }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">Editar perfil</a></li>
+                            {% if is_school %}
+                                <li><a class="dropdown-item" href="{% url 'school:edit_school' %}">Editar escuela</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">Editar perfil</a></li>
+                            {% endif %}
                             {% if request.user.is_staff %}
                                 <li><a class="dropdown-item" href="{% url 'panel:list_users' %}" target="_blank">Panel</a></li>
                             {% endif %}
