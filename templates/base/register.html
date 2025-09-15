@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block container %}
-    <div class="row">
-        <div class="d-flex flex-column">
-            <a href="{% url 'users:register' %}">Registrarse como usuario</a>
-            <a href="{% url 'school:register' %}">Registrarse como institución</a>
-        </div>
+<div class="split-container">
+    <div class="split split-left">
+        <a href="{% url 'users:register' %}">
+            <button class="btn-option btn-left">Registrarse como Usuario</button>
+        </a>
     </div>
+
+    <div class="split split-right">
+        <a href="{% url 'school:register' %}">
+            <button class="btn-option btn-right">Registrarse como Institución</button>
+        </a>
+    </div>
+</div>
 {% endblock %}

@@ -31,12 +31,10 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
-                <!-- Columna foto de perfil -->
                 <div class="col-xl-4">
                     <div class="card mb-4 mb-xl-0">
                         <div class="card-header">Foto de perfil</div>
                         <div class="card-body text-center">
-                            <!-- Imagen de perfil con previsualización -->
                             <img id="profileImage" class="img-account-profile rounded-circle mb-2"
                                  src="{% if user.profile_photo %}{{ user.profile_photo.url }}{% else %}
                              http://bootdey.com/img/Content/avatar/avatar1.png{% endif %}"
