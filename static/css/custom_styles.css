@@ -83,4 +83,27 @@
 
 .custom-input-effect {
     border: 1px solid white !important;
+    color: white !important;
+}
+
+.form-label-custom {
+    color: white !important;
+}
+
+#eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-5%) scale(1);
+    cursor: pointer;
+    color: white;
+    background-color: transparent;
+    border: none;
+    transition: transform 0.3s ease;
+
+}
+
+#eye-icon:hover {
+    transition: transform 0.3s ease;
+    transform: translateY(-5%) scale(1.2);
 }
