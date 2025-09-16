@@ -24,7 +24,6 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <!-- FOTO DE PORTADA -->
         <div class="mb-2">
             <div class="card mb-4 mb-xl-0">
                 <div class="card-header text-center ">Foto de Portada</div>
@@ -34,7 +33,7 @@
                          src="{% if school and school.profile_photo %}
                                   {{ school.profile_photo.url }}
                               {% else %}
-                                  http://bootdey.com/img/Content/avatar/avatar1.png
+                                  {% static 'img/school_photo_register.png' %}
                               {% endif %}"
                          alt="Perfil"
                          style="height:250px; object-fit:fill; border-radius:0;">
@@ -42,7 +41,7 @@
                     <input type="file" id="imageUpload" name="profile_photo" accept="image/*"
                            style="display:none;">
 
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex justify-content-end mt-2">
                         <button class="btn btn-primary" type="button"
                                 onclick="document.getElementById('imageUpload').click();">
                             Subir nueva imagen
