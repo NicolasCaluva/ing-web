@@ -198,6 +198,7 @@ body, html {
     border-radius: 1rem;
     background-color: white;
 }
+
 @media (max-width: 991.98px) {
     .cascading-right {
         margin-right: 0;
