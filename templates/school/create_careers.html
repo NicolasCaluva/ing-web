@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Agregar carreras</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div id="career-forms">
+            <!-- Primer bloque de carrera -->
+            <div class="career-form border p-3 mb-3 rounded">
+                <div class="mb-2">
+                    <label for="career_name_0" class="form-label">Nombre</label>
+                    <input type="text" name="career_name" id="career_name_0" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                    <label for="career_scope_0" class="form-label">Alcance</label>
+                    <input type="text" name="career_scope" id="career_scope_0" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                    <label for="career_duration_0" class="form-label">Duración</label>
+                    <input type="text" name="career_duration" id="career_duration_0" class="form-control" required>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="add-career" class="btn btn-secondary mb-3">
+            + Agregar otra carrera
+        </button>
+
+        <br>
+        <button type="submit" class="btn btn-primary">Guardar carreras</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let formContainer = document.getElementById("career-forms");
+    let addButton = document.getElementById("add-career");
+    let careerIndex = 1; // ya hay un form inicial
+
+    addButton.addEventListener("click", function () {
+        let newForm = document.createElement("div");
+        newForm.classList.add("career-form", "border", "p-3", "mb-3", "rounded");
+
+        newForm.innerHTML = `
+            <div class="mb-2">
+                <label for="career_name_${careerIndex}" class="form-label">Nombre</label>
+                <input type="text" name="career_name" id="career_name_${careerIndex}" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label for="career_scope_${careerIndex}" class="form-label">Alcance</label>
+                <input type="text" name="career_scope" id="career_scope_${careerIndex}" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label for="career_duration_${careerIndex}" class="form-label">Duración</label>
+                <input type="text" name="career_duration" id="career_duration_${careerIndex}" class="form-control" required>
+            </div>
+        `;
+
+        formContainer.appendChild(newForm);
+        careerIndex++;
+    });
+});
+</script>
+{% endblock %}
