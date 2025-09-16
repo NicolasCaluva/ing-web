@@ -14,8 +14,10 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                             {% if is_school %}
                                 <li><a class="dropdown-item" href="{% url 'school:edit_school' %}">Editar escuela</a></li>
-                            {% else %}
+                            {% elif not is_school_with_no_school %}
                                 <li><a class="dropdown-item" href="{% url 'users:edit_profile' %}">Editar perfil</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{% url 'schools:create_school' %}">Crear escuela</a></li>
                             {% endif %}
                             {% if request.user.is_staff %}
                                 <li><a class="dropdown-item" href="{% url 'panel:list_users' %}" target="_blank">Panel</a></li>
