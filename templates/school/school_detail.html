@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block container %}
-    <div class="container-fluid mt-4">
-        <div class="card mb-4 border-bottom-0">
+    <div class="container-fluid pt-4 vw-100 vh-100 bg-gray">
+        <div class="card mb-4 mx-4 rounded-4 shadow-sm custom-bg-white">
             <div class="card-body">
                 <div class="cover-photo"
                         {% if school.profile_photo %}
@@ -20,10 +20,10 @@
                 ></div>
             </div>
 
-            <div class="row d-flex w-100 ms-0">
+            <div class="row d-flex w-100 ms-0 rounded-bottom">
                 <div class="col-4 flap">
                     <button hx-get="{% url 'school:general_information' school.id %}" hx-target="#section"
-                            hx-swap="innerHTML" class="flap-button">
+                            hx-swap="innerHTML" class="flap-button-left">
                         Información general
                     </button>
                 </div>
@@ -37,18 +37,18 @@
 
                 <div class="col-4 flap">
                     <button hx-get="{% url 'school:careers_list' school.id %}" hx-target="#section"
-                            hx-swap="innerHTML" class="flap-button">
+                            hx-swap="innerHTML" class="flap-button-right">
                         Carreras
                     </button>
                 </div>
             </div>
-
-            <div>
-                <a href="{% url 'home' %}">Volver al listado de escuelas</a>
-            </div>
         </div>
 
-        <div id="section">
+        <div class="mb-3 ms-4">
+            <a href="{% url 'home' %}">Volver al listado de escuelas</a>
+        </div>
+
+        <div id="section" class="mx-4">
             {% include 'school/partial/general_information.html' %}
         </div>
 

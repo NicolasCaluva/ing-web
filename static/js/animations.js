@@ -1,7 +1,5 @@
 $(document).ready(function () {
-    console.log("Document is ready");
     $('#eye-icon').on('click', function () {
-        console.log("Eye icon clicked");
         var eyeIcon = $(this);
         var input = $('#password');
 

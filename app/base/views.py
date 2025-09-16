@@ -45,7 +45,13 @@ def login_view(request):
                 return render(request, 'base/login.html',
                               {'error': "El correo electrónico o la contraseña son incorrectos."})
         else:
-            error_message = "Por favor, ingrese su correo electrónico y contraseña."
+            if not email and not password:
+                error_message = "Por favor, ingrese su correo electrónico y contraseña."
+            elif not email:
+                error_message = "Por favor, ingrese su correo electrónico."
+            else:
+                error_message = "Por favor, ingrese su contraseña."
+
             return render(request, 'base/login.html', {'error': error_message})
 
     else:
