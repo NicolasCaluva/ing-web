@@ -34,11 +34,14 @@ def school_list(request):
         "query": query,
         "turno": turno,
         "is_school": False,
+        "is_school_with_no_school": False,
     }
     if request.user.is_authenticated:
         if School.objects.filter(user__email=request.user.email).exists():
             is_school = True
             context["is_school"] = is_school
+        elif request.user.email.endswith('@santafe.edu.ar'):
+            context["is_school_with_no_school"] = True
     if request.headers.get("HX-Request") == "true":
         return render(request, "base/partials/school_cards.html", context)
 
@@ -145,3 +148,69 @@ def edit_school(request):
         context["success"] = "Perfil de la escuela actualizado correctamente."
         return redirect(reverse('home'))
     return render(request, 'school/edit_school.html', context)
+
+def create_school(request):
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
+    if School.objects.filter(user__email=request.user.email).exists():
+        return redirect(f"{reverse('home')}?next={request.path}")
+    if not request.user.email.endswith('@santafe.edu.ar'):
+        context = {
+            "error": "El correo electrónico debe terminar con @santafe.edu.ar."
+        }
+        return render(request, 'school/create_school.html', context)
+    if request.method == "POST":
+        name = request.POST.get('name', '').strip()
+        address = request.POST.get('address', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        profile_photo = request.FILES.get('profile_photo')
+        logo = request.FILES.get('logo')
+        general_description = request.POST.get('general_description', '').strip()
+        income_description = request.POST.get('income_description', '').strip()
+        shift = request.POST.getlist('shifts')
+
+        if not name or not address or not phone_number or not profile_photo or not logo or not general_description or not income_description or not shift:
+            context = {
+                "error": "Por favor, complete todos los campos obligatorios.",
+            }
+            return render(request, 'school/create_school.html', context)
+
+        school = School.objects.create(
+            user=request.user,
+            name=name,
+            address=address,
+            phone_number=phone_number,
+            profile_photo=profile_photo,
+            logo=logo,
+            general_description=general_description,
+            income_description=income_description,
+            shifts=shift
+        )
+        school.save()
+
+        return redirect(reverse('home'))
+
+    return render(request, 'school/create_school.html')
+def create_careers(request):
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
+    school = School.objects.filter(user__email=request.user.email).first()
+    if not school:
+        return redirect(f"{reverse('home')}?next={request.path}")
+    if request.method == "POST":
+        career_names = request.POST.getlist('career_name')
+        career_scopes = request.POST.getlist('career_scope')
+        career_durations = request.POST.getlist('career_duration')
+
+        for name, scope, duration in zip(career_names, career_scopes, career_durations):
+            if name.strip() and scope.strip() and duration.strip():
+                Career.objects.create(
+                    school=school,
+                    name=name.strip(),
+                    scope=scope.strip(),
+                    duration=duration.strip()
+                )
+
+        return redirect(reverse('home'))
+
+    return render(request, 'school/create_careers.html')
