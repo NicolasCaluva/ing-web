@@ -30,7 +30,7 @@
                     <h1 class="text-center fc-gradient">DONDE ESTUDIAR</h1>
                     <div class="card-body py-5 px-md-5">
                         {% if error %}
-                            <div class="alert alert-danger">{{ error }}</div>
+                            <div class="alert alert-danger py-1 px-2">{{ error }}</div>
                         {% endif %}
                         <form action="{% url 'login' %}" method="post">
                             {% csrf_token %}
