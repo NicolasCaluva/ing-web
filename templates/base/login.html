@@ -36,16 +36,17 @@
                             {% csrf_token %}
                             <!-- Email input -->
                             <div data-mdb-input-init class="form-outline mb-4">
-                                <input type="email" id="form2Example1" class="form-control fc-white custom-input-effect"
+                                <label class="form-label-custom fc-white" for="email">Email</label>
+                                <input type="email" id="email" class="form-control fc-white custom-input-effect"
                                        name="email"/>
-                                <label class="form-label fc-white" for="form2Example1">Email</label>
                             </div>
 
                             <!-- Password input -->
                             <div data-mdb-input-init class="form-outline mb-4">
-                                <input type="password" id="form2Example2" class="form-control custom-input-effect"
+                                <label class="form-label-custom fc-white" for="password">Contraseña</label>
+                                <input type="password" id="password" class="form-control custom-input-effect"
                                        name="password"/>
-                                <label class="form-label fc-white" for="form2Example2">Contraseña</label>
+                                <button type="button" id="eye-icon"><i class="fa-solid fa-eye"></i></button>
                             </div>
 
                             <!-- 2 column grid layout for inline styling -->
@@ -87,4 +88,5 @@
 
 {% block js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.js"></script>
+    <script src="../../static/js/animations.js"></script>
 {% endblock %}
