@@ -11,6 +11,25 @@
     height: 100%;
     border: none;
     font-size: 18px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.flap-button-left {
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-size: 18px;
+    border-bottom-left-radius: 0.75rem;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.flap-button-right {
+    width: 100%;
+    height: 100%;
+    border: none;
+    font-size: 18px;
+    border-bottom-right-radius: 0.75rem;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .cover-photo {
@@ -106,4 +125,13 @@
 #eye-icon:hover {
     transition: transform 0.3s ease;
     transform: translateY(-5%) scale(1.2);
+}
+
+.bg-gray {
+    background-color: #f2f2f2;
+}
+
+.custom-bg-white {
+    border-radius: 1rem;
+    background-color: white;
 }

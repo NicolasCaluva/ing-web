@@ -1,35 +1,41 @@
-<h2>Carreras</h2>
+<div class="custom-bg-white p-3 shadow-sm">
+    <div class="card border-0">
+        <div class="card-header border-bottom-0">
+            <h2>Carreras</h2>
+        </div>
 
-{% if careers %}
-    <div class="row mx-5">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Alcance</th>
-                <th>Duración</th>
-                <th>Inscripciones abiertas</th>
-            </tr>
-            </thead>
-            <tbody >
-            {% for career in careers %}
-                <tr>
-                    <td>{{ career.name }}</td>
-                    <td>{{ career.scope }}</td>
-                    <td>{{ career.get_duration }}</td>
-                    <td>
-                        {% if career.is_active %}
-                            <span class="badge bg-success">Sí</span>
-                        {% else %}
-                            <span class="badge bg-secondary">No</span>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
+        {% if careers %}
+            <div class="row mx-5">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Alcance</th>
+                        <th>Duración</th>
+                        <th>Inscripciones abiertas</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for career in careers %}
+                        <tr>
+                            <td>{{ career.name }}</td>
+                            <td>{{ career.scope }}</td>
+                            <td>{{ career.get_duration }}</td>
+                            <td>
+                                {% if career.is_active %}
+                                    <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
 
-        </table>
+                </table>
+            </div>
+        {% else %}
+            <p>No hay carreras disponibles para esta escuela.</p>
+        {% endif %}
     </div>
-{% else %}
-    <p>No hay carreras disponibles para esta escuela.</p>
-{% endif %}
+</div>

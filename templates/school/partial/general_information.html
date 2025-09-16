@@ -1,16 +1,24 @@
-<h2>Información general</h2>
-{% if school.general_description %}
-    <p>{{ school.general_description }}</p>
-{% endif %}
-<h1 class="card-title">{{ school.name }}</h1>
-<p class="card-text">
-    <strong>Valoración promedio:</strong>
-    {% if school.average_valoration %}
-        <span class="badge bg-success">{{ school.average_valoration }}</span>
-    {% else %}
-        <span class="badge bg-secondary">Sin valoraciones</span>
-    {% endif %}
-</p>
-<p><strong>Dirección:</strong> {{ school.address }}</p>
-<p><strong>Teléfono:</strong> {{ school.phone_number }}</p>
-<p><strong>Email:</strong> {{ school.email }}</p>
+<div class="custom-bg-white p-3 shadow-sm">
+    <div class="card border-0">
+        <div class="card-header border-bottom-0">
+            <h2>Información general</h2>
+        </div>
+        <div class="card-body">
+            {% if school.general_description %}
+                <p>{{ school.general_description }}</p>
+            {% endif %}
+            <h1 class="card-title">{{ school.name }}</h1>
+            <p class="card-text">
+                <strong>Valoración promedio:</strong>
+                {% if school.average_valoration %}
+                    <span class="badge bg-success">{{ school.average_valoration }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">Sin valoraciones</span>
+                {% endif %}
+            </p>
+            <p><strong>Dirección:</strong> {{ school.address|default_if_none:"" }}</p>
+            <p><strong>Teléfono:</strong> {{ school.phone_number|default_if_none:"" }}</p>
+            <p><strong>Email:</strong> {{ school.email|default_if_none:"" }}</p>
+        </div>
+    </div>
+</div>
