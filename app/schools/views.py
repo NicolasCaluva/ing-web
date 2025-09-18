@@ -188,7 +188,7 @@ def create_school(request):
         )
         school.save()
 
-        return redirect(reverse('home'))
+        return redirect(reverse('school:create_careers'))
 
     return render(request, 'school/create_school.html')
 def create_careers(request):
@@ -198,19 +198,59 @@ def create_careers(request):
     if not school:
         return redirect(f"{reverse('home')}?next={request.path}")
     if request.method == "POST":
-        career_names = request.POST.getlist('career_name')
-        career_scopes = request.POST.getlist('career_scope')
-        career_durations = request.POST.getlist('career_duration')
+        career_name = request.POST.get('career_name', '').strip()
+        career_scope = request.POST.get('career_scope', '').strip()
+        career_duration = request.POST.get('career_duration', '').strip()
+        origin=request.POST.get('origin','').strip()
 
-        for name, scope, duration in zip(career_names, career_scopes, career_durations):
-            if name.strip() and scope.strip() and duration.strip():
-                Career.objects.create(
-                    school=school,
-                    name=name.strip(),
-                    scope=scope.strip(),
-                    duration=duration.strip()
-                )
+        if not career_name or not career_scope or not career_duration:
+            context = {
+                "error": "Por favor, complete todos los campos obligatorios.",
+                "careers": Career.objects.filter(school=school)
+            }
+            return render(request, 'school/create_careers.html', context)
 
-        return redirect(reverse('home'))
+        career = Career.objects.create(
+            school=school,
+            name=career_name,
+            scope=career_scope,
+            duration=career_duration
+        )
+        career.save()
+        if origin=='edit_school':
+            return redirect(reverse('school:edit_school'))
+        return redirect(reverse('school:create_careers'))
+    context = {
+        "careers": Career.objects.filter(school=school)
+    }
+    return render(request, 'school/create_careers.html', context)
+def update_career(request, career_id):
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('login')}?next={request.path}")
 
-    return render(request, 'school/create_careers.html')
+    school = School.objects.filter(user__email=request.user.email).first()
+    if not school:
+        return redirect(f"{reverse('home')}?next={request.path}")
+
+    career = get_object_or_404(Career, id=career_id, school=school)
+
+    if request.method == "POST":
+        career_name = request.POST.get('career_name', '').strip()
+        career_scope = request.POST.get('career_scope', '').strip()
+        career_duration = request.POST.get('career_duration', '').strip()
+        origin = request.POST.get('origin', '').strip()
+
+        if not career_name or not career_scope or not career_duration:
+            context = {
+                "error": "Por favor, complete todos los campos obligatorios.",
+                "careers": Career.objects.filter(school=school)
+            }
+            return render(request, 'school/create_careers.html', context)
+
+        career.name = career_name
+        career.scope = career_scope
+        career.duration = career_duration
+        career.save()
+        if origin=='edit_school':
+            return redirect(reverse('school:edit_school'))
+        return redirect(reverse('school:create_careers'))
