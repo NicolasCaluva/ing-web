@@ -126,6 +126,13 @@ def edit_school(request):
         if logo:
             school.logo = logo
         if name:
+            if School.objects.filter(name=name).exclude(id=school.id).exists():
+                context = {
+                    "error": "Ya existe una escuela con ese nombre.",
+                    "school": school,
+                    "careers": careers,
+                }
+                return render(request, 'school/edit_school.html', context)
             school.name = name
         if address:
             school.address = address
@@ -174,7 +181,11 @@ def create_school(request):
                 "error": "Por favor, complete todos los campos obligatorios.",
             }
             return render(request, 'school/create_school.html', context)
-
+        if School.objects.filter(name=name):
+            context = {
+                "error": "Ya existe una escuela con ese nombre.",
+            }
+            return render(request, 'school/create_school.html', context)
         school = School.objects.create(
             user=request.user,
             name=name,
