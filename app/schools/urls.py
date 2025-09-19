@@ -1,6 +1,6 @@
 from django.urls import path
 from app.schools.views import school_detail, careers_list, general_information, edit_school, create_school, \
-    create_careers
+    create_careers, update_career
 from app.base.views import register_school_view
 
 app_name = 'school'
@@ -11,5 +11,6 @@ urlpatterns = [
     path('<int:pk>/informacion-general/', general_information, name='general_information'),
     path('editar-escuela/', edit_school, name='edit_school'),
     path('crear-escuela/', create_school, name='create_school'),
-    path('crear-carrera/', create_careers, name='create_careers')
+    path('crear-carrera/', create_careers, name='create_careers'),
+    path("careers/update/<int:career_id>/", update_career, name="update_career"),
 ]
