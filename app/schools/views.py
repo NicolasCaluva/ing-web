@@ -1,3 +1,4 @@
+import googlemaps
 from django.db.models import Q
 from django.http import HttpResponse
 
@@ -5,6 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 
+from dondeestudiar import settings
 from .models import School, Career
 
 
@@ -197,6 +199,14 @@ def create_school(request):
             income_description=income_description,
             shifts=shift
         )
+        if school.address:
+            gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+            geocode_result = gmaps.geocode(school.address)
+
+            if geocode_result:
+                location = geocode_result[0]['geometry']['location']
+                school.latitude = location['lat']
+                school.longitude = location['lng']
         school.save()
 
         return redirect(reverse('school:create_careers'))

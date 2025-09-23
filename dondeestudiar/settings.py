@@ -117,6 +117,8 @@ if 'RENDER' in os.environ:
         'API_KEY': os.environ.get("API_KEY"),
         'API_SECRET': os.environ.get("API_SECRET"),
     }
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+    GOOGLE_MAPS_API_KEY = "AIzaSyBZxBZP3zB0Sws8nzCngaydXN-BYMTMz78"
 try:
     from .local_settings import *
 
@@ -147,5 +149,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-if not DEBUG:
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")

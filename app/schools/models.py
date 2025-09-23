@@ -34,6 +34,9 @@ class School(models.Model):
     recovery_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
     email_verified = models.BooleanField(default=False)
     shifts = MultiSelectField(choices=SHIFT_CHOICES, max_length=50, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True, related_name='schools')
 
     def __str__(self):
