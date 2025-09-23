@@ -86,6 +86,53 @@
                             <label class="small mb-1">Dirección</label>
                             <input class="form-control" type="text" name="address" value="{{ school.address }}">
                         </div>
+                        <div id="map" style="height:400px;width:100%;"></div>
+
+                        <input type="hidden" id="id_latitude" name="latitude">
+                        <input type="hidden" id="id_longitude" name="longitude">
+
+                        <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places"></script>
+                        <script>
+                          function initMap() {
+                            const defaultLocation = { lat: -34.6037, lng: -58.3816 }; // Buenos Aires por defecto
+                            const map = new google.maps.Map(document.getElementById("map"), {
+                              zoom: 13,
+                              center: defaultLocation,
+                            });
+
+                            const marker = new google.maps.Marker({
+                              position: defaultLocation,
+                              map: map,
+                              draggable: true,
+                            });
+
+                            // Autocompletar dirección
+                            const input = document.getElementById("id_address");
+                            const autocomplete = new google.maps.places.Autocomplete(input);
+                            autocomplete.bindTo("bounds", map);
+
+                            autocomplete.addListener("place_changed", () => {
+                              const place = autocomplete.getPlace();
+                              if (!place.geometry) return;
+
+                              map.setCenter(place.geometry.location);
+                              marker.setPosition(place.geometry.location);
+
+                              document.getElementById("id_latitude").value = place.geometry.location.lat();
+                              document.getElementById("id_longitude").value = place.geometry.location.lng();
+                            });
+
+                            // Si mueve el pin manualmente
+                            marker.addListener("dragend", () => {
+                              const pos = marker.getPosition();
+                              document.getElementById("id_latitude").value = pos.lat();
+                              document.getElementById("id_longitude").value = pos.lng();
+                            });
+                          }
+
+                          window.onload = initMap;
+                        </script>
+
                         <div class="mt-1">
                             <label class="small mb-1">Número de teléfono</label>
                             <input class="form-control" type="number" name="phone_number" value="{{ school.phone_number }}">
