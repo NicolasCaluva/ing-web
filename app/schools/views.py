@@ -181,11 +181,13 @@ def create_school(request):
         if not name or not address or not phone_number or not profile_photo or not logo or not general_description or not income_description or not shift:
             context = {
                 "error": "Por favor, complete todos los campos obligatorios.",
+                "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY
             }
             return render(request, 'school/create_school.html', context)
         if School.objects.filter(name=name):
             context = {
                 "error": "Ya existe una escuela con ese nombre.",
+                "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY
             }
             return render(request, 'school/create_school.html', context)
         school = School.objects.create(
@@ -223,14 +225,25 @@ def create_careers(request):
     if request.method == "POST":
         career_name = request.POST.get('career_name', '').strip()
         career_scope = request.POST.get('career_scope', '').strip()
-        career_duration = request.POST.get('career_duration', '').strip()
         origin=request.POST.get('origin','').strip()
+
+        career_duration = int(request.POST.get('career_duration', 0))
+        if career_duration <= 0:
+            context = {
+                "error": "Error, La duracion de la carrera debe ser mayor a 0",
+                "careers": Career.objects.filter(school=school)
+            }
+            if origin == 'edit_school':
+                return render(request, "school/edit_school.html",context)
+            return render(request, 'school/create_careers.html', context)
 
         if not career_name or not career_scope or not career_duration:
             context = {
                 "error": "Por favor, complete todos los campos obligatorios.",
                 "careers": Career.objects.filter(school=school)
             }
+            if origin == 'edit_school':
+                return render(request, "school/edit_school.html",context)
             return render(request, 'school/create_careers.html', context)
 
         career = Career.objects.create(
@@ -260,14 +273,25 @@ def update_career(request, career_id):
     if request.method == "POST":
         career_name = request.POST.get('career_name', '').strip()
         career_scope = request.POST.get('career_scope', '').strip()
-        career_duration = request.POST.get('career_duration', '').strip()
         origin = request.POST.get('origin', '').strip()
+
+        career_duration = int(request.POST.get('career_duration', 0))
+        if career_duration <= 0:
+            context = {
+                "error": "Error, La duracion de la carrera debe ser mayor a 0",
+                "careers": Career.objects.filter(school=school)
+            }
+            if origin == 'edit_school':
+                return render(request, 'school/edit_school.html',context)
+            return render(request, 'school/create_careers.html', context)
 
         if not career_name or not career_scope or not career_duration:
             context = {
                 "error": "Por favor, complete todos los campos obligatorios.",
                 "careers": Career.objects.filter(school=school)
             }
+            if origin == 'edit_school':
+                return render(request, "school/edit_school.html",context)
             return render(request, 'school/create_careers.html', context)
 
         career.name = career_name
