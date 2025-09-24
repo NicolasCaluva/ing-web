@@ -84,20 +84,27 @@
                             <label class="small mb-1">Dirección</label>
                             <input id="id_address" class="form-control" type="text" name="address" value="{{ school.address }}">
                         </div>
-                            <div id="map" class="mt-1" style="height:400px;width:100%;"></div>
+                            <div id="map" class="mt-2" style="height:400px;width:100%;"></div>
                             <input type="hidden" id="id_latitude" name="latitude">
                             <input type="hidden" id="id_longitude" name="longitude">
                         <div class="mt-1">
                             <label class="small mb-1">Número de teléfono</label>
-                            <input class="form-control" type="number" name="phone_number" value="{{ school.phone_number }}">
+                            <input class="form-control"
+                                   type="tel"
+                                   name="phone_number"
+                                   value="{{ school.phone_number }}"
+                                   placeholder="+54 3492 526598"
+                                   pattern="^\+54[0-9]{8,12}$"
+                                   title="Ingrese un número válido en formato internacional, por ejemplo +543492526598"
+                                   maxlength="13">
                         </div>
                         <div class="mt-1">
                             <label class="small mb-1">Descripción general</label>
-                            <input class="form-control" type="text" name="general_description" value="{{ school.general_description }}">
+                            <textarea rows="4" class="form-control" type="text" name="general_description">{{ school.general_description|default_if_none:"" }}</textarea>
                         </div>
                         <div class="mt-1">
                             <label class="small mb-1">Descripción de ingreso</label>
-                            <input class="form-control" type="text" name="income_description" value="{{ school.income_description }}">
+                            <textarea rows="4" class="form-control" name="income_description">{{ school.income_description|default_if_none:"" }}</textarea>
                         </div>
                         <div class="mt-1 mb-3">
                             <label class="small" for="shifts">Turnos (puede seleccionar varios, usando
