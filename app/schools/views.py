@@ -210,8 +210,10 @@ def create_school(request):
         school.save()
 
         return redirect(reverse('school:create_careers'))
-
-    return render(request, 'school/create_school.html')
+    context = {
+        "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY
+    }
+    return render(request, 'school/create_school.html', context)
 def create_careers(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('login')}?next={request.path}")

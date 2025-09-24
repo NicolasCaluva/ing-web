@@ -118,7 +118,7 @@ if 'RENDER' in os.environ:
         'API_SECRET': os.environ.get("API_SECRET"),
     }
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-    GOOGLE_MAPS_API_KEY = "AIzaSyBZxBZP3zB0Sws8nzCngaydXN-BYMTMz78"
+    GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
 try:
     from .local_settings import *
 
