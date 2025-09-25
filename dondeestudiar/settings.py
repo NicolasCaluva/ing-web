@@ -117,13 +117,10 @@ if 'RENDER' in os.environ:
         'API_KEY': os.environ.get("API_KEY"),
         'API_SECRET': os.environ.get("API_SECRET"),
     }
-try:
-    from .local_settings import *
-
-    print("⚡ Usando local_settings.py")
-except ImportError:
-    print("⚡ No se encontró local_settings.py")
-    pass
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+    GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
+else:
+    GOOGLE_MAPS_API_KEY = ""
 
 if not DEBUG:
     STORAGES = {
@@ -137,6 +134,14 @@ if not DEBUG:
         },
     }
 
+try:
+    from .local_settings import *
+
+    print("⚡ Usando local_settings.py")
+except ImportError:
+    print("⚡ No se encontró local_settings.py")
+    pass
+
 # =========================
 # Configuración para envío de correos con Gmail
 # =========================
@@ -146,5 +151,4 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

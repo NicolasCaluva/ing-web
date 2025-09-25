@@ -20,10 +20,8 @@
             <i class="fa-solid fa-arrow-left"></i> Volver al listado de escuelas
         </a>
     </div>
-
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-
         <div class="mb-2">
             <div class="card mb-4 mb-xl-0">
                 <div class="card-header text-center ">Foto de Portada</div>
@@ -33,7 +31,7 @@
                          src="{% if school and school.profile_photo %}
                                   {{ school.profile_photo.url }}
                               {% else %}
-                                  {% static 'img/school_photo_register.png' %}
+                                  {% static 'img/5e5752c8831cebc1827bffe32a9b3f2f.jpg' %}
                               {% endif %}"
                          alt="Perfil"
                          style="height:250px; object-fit:fill; border-radius:0;">
@@ -84,19 +82,29 @@
                         </div>
                         <div class="mt-1">
                             <label class="small mb-1">Dirección</label>
-                            <input class="form-control" type="text" name="address" value="{{ school.address }}">
+                            <input id="id_address" class="form-control" type="text" name="address" value="{{ school.address }}">
                         </div>
+                            <div id="map" class="mt-2" style="height:400px;width:100%;"></div>
+                            <input type="hidden" id="id_latitude" name="latitude">
+                            <input type="hidden" id="id_longitude" name="longitude">
                         <div class="mt-1">
                             <label class="small mb-1">Número de teléfono</label>
-                            <input class="form-control" type="number" name="phone_number" value="{{ school.phone_number }}">
+                            <input class="form-control"
+                                   type="tel"
+                                   name="phone_number"
+                                   value="{{ school.phone_number }}"
+                                   placeholder="+54 3492 526598"
+                                   pattern="^\+54[0-9]{8,12}$"
+                                   title="Ingrese un número válido en formato internacional, por ejemplo +543492526598"
+                                   maxlength="13">
                         </div>
                         <div class="mt-1">
                             <label class="small mb-1">Descripción general</label>
-                            <input class="form-control" type="text" name="general_description" value="{{ school.general_description }}">
+                            <textarea rows="4" class="form-control" type="text" name="general_description">{{ school.general_description|default_if_none:"" }}</textarea>
                         </div>
                         <div class="mt-1">
                             <label class="small mb-1">Descripción de ingreso</label>
-                            <input class="form-control" type="text" name="income_description" value="{{ school.income_description }}">
+                            <textarea rows="4" class="form-control" name="income_description">{{ school.income_description|default_if_none:"" }}</textarea>
                         </div>
                         <div class="mt-1 mb-3">
                             <label class="small" for="shifts">Turnos (puede seleccionar varios, usando
@@ -112,10 +120,11 @@
                                     Noche
                                 </option>
                             </select>
-                            <button class="btn btn-primary float-end" type="submit">Crear Escuela</button>
+                            <button class="btn btn-primary float-end mt-2" type="submit">Crear Escuela</button>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </form>
 </div>
@@ -123,4 +132,5 @@
 
 {% block js %}
 <script src="{% static 'js/edit_school.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
 {% endblock %}

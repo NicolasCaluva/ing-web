@@ -94,19 +94,23 @@
                                            value="{{ school.address }}">
                                 </div>
                                 <div class="mt-1">
-                                    <label class="small mb-1">Numero de teléfono</label>
-                                    <input class="form-control" type="number" name="phone_number"
-                                           value="{{ school.phone_number }}">
+                                    <label class="small mb-1">Número de teléfono</label>
+                                    <input class="form-control"
+                                           type="tel"
+                                           name="phone_number"
+                                           value="{{ school.phone_number }}"
+                                           placeholder="+54 3492 526598"
+                                           pattern="^\+54[0-9]{8,12}$"
+                                           title="Ingrese un número válido en formato internacional, por ejemplo +543492526598"
+                                           maxlength="13">
                                 </div>
                                 <div class="mt-1">
                                     <label class="small mb-1">Descripción general</label>
-                                    <input class="form-control" type="text" name="general_description"
-                                           value="{{ school.general_description }}">
+                                    <textarea rows="4" class="form-control" type="text" name="general_description">{{ school.general_description|default_if_none:"" }}</textarea>
                                 </div>
                                 <div class="mt-1">
                                     <label class="small mb-1">Descripción de ingreso</label>
-                                    <input class="form-control" type="text" name="income_description"
-                                           value="{{ school.income_description }}">
+                                    <textarea rows="4" class="form-control" name="income_description">{{ school.income_description|default_if_none:"" }}</textarea>
                                 </div>
                                 <div class="mt-1 mb-3">
                                     <label class="small" for="shifts">Turnos (puede seleccionar varios, usando
@@ -131,64 +135,107 @@
             </div>
         </form>
 
+        <div class="container mt-4">
         <div class="card mb-3">
-            <div class="card-header">Carreras</div>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Carreras</span>
+                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addCareerModal">
+                    + Agregar
+                </button>
+            </div>
             <div class="card-body">
                 <ul class="list-group">
                     {% for career in careers %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             {{ career.name }}
-                            <button class="btn btn-sm btn-primary"
+                            <button class="btn btn-sm btn-warning"
                                     type="button"
                                     data-bs-toggle="modal"
                                     data-bs-target="#careerModal{{ forloop.counter }}">
                                 Editar
                             </button>
                         </li>
+
                         <div class="modal fade" id="careerModal{{ forloop.counter }}" tabindex="-1"
                              aria-labelledby="careerModalLabel{{ forloop.counter }}" aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="careerModalLabel{{ forloop.counter }}">
-                                            Detalles de la carrera {{ forloop.counter }}
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Cerrar"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="small mb-1">Nombre de la carrera</label>
-                                            <input class="form-control" type="text"
-                                                   name="career_name_{{ forloop.counter }}"
-                                                   value="{{ career.name }}">
+                                    <form method="post" action="{% url 'school:update_career' career.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="origin" value="edit_school">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="careerModalLabel{{ forloop.counter }}">
+                                                Editar carrera
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Cerrar"></button>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1">Descripción de la carrera</label>
-                                            <input class="form-control" type="text"
-                                                   name="career_scope_{{ forloop.counter }}" value="{{ career.scope }}">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="small mb-1">Nombre</label>
+                                                <input class="form-control" type="text" name="career_name"
+                                                       value="{{ career.name }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="small mb-1">Alcance</label>
+                                                <input class="form-control" type="text" name="career_scope"
+                                                       value="{{ career.scope }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="small mb-1">Duración</label>
+                                                <input class="form-control" type="text" name="career_duration"
+                                                       value="{{ career.duration }}">
+                                            </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1">Duración de la carrera</label>
-                                            <input class="form-control" type="text"
-                                                   name="career_duration_{{ forloop.counter }}"
-                                                   value="{{ career.duration }}">
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cerrar</button>
+                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
                                         </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
-                                        </button>
-                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar
-                                            cambios
-                                        </button>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
+                    {% empty %}
+                        <li class="list-group-item">No hay carreras registradas.</li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="addCareerModal" tabindex="-1" aria-labelledby="addCareerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" action="{% url 'school:create_careers' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="origin" value="edit_school">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCareerModalLabel">Agregar nueva carrera</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="small mb-1">Nombre</label>
+                            <input class="form-control" type="text" name="career_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Alcance</label>
+                            <input class="form-control" type="text" name="career_scope" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small mb-1">Duración</label>
+                            <input class="form-control" type="text" name="career_duration" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar carrera</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     </div>
 {% endblock %}
 
