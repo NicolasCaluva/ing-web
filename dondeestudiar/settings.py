@@ -119,14 +119,8 @@ if 'RENDER' in os.environ:
     }
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
-GOOGLE_MAPS_API_KEY=""
-try:
-    from .local_settings import *
-
-    print("⚡ Usando local_settings.py")
-except ImportError:
-    print("⚡ No se encontró local_settings.py")
-    pass
+else:
+    GOOGLE_MAPS_API_KEY = ""
 
 if not DEBUG:
     STORAGES = {
@@ -139,6 +133,14 @@ if not DEBUG:
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
+
+try:
+    from .local_settings import *
+
+    print("⚡ Usando local_settings.py")
+except ImportError:
+    print("⚡ No se encontró local_settings.py")
+    pass
 
 # =========================
 # Configuración para envío de correos con Gmail
