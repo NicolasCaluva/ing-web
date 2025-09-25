@@ -27,7 +27,6 @@ class School(models.Model):
     address = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     profile_photo = models.ImageField(upload_to='school_photos/', null=True, blank=True)
-    cover_photo = models.ImageField(upload_to='school_cover_photos/', null=True, blank=True)
     logo = models.ImageField(upload_to='school_logo/', null=True, blank=True)
     general_description = models.TextField(null=True, blank=True)
     income_description = models.TextField(null=True, blank=True)
@@ -78,3 +77,13 @@ class Career(models.Model):
         if self.duration == 1:
             return f'{self.duration} año'
         return f'{self.duration} años'
+
+
+class Photo(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='school_photos/')
+    description = models.CharField(max_length=255, null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Foto de {self.school.name} ({self.id})"

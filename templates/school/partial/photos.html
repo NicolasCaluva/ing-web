@@ -1,0 +1,20 @@
+<div class="custom-bg-white p-3 shadow">
+    <div class="card border-0">
+        <div class="card-header border-bottom-0">
+            <h2>Fotos</h2>
+        </div>
+
+        {% if photos %}
+            <div class="row d-flex mx-5">
+                {% for photo in photos %}
+                    <div class="col-3 flex-wrap justify-content-start">
+                        <img src="{{ photo.image.url }}" alt="Foto de {{ photo.school.name }}" class="img-thumbnail"
+                             style="width: 200px; height: auto;">
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No hay fotos disponibles para esta escuela.</p>
+        {% endif %}
+    </div>
+</div>
