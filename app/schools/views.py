@@ -1,4 +1,5 @@
 import googlemaps
+import math
 from django.db.models import Q
 from django.http import HttpResponse
 
@@ -12,9 +13,28 @@ from .models import School, Career
 
 # Create your views here.
 
+# función auxiliar para calcular distancia en km
+#TODO revisar si esta funcion iria en otro lado
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # radio de la tierra en km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
 def school_list(request):
     query = request.GET.get("search", "").strip()
     turno = request.GET.get("turno")
+    distance = request.GET.get("distance")  # nuevo filtro
+    user_lat = request.COOKIES.get("user_lat")
+    user_lon = request.COOKIES.get("user_lon")
+
 
     schools = School.objects.all()
 
@@ -28,6 +48,28 @@ def school_list(request):
 
     if turno:
         schools = schools.filter(shifts__contains=turno)
+    # --- ubicación y distancia ---
+    if distance and distance != "" and user_lat and user_lon:
+        user_lat = float(user_lat)
+        user_lon = float(user_lon)
+
+        for s in schools:
+            if s.latitude is not None and s.longitude is not None:
+                s.distance = haversine(
+                    user_lat,
+                    user_lon,
+                    float(s.latitude),
+                    float(s.longitude)
+                )
+            else:
+                s.distance = None
+
+        max_distance = float(distance)
+        schools = [s for s in schools if s.distance and s.distance <= max_distance]
+    else:
+        # si no hay distance seleccionado, ninguna escuela tiene distancia calculada
+        for s in schools:
+            s.distance = None
 
     # --- context unificado ---
     context = {
