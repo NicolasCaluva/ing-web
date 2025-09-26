@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block container %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container px-4 px-lg-5">
@@ -47,45 +48,67 @@
 
     <!-- Section -->
     <section class="py-5">
-        <div class="container-fluid px-4 px-lg-5 row">
+        <div class="container-fluid px-6 px-lg-7 row">
             <!-- Barra de búsqueda -->
-            <div class="card mb-4 offset-3   col-6 p-0">
+            <div class="card mb-4 offset-1 col-10 p-0">
                 <div class="card-body bg-light border rounded p-3">
-                    <div class="row g-3">
-                        <!-- Buscador -->
-                        <div class="col-md-8">
-                            <label for="search" class="form-label fw-bold">Buscador</label>
-                            <input
+
+                        <div class="row g-3">
+                            <!-- Buscador -->
+                            <div class="col-md-4">
+                                <label for="search" class="form-label fw-bold">Buscador</label>
+                                <input
                                     id="search"
                                     type="text"
                                     class="form-control"
-                                    placeholder="Por nombre, carrera o tag (ej: técnica, sociales)..."
+                                    placeholder="Por nombre, carrera o tag..."
                                     name="search"
                                     hx-get="{% url 'home' %}"
                                     hx-target="#school-list"
                                     hx-trigger="keyup changed delay:500ms"
-                                    hx-include="#turno"
-                            />
-                        </div>
-                        <!-- Turno -->
-                        <div class="col-md-4">
-                            <label for="turno" class="form-label fw-bold">Turno</label>
-                            <select
+                                    hx-include="#turno, #distance"
+                                />
+                            </div>
+
+                            <!-- Turno -->
+                            <div class="col-md-4">
+                                <label for="turno" class="form-label fw-bold">Turno</label>
+                                <select
                                     id="turno"
-                                    class="form-select"
                                     name="turno"
+                                    class="form-select"
                                     hx-get="{% url 'home' %}"
                                     hx-target="#school-list"
                                     hx-trigger="change"
-                                    hx-include="#search"
-                            >
-                                <option value="">Todos</option>
-                                <option value="MANANA">Mañana</option>
-                                <option value="TARDE">Tarde</option>
-                                <option value="NOCHE">Noche</option>
-                            </select>
+                                    hx-include="#search, #distance"
+                                >
+                                    <option value="">Todos</option>
+                                    <option value="MANANA">Mañana</option>
+                                    <option value="TARDE">Tarde</option>
+                                    <option value="NOCHE">Noche</option>
+                                </select>
+                            </div>
+
+                            <!-- Distancia -->
+                            <div class="col-md-4">
+                                <label for="distance" class="form-label fw-bold">Distancia</label>
+                                <select
+                                    id="distance"
+                                    name="distance"
+                                    class="form-select"
+                                    hx-get="{% url 'home' %}"
+                                    hx-target="#school-list"
+                                    hx-trigger="change"
+                                    hx-include="#search, #turno"
+                                >
+                                    <option value="">-- Selecciona --</option>
+                                    <option value="5">5 km</option>
+                                    <option value="10">10 km</option>
+                                    <option value="25">25 km</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+
                 </div>
             </div>
 
@@ -101,4 +124,5 @@
     <footer class="py-5 bg-dark">
         <div class="container"><p class="m-0 text-center text-white">&copy; Proyecto Escuelas 2025</p></div>
     </footer>
+    <script src="{% static 'js/location_filter.js' %}"></script>
 {% endblock %}

@@ -36,6 +36,10 @@
                 {% else %}
                     <p><em>No hay carreras registradas</em></p>
                 {% endif %}
+
+                {% if school.distance %}
+                    <p><small class="text-muted">{{ school.distance|floatformat:1 }} km de tu ubicación</small></p>
+                {% endif %}
             </div>
         </div>
 
