@@ -49,7 +49,7 @@ def school_list(request):
     if turno:
         schools = schools.filter(shifts__contains=turno)
     # --- ubicación y distancia ---
-    if distance and distance != "" and user_lat and user_lon:
+    if distance and user_lat and user_lon:
         user_lat = float(user_lat)
         user_lon = float(user_lon)
 
