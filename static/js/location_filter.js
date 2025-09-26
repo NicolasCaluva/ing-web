@@ -52,6 +52,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Cambios en búsqueda y turno
-    searchInput.addEventListener("keyup", () => htmx.trigger(searchInput, 'keyup'));
-    turnoSelect.addEventListener("change", () => htmx.trigger(turnoSelect, 'change'));
 });
