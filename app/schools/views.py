@@ -34,7 +34,7 @@ def school_list(request):
     distance = request.GET.get("distance")  # nuevo filtro
     user_lat = request.COOKIES.get("user_lat")
     user_lon = request.COOKIES.get("user_lon")
-
+    distance=float(distance)
 
     schools = School.objects.all()
 
@@ -52,7 +52,7 @@ def school_list(request):
     if distance and user_lat and user_lon:
         user_lat = float(user_lat)
         user_lon = float(user_lon)
-
+        filtered_schools=[]
         for s in schools:
             if s.latitude is not None and s.longitude is not None:
                 s.distance = haversine(
@@ -62,10 +62,11 @@ def school_list(request):
                     float(s.longitude)
                 )
             else:
-                s.distance = None
+                s.distance = 0
+        if s.distance <= distance:
+            filtered_schools.append(s)
 
-        max_distance = float(distance)
-        schools = [s for s in schools if s.distance and s.distance <= max_distance]
+        schools = filtered_schools
     else:
         # si no hay distance seleccionado, ninguna escuela tiene distancia calculada
         for s in schools:
