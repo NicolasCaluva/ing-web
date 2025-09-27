@@ -34,7 +34,6 @@ def school_list(request):
     distance = request.GET.get("distance")  # nuevo filtro
     user_lat = request.COOKIES.get("user_lat")
     user_lon = request.COOKIES.get("user_lon")
-    distance=float(distance)
 
     schools = School.objects.all()
 
@@ -50,6 +49,7 @@ def school_list(request):
         schools = schools.filter(shifts__contains=turno)
     # --- ubicación y distancia ---
     if distance and user_lat and user_lon:
+        distance = float(distance)
         user_lat = float(user_lat)
         user_lon = float(user_lon)
         filtered_schools=[]
@@ -81,6 +81,7 @@ def school_list(request):
         "is_school": False,
         "is_school_with_no_school": False,
     }
+
     if request.user.is_authenticated:
         if School.objects.filter(user__email=request.user.email).exists():
             is_school = True
@@ -145,6 +146,8 @@ def general_information(request, pk):
     }
 
     return render(request, 'school/partial/general_information.html', context)
+
+
 def edit_school(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('login')}?next={request.path}")

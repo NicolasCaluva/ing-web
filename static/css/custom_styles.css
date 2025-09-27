@@ -147,7 +147,7 @@ body, html {
     opacity: 0.4;
 }
 
-    .split-left::before {
+.split-left::before {
     background-image: url("../img/login_image.png");
 }
 
@@ -164,7 +164,7 @@ body, html {
     border-radius: 12px;
     border: none;
     transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .btn-left {
@@ -186,6 +186,7 @@ body, html {
     background: #95a5a6;
     transform: scale(1.05);
 }
+
 .cascading-right {
     margin-right: -50px;
 }
@@ -205,3 +206,20 @@ body, html {
     }
 }
 
+#eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-5%) scale(1);
+    cursor: pointer;
+    color: white;
+    background-color: transparent;
+    border: none;
+    transition: transform 0.3s ease;
+
+}
+
+#eye-icon:hover {
+    transition: transform 0.3s ease;
+    transform: translateY(-5%) scale(1.2);
+}
