@@ -220,6 +220,5 @@ body, html {
 }
 
 #eye-icon:hover {
-    transition: transform 0.3s ease;
     transform: translateY(-5%) scale(1.2);
 }
