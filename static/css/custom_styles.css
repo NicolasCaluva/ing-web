@@ -216,7 +216,6 @@ body, html {
     background-color: transparent;
     border: none;
     transition: transform 0.3s ease;
-
 }
 
 #eye-icon:hover {
