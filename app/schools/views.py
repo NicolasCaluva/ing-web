@@ -132,8 +132,8 @@ def general_information(request, pk):
     }
 
     return render(request, 'school/partial/general_information.html', context)
-
-
+  
+  
 def photos_list(request, pk):
     school = get_object_or_404(School, pk=pk)
     photos = school.photos.all()
@@ -144,8 +144,8 @@ def photos_list(request, pk):
     }
 
     return render(request, 'school/partial/photos.html', context)
-
-
+  
+  
 def edit_school(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('login')}?next={request.path}")
