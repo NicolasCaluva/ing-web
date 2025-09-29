@@ -144,7 +144,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 if not DEBUG:
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 
 LOG_LEVEL = os.environ.get('DJANGO_LOG_LEVEL', 'WARNING')
