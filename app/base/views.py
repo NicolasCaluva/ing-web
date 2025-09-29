@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -12,6 +10,7 @@ from django.utils.text import slugify
 from app.schools.models import School
 from app.users.models import UserBase
 from dondeestudiar import settings
+import logging
 logger = logging.getLogger(__name__)
 
 # Create your views here.

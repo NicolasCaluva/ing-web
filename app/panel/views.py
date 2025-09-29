@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
-
-from app.base.views import logger
 from app.schools.models import School
 from app.users.models import UserBase
+import logging
+logger = logging.getLogger(__name__)
 
 
 # Create your views here.
