@@ -12,5 +12,7 @@ dependencies = [
     "whitenoise[brotli]>=6.9.0",
     "Pillow>=10.0.0",
     "django-cloudinary-storage>=0.3.0",
-    "django-multiselectfield >= 1.0.1"
+    "django-multiselectfield >= 1.0.1",
+    "whoosh>=2.7.4",
+    "django-haystack>=3.3.0",
 ]
