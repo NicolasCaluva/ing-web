@@ -156,7 +156,6 @@ def add_reply(request, pk, comment_id):
                 reply.user = UserBase.objects.get(user=request.user)
                 logger.info(f"Respuesta creada: {reply.pk} por usuario: {request.user}")
                 reply.save()
-                logger.info(f"Respuesta creada: {reply.pk} por usuario: {request.user}")
                 return redirect('school:school_detail', pk=school.pk)
             else:
                 logger.warning(f"Error en formulario de respuesta por usuario: {request.user} - Errores: {form.errors}")
