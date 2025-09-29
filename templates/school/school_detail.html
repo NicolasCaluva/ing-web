@@ -21,24 +21,31 @@
             </div>
 
             <div class="row d-flex w-100 ms-0 rounded-bottom">
-                <div class="col-4 flap">
+                <div class="col-3 flap">
                     <button hx-get="{% url 'school:general_information' school.id %}" hx-target="#section"
                             hx-swap="innerHTML" class="flap-button-left">
                         Información general
                     </button>
                 </div>
 
-                <div class="col-4 flap">
+                <div class="col-3 flap">
                     <button hx-get="{% url 'comments:comments_list' school.id %}" hx-target="#section"
                             hx-swap="innerHTML" class="flap-button">
                         Opiniones
                     </button>
                 </div>
 
-                <div class="col-4 flap">
+                <div class="col-3 flap">
                     <button hx-get="{% url 'school:careers_list' school.id %}" hx-target="#section"
-                            hx-swap="innerHTML" class="flap-button-right">
+                            hx-swap="innerHTML" class="flap-button">
                         Carreras
+                    </button>
+                </div>
+
+                <div class="col-3 flap">
+                    <button hx-get="{% url 'school:photos_list' school.id %}" hx-target="#section"
+                            hx-swap="innerHTML" class="flap-button-right">
+                        Fotos
                     </button>
                 </div>
             </div>
