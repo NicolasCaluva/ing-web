@@ -160,6 +160,7 @@ def add_reply(request, pk, comment_id):
                 return redirect('school:school_detail', pk=school.pk)
             else:
                 logger.warning(f"Error en formulario de respuesta por usuario: {request.user} - Errores: {form.errors}")
+                return render(request, 'school/school_detail.html', {'form': form})
         else:
             logger.warning(f"Intento de responder sin autenticación en comentario: {comment.pk}")
             return render(request, 'school/school_detail.html', {
