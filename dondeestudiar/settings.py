@@ -119,9 +119,10 @@ if 'RENDER' in os.environ:
     }
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
-
+    LOG_LEVEL = os.environ.get('DJANGO_LOG_LEVEL', 'WARNING')
 else:
     GOOGLE_MAPS_API_KEY = ""
+    LOG_LEVEL =""
 
 if not DEBUG:
     STORAGES = {
@@ -153,10 +154,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-if not DEBUG:
-
-
-LOG_LEVEL = os.environ.get('DJANGO_LOG_LEVEL', 'WARNING')
 
 LOGGING = {
     'version': 1,
