@@ -122,7 +122,7 @@ if 'RENDER' in os.environ:
     LOG_LEVEL = os.environ.get('DJANGO_LOG_LEVEL', 'WARNING')
 else:
     GOOGLE_MAPS_API_KEY = ""
-    LOG_LEVEL =""
+    LOG_LEVEL ="WARNING"
 
 if not DEBUG:
     STORAGES = {

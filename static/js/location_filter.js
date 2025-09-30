@@ -53,3 +53,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cambios en búsqueda y turno
 });
+
+function getCookie(name) {
+    let value = "; " + document.cookie;
+    let parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("btn-directions");
+    if (!btn) return;
+
+    const lat = getCookie("user_lat");
+    const lon = getCookie("user_lon");
+    const destination = encodeURIComponent(btn.dataset.address);
+
+    if (lat && lon) {
+        const origin = `${lat},${lon}`;
+        btn.href = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
+    } else {
+        btn.href = `https://www.google.com/maps/search/?api=1&query=${destination}`;
+    }
+});
