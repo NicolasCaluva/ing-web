@@ -65,7 +65,7 @@
                                     name="search"
                                     hx-get="{% url 'home' %}"
                                     hx-target="#school-list"
-                                    hx-trigger="keyup changed delay:500ms"
+                                    hx-trigger="keyup changed delay:300ms"
                                     hx-include="#turno, #distance"
                                 />
                             </div>
@@ -83,29 +83,27 @@
                                     hx-include="#search, #distance"
                                 >
                                     <option value="">Todos</option>
-                                    <option value="MANANA">Mañana</option>
-                                    <option value="TARDE">Tarde</option>
-                                    <option value="NOCHE">Noche</option>
+                                    <option value="Mañana">Mañana</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noche">Noche</option>
                                 </select>
                             </div>
 
                             <!-- Distancia -->
                             <div class="col-md-4">
                                 <label for="distance" class="form-label fw-bold">Distancia</label>
-                                <select
+                                <input
                                     id="distance"
+                                    type="number"
                                     name="distance"
-                                    class="form-select"
+                                    class="form-control"
+                                    placeholder="Distancia en km"
+                                    min="1"
                                     hx-get="{% url 'home' %}"
                                     hx-target="#school-list"
-                                    hx-trigger="change"
+                                    hx-trigger="keyup changed delay:300ms"
                                     hx-include="#search, #turno"
                                 >
-                                    <option value="">-- Selecciona --</option>
-                                    <option value="5">5 km</option>
-                                    <option value="10">10 km</option>
-                                    <option value="25">25 km</option>
-                                </select>
                             </div>
                         </div>
 
