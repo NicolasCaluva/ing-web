@@ -20,8 +20,12 @@
             <p><strong>Teléfono:</strong> {{ school.phone_number|default_if_none:"" }}</p>
             <p><strong>Email:</strong> {{ school.email|default_if_none:"" }}</p>
             {% if school.address %}
-                <a href="https://www.google.com/maps/search/?api=1&query={{ school.address|urlencode }}" target="_blank" class="btn btn-primary mt-2">
-                    ¿Cómo llegar?
+                <a id="btn-directions"
+                   href="#"
+                   data-address="{{ school.address|escapejs }}"
+                   target="_blank"
+                   class="btn btn-primary mt-2">
+                   ¿Cómo llegar?
                 </a>
             {% endif %}
         </div>
