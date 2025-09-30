@@ -27,13 +27,14 @@ class School(models.Model):
     address = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     profile_photo = models.ImageField(upload_to='school_photos/', null=True, blank=True)
-    cover_photo = models.ImageField(upload_to='school_cover_photos/', null=True, blank=True)
     logo = models.ImageField(upload_to='school_logo/', null=True, blank=True)
     general_description = models.TextField(null=True, blank=True)
     income_description = models.TextField(null=True, blank=True)
     recovery_code = models.CharField(max_length=10, unique=True, null=True, blank=True)
     email_verified = models.BooleanField(default=False)
     shifts = MultiSelectField(choices=SHIFT_CHOICES, max_length=50, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True, blank=True, related_name='schools')
 
     def __str__(self):
@@ -76,3 +77,13 @@ class Career(models.Model):
         if self.duration == 1:
             return f'{self.duration} año'
         return f'{self.duration} años'
+
+
+class Photo(models.Model):
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='school_photos/')
+    description = models.CharField(max_length=255, null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Foto de {self.school.name} ({self.id})"
