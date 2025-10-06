@@ -222,7 +222,7 @@ body, html {
     transform: translateY(-5%) scale(1.2);
 }
 
-/* ----- Badge estilo Tailwind: Small flat pill with dot ----- */
+/* ----- Tailwind-style badge: Small flat pill with dot ----- */
 .badge-pill-flat {
     display: inline-flex;
     align-items: center;
