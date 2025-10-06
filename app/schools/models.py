@@ -62,6 +62,18 @@ class School(models.Model):
                 self.save()
                 return new_code
 
+    def get_shifts_list(self):
+        """Retorna una lista de etiquetas legibles para cada turno"""
+        if not self.shifts:
+            return []
+        shift_dict = dict(self.SHIFT_CHOICES)
+        # MultiSelectField puede retornar un string separado por comas o una lista
+        if isinstance(self.shifts, str):
+            shifts_list = [s.strip() for s in self.shifts.split(',') if s.strip()]
+        else:
+            shifts_list = list(self.shifts)
+        return [shift_dict.get(shift, shift) for shift in shifts_list]
+
 
 class Career(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='careers')
