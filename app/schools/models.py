@@ -63,7 +63,7 @@ class School(models.Model):
                 return new_code
 
     def get_shifts_list(self):
-        """Retorna una lista de etiquetas legibles para cada turno"""
+        """Returns a list of readable labels for each shift"""
         if not self.shifts:
             return []
         shift_dict = dict(self.SHIFT_CHOICES)
