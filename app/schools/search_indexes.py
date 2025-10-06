@@ -3,7 +3,7 @@ from haystack import indexes
 from .models import School
 
 class SchoolIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
+    text = indexes.EdgeNgramField(document=True, use_template=True)
     name = indexes.CharField(model_attr='name')
     careers = indexes.MultiValueField()
     tag = indexes.CharField(model_attr='tag__name', null=True)
