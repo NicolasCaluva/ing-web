@@ -15,4 +15,5 @@ dependencies = [
     "django-multiselectfield >= 1.0.1",
     "whoosh>=2.7.4",
     "django-haystack>=3.3.0",
+    "googlemaps>=4.10.0"
 ]

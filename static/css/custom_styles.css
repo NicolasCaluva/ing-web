@@ -221,3 +221,31 @@ body, html {
 #eye-icon:hover {
     transform: translateY(-5%) scale(1.2);
 }
+
+/* ----- Tailwind-style badge: Small flat pill with dot ----- */
+.badge-pill-flat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    margin: 0 4px 4px 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    background-color: #dbeafe;
+    color: #1e40af;
+    transition: all 0.2s ease;
+}
+
+.badge-pill-flat::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.badge-pill-flat:hover {
+    background-color: #bfdbfe;
+}
