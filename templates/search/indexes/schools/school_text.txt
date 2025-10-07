@@ -1,9 +1,0 @@
-{{ object.name }}
-{{ object.general_description }}
-{{ object.address }}
-{{ object.tag }}
-
-{% for carrera in object.careers.all %}
-    {{ carrera.name }}
-    {{ carrera.scope }}
-{% endfor %}
