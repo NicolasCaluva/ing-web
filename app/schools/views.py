@@ -9,11 +9,21 @@ from django.urls import reverse
 
 from dondeestudiar import settings
 from .models import School, Career
+from haystack.query import SearchQuerySet
 import logging
 logger = logging.getLogger(__name__)
 
-
 # Create your views here.
+def rebuild_index(request):
+    from django.core.management import call_command
+    from django.http import JsonResponse
+    try:
+        call_command("rebuild_index", noinput=False)
+        result = "Index rebuilt"
+    except Exception as err:
+        result = f"Error: {err}"
+
+    return JsonResponse({"result": result})
 
 # función auxiliar para calcular distancia en km
 #TODO revisar si esta funcion iria en otro lado
@@ -34,10 +44,9 @@ def school_list(request):
     logger.info("Acceso a school_list por usuario: %s", request.user)
     query = request.GET.get("search", "").strip()
     turno = request.GET.get("turno")
-    distance = request.GET.get("distance")  # nuevo filtro
+    distance = request.GET.get("distance")
     user_lat = request.COOKIES.get("user_lat")
     user_lon = request.COOKIES.get("user_lon")
-
     schools = School.objects.all()
     logger.debug("Total escuelas iniciales: %d", schools.count())
 
@@ -62,7 +71,8 @@ def school_list(request):
         distance = float(distance)
         user_lat = float(user_lat)
         user_lon = float(user_lon)
-        filtered_schools=[]
+
+        filtered_schools = []
         for s in schools:
             if s.latitude is not None and s.longitude is not None:
                 s.distance = haversine(
@@ -71,19 +81,16 @@ def school_list(request):
                     float(s.latitude),
                     float(s.longitude)
                 )
+                if s.distance <= distance:
+                    filtered_schools.append(s)
             else:
-                s.distance = 0
-        if s.distance <= distance:
-            filtered_schools.append(s)
-
+                s.distance = None
         schools = filtered_schools
 
     else:
-        # si no hay distance seleccionado, ninguna escuela tiene distancia calculada
         for s in schools:
             s.distance = None
 
-    # --- context unificado ---
     context = {
         "schools": schools,
         "user": request.user,
@@ -108,6 +115,7 @@ def school_list(request):
 
     logger.debug("Render completo de index")
     return render(request, "base/index.html", context)
+
 
 
 def school_detail(request, pk):

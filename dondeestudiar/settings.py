@@ -28,6 +28,9 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.staticfiles',
 
+    # Haystack
+    'haystack',
+
     # Apps propias
     'app.base',
     'app.comments',
@@ -40,6 +43,13 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'cloudinary',
 ]
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': BASE_DIR / 'whoosh_index',
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
