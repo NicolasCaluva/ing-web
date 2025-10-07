@@ -12,6 +12,16 @@ from .models import School, Career
 from haystack.query import SearchQuerySet
 
 # Create your views here.
+def rebuild_index(request):
+    from django.core.management import call_command
+    from django.http import JsonResponse
+    try:
+        call_command("rebuild_index", noinput=False)
+        result = "Index rebuilt"
+    except Exception as err:
+        result = f"Error: {err}"
+
+    return JsonResponse({"result": result})
 
 # función auxiliar para calcular distancia en km
 #TODO revisar si esta funcion iria en otro lado
