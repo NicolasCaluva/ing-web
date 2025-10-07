@@ -117,7 +117,6 @@ def school_list(request):
     return render(request, "base/index.html", context)
 
 
-
 def school_detail(request, pk):
     logger.info("Detalle de escuela pk=%s por usuario: %s", pk, request.user)
     school = get_object_or_404(School, pk=pk)
