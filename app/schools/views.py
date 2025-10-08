@@ -9,11 +9,21 @@ from django.urls import reverse
 
 from dondeestudiar import settings
 from .models import School, Career
+from haystack.query import SearchQuerySet
 import logging
 logger = logging.getLogger(__name__)
 
-
 # Create your views here.
+def rebuild_index(request):
+    from django.core.management import call_command
+    from django.http import JsonResponse
+    try:
+        call_command("rebuild_index", noinput=False)
+        result = "Index rebuilt"
+    except Exception as err:
+        result = f"Error: {err}"
+
+    return JsonResponse({"result": result})
 
 # función auxiliar para calcular distancia en km
 #TODO revisar si esta funcion iria en otro lado
@@ -31,38 +41,29 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c
 
 def school_list(request):
-    logger.info("Acceso a school_list por usuario: %s", request.user)
     query = request.GET.get("search", "").strip()
     turno = request.GET.get("turno")
-    distance = request.GET.get("distance")  # nuevo filtro
+    distance = request.GET.get("distance")
     user_lat = request.COOKIES.get("user_lat")
     user_lon = request.COOKIES.get("user_lon")
 
-    schools = School.objects.all()
-    logger.debug("Total escuelas iniciales: %d", schools.count())
-
-    # --- filtros ---
     if query:
-        logger.info("Filtro de búsqueda: %s", query)
-        schools = schools.filter(
-            Q(name__icontains=query) |
-            Q(careers__name__icontains=query) |
-            Q(tag__name__icontains=query)
-        ).distinct()
-        logger.debug("Escuelas tras filtro de búsqueda: %d", schools.count())
+        sqs = SearchQuerySet().models(School)
+        schools_search = sqs.filter(content__icontains=query)
+        school_ids = [result.pk for result in schools_search]
+        schools = School.objects.filter(id__in=school_ids)
+    else:
+        schools = School.objects.all()
 
     if turno:
-        logger.info("Filtro de turno: %s", turno)
         schools = schools.filter(shifts__contains=turno)
-        logger.debug("Escuelas tras filtro de turno: %d", schools.count())
 
-    # --- ubicación y distancia ---
     if distance and user_lat and user_lon:
-        logger.info("Filtro de distancia: %s km, lat: %s, lon: %s", distance, user_lat, user_lon)
         distance = float(distance)
         user_lat = float(user_lat)
         user_lon = float(user_lon)
-        filtered_schools=[]
+
+        filtered_schools = []
         for s in schools:
             if s.latitude is not None and s.longitude is not None:
                 s.distance = haversine(
@@ -71,19 +72,15 @@ def school_list(request):
                     float(s.latitude),
                     float(s.longitude)
                 )
+                if s.distance <= distance:
+                    filtered_schools.append(s)
             else:
-                s.distance = 0
-        if s.distance <= distance:
-            filtered_schools.append(s)
-
+                s.distance = None
         schools = filtered_schools
-
     else:
-        # si no hay distance seleccionado, ninguna escuela tiene distancia calculada
         for s in schools:
             s.distance = None
 
-    # --- context unificado ---
     context = {
         "schools": schools,
         "user": request.user,
@@ -95,18 +92,13 @@ def school_list(request):
 
     if request.user.is_authenticated:
         if School.objects.filter(user__email=request.user.email).exists():
-            is_school = True
-            context["is_school"] = is_school
-            logger.info("Usuario es escuela: %s", request.user.email)
+            context["is_school"] = True
         elif request.user.email.endswith('@santafe.edu.ar'):
             context["is_school_with_no_school"] = True
-            logger.info("Usuario con email santafe.edu.ar sin escuela: %s", request.user.email)
 
     if request.headers.get("HX-Request") == "true":
-        logger.debug("Render parcial por HX-Request")
         return render(request, "base/partials/school_cards.html", context)
 
-    logger.debug("Render completo de index")
     return render(request, "base/index.html", context)
 
 
