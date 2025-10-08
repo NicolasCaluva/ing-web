@@ -1,5 +1,7 @@
 import googlemaps
 import math
+
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
 
@@ -14,19 +16,20 @@ from .models import School, Career
 # Create your views here.
 
 # función auxiliar para calcular distancia en km
-#TODO revisar si esta funcion iria en otro lado
+# TODO revisar si esta funcion iria en otro lado
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # radio de la tierra en km
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
     a = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(math.radians(lat1))
-        * math.cos(math.radians(lat2))
-        * math.sin(dlon / 2) ** 2
+            math.sin(dlat / 2) ** 2
+            + math.cos(math.radians(lat1))
+            * math.cos(math.radians(lat2))
+            * math.sin(dlon / 2) ** 2
     )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
+
 
 def school_list(request):
     query = request.GET.get("search", "").strip()
@@ -52,7 +55,7 @@ def school_list(request):
         distance = float(distance)
         user_lat = float(user_lat)
         user_lon = float(user_lon)
-        filtered_schools=[]
+        filtered_schools = []
         for s in schools:
             if s.latitude is not None and s.longitude is not None:
                 s.distance = haversine(
@@ -149,7 +152,7 @@ def photos_list(request, pk):
 def edit_school(request):
     if not request.user.is_authenticated:
         return redirect(f"{reverse('login')}?next={request.path}")
-    school= School.objects.filter(user__email=request.user.email).first()
+    school = School.objects.filter(user__email=request.user.email).first()
 
     if not school:
         return redirect(f"{reverse('home')}?next={request.path}")
@@ -282,8 +285,8 @@ def create_careers(request):
     if request.method == "POST":
         career_name = request.POST.get('career_name', '').strip()
         career_scope = request.POST.get('career_scope', '').strip()
-        origin=request.POST.get('origin','').strip()
-        career_dura= request.POST.get('career_duration','').strip()
+        origin = request.POST.get('origin', '').strip()
+        career_dura = request.POST.get('career_duration', '').strip()
 
         if not career_dura.isdigit():
             context = {
@@ -292,7 +295,7 @@ def create_careers(request):
                 "school": school,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
+                return render(request, "school/edit_school.html", context)
             return render(request, 'school/create_careers.html', context)
         career_duration = int(career_dura)
 
@@ -303,7 +306,7 @@ def create_careers(request):
                 "school": school,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
+                return render(request, "school/edit_school.html", context)
             return render(request, 'school/create_careers.html', context)
 
         if not career_name or not career_scope or not career_duration:
@@ -313,7 +316,7 @@ def create_careers(request):
                 "school": school,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
+                return render(request, "school/edit_school.html", context)
             return render(request, 'school/create_careers.html', context)
 
         career = Career.objects.create(
@@ -324,7 +327,7 @@ def create_careers(request):
         )
         career.save()
 
-        if origin=='edit_school':
+        if origin == 'edit_school':
             return redirect(reverse('school:edit_school'))
 
         return redirect(reverse('school:create_careers'))
@@ -370,7 +373,7 @@ def update_career(request, career_id):
                 "school": school,
             }
             if origin == 'edit_school':
-                return render(request, 'school/edit_school.html',context)
+                return render(request, 'school/edit_school.html', context)
             return render(request, 'school/create_careers.html', context)
 
         if not career_name or not career_scope or not career_duration:
@@ -380,7 +383,7 @@ def update_career(request, career_id):
                 "school": school,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
+                return render(request, "school/edit_school.html", context)
             return render(request, 'school/create_careers.html', context)
 
         career.name = career_name
@@ -388,7 +391,45 @@ def update_career(request, career_id):
         career.duration = career_duration
         career.save()
 
-        if origin=='edit_school':
+        if origin == 'edit_school':
             return redirect(reverse('school:edit_school'))
 
         return redirect(reverse('school:create_careers'))
+
+
+@login_required
+def schooL_photos(request):
+    school = School.objects.filter(user__email=request.user.email).first()
+
+    if not school:
+        return redirect(f"{reverse('home')}?next={request.path}")
+
+    if request.method == "GET":
+        context = {
+            "school": school,
+            "photos": school.photos.all(),
+        }
+        return render(request, 'school/partial/photos.html', context)
+
+    elif request.method == "POST":
+        photos = request.FILES.getlist('photos')
+        if not photos:
+            context = {
+                "error": "Por favor, suba al menos una foto.",
+                "school": school,
+                "photos": school.photos.all(),
+            }
+            return render(request, 'school/partial/photos.html', context)
+
+        for photo in photos:
+            school.photos.create(image=photo)
+
+        return redirect(reverse('school:edit_school', args=[school.pk]))
+
+
+    else:
+        context = {
+            "school": school,
+            "photos": school.photos.all(),
+        }
+        return render(request, 'school/partial/edit_data.html', context)
