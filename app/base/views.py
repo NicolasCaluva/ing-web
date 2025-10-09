@@ -123,6 +123,7 @@ def register_user_view(request):
             reverse("base:verify_email") + f"?code={code}"
         )
         try:
+            logger.info(f"Enviando correo de verificación a: {email}")
             send_mail(
                 subject="Verifica tu cuenta",
                 message=f"Hola {first_name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
