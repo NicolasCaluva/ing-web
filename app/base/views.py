@@ -13,6 +13,10 @@ from dondeestudiar import settings
 import logging
 logger = logging.getLogger(__name__)
 
+import socket
+from smtplib import SMTPException, SMTPAuthenticationError, SMTPRecipientsRefused, SMTPSenderRefused, SMTPDataError
+from django.core.mail import BadHeaderError
+
 # Create your views here.
 
 
@@ -127,8 +131,21 @@ def register_user_view(request):
                 fail_silently=False,
             )
             logger.info(f"Correo de verificación enviado a: {email}")
+        except BadHeaderError as e:
+            logger.error(f"Header inválido al enviar correo a {email}: {e}")
+            return render(request, 'base/register_user.html', {'error': "Error en el encabezado del correo."})
+        except (SMTPAuthenticationError, SMTPSenderRefused) as e:
+            logger.error(f"Autenticación/Remitente rechazado para {email}: {e}")
+            return render(request, 'base/register_user.html', {'error': "Error de autenticación con el servidor de correo."})
+        except (SMTPRecipientsRefused, SMTPDataError) as e:
+            logger.error(f"Servidor SMTP rechazó destinatario/datos para {email}: {e}")
+            return render(request, 'base/register_user.html', {'error': "El servidor de correo rechazó el envío."})
+        except (SMTPException, socket.error) as e:
+            logger.error(f"Error de conexión SMTP al enviar correo a {email}: {e}")
+            return render(request, 'base/register_user.html', {'error': "No se pudo enviar el correo. Intente nuevamente más tarde."})
         except Exception as e:
-            logger.error(f"Error enviando correo de verificación a {email}: {e}")
+            logger.exception(f"Error inesperado enviando correo a {email}: {e}")
+            return render(request, 'base/register_user.html', {'error': "Error inesperado al enviar el correo."})
 
         return redirect(reverse('base:verification_mail_sent'))
 
