@@ -130,6 +130,12 @@ if 'RENDER' in os.environ:
     }
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
+
+    # En Render, usar backend de consola porque bloquean SMTP
+    # Los enlaces de verificación se mostrarán en los logs
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    print("⚠️  SMTP bloqueado en Render - usando console backend")
+    print("⚠️  Los enlaces de verificación se mostrarán en los logs")
     # LOG_LEVEL se determinará de forma centralizada más abajo
 else:
     GOOGLE_MAPS_API_KEY = ""
