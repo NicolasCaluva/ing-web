@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app.base.middleware.ExceptionLoggingMiddleware',  # Captura y loguea TODAS las excepciones
 ]
 
 ROOT_URLCONF = 'dondeestudiar.urls'
