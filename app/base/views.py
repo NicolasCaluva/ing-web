@@ -125,7 +125,7 @@ def register_user_view(request):
             logger.exception(f"Error crítico creando usuario {email}: {e}")
             return render(request, 'base/register_user.html', {'error': "Error al crear la cuenta. Por favor, intente nuevamente."})
 
-        # Bloque 2: Envío de correo
+        # Bloque 2: Envío de correo ASÍNCRONO con timeout
         verification_link = request.build_absolute_uri(
             reverse("base:verify_email") + f"?code={code}"
         )
@@ -133,42 +133,43 @@ def register_user_view(request):
         # Verificar configuración de email
         if not settings.EMAIL_HOST_PASSWORD:
             logger.error(f"EMAIL_HOST_PASSWORD no está configurado. No se puede enviar correo a {email}")
-            return render(request, 'base/register_user.html', {'error': "El sistema de correo no está configurado correctamente. Contacte al administrador."})
+            # Continuar de todos modos - el usuario puede contactar soporte
+            logger.warning(f"Usuario {email} creado pero correo no enviado (sin configuración)")
+            return redirect(reverse('base:verification_mail_sent'))
 
-        try:
-            logger.info(f"Enviando correo de verificación a: {email}")
-            result = send_mail(
-                subject="Verifica tu cuenta",
-                message=f"Hola {first_name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[email],
-                fail_silently=False,
-            )
-            logger.info(f"✅ Correo enviado exitosamente a: {email}. Resultado: {result}")
-        except BadHeaderError as e:
-            logger.error(f"❌ BadHeaderError al enviar correo a {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "Error en el encabezado del correo."})
-        except SMTPAuthenticationError as e:
-            logger.error(f"❌ SMTPAuthenticationError para {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "Error de autenticación con el servidor de correo."})
-        except SMTPSenderRefused as e:
-            logger.error(f"❌ SMTPSenderRefused para {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "El servidor rechazó el remitente del correo."})
-        except SMTPRecipientsRefused as e:
-            logger.error(f"❌ SMTPRecipientsRefused para {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "El servidor rechazó el destinatario."})
-        except SMTPDataError as e:
-            logger.error(f"❌ SMTPDataError para {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "Error en los datos del correo."})
-        except SMTPException as e:
-            logger.error(f"❌ SMTPException al enviar correo a {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "Error del servidor de correo. Intente nuevamente más tarde."})
-        except socket.error as e:
-            logger.error(f"❌ socket.error al enviar correo a {email}: {str(e)}", exc_info=True)
-            return render(request, 'base/register_user.html', {'error': "No se pudo conectar al servidor de correo."})
-        except Exception as e:
-            logger.exception(f"❌ Error INESPERADO enviando correo a {email}: {str(e)}")
-            return render(request, 'base/register_user.html', {'error': "Error inesperado al enviar el correo. Por favor, contacte al administrador."})
+        # Enviar correo en un hilo separado para no bloquear la respuesta
+        import threading
+
+        def send_verification_email():
+            """Envía el correo de verificación en segundo plano con timeout"""
+            try:
+                logger.info(f"[THREAD] Enviando correo de verificación a: {email}")
+
+                # Usar timeout en la conexión SMTP
+                from django.core.mail import get_connection
+                connection = get_connection(
+                    fail_silently=False,
+                    timeout=10,  # Timeout de 10 segundos
+                )
+
+                result = send_mail(
+                    subject="Verifica tu cuenta",
+                    message=f"Hola {first_name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[email],
+                    fail_silently=False,
+                    connection=connection,
+                )
+                logger.info(f"✅ [THREAD] Correo enviado exitosamente a: {email}. Resultado: {result}")
+            except Exception as e:
+                # Solo loguear el error, no interrumpir el flujo
+                logger.error(f"❌ [THREAD] Error enviando correo a {email}: {type(e).__name__}: {str(e)}")
+                logger.exception(f"[THREAD] Traceback completo del error de correo:")
+
+        # Iniciar el envío en segundo plano
+        email_thread = threading.Thread(target=send_verification_email, daemon=True)
+        email_thread.start()
+        logger.info(f"Hilo de envío de correo iniciado para: {email}")
 
         logger.info(f"✅ Registro completado exitosamente para: {email}")
         return redirect(reverse('base:verification_mail_sent'))
@@ -219,7 +220,7 @@ def register_school_view(request):
             user = User.objects.create_user(username=email, email=email, password=password, is_active=False)
             logger.info(f"Usuario de escuela creado: {email}")
 
-            # Crear UserBase para la escuela (estaba faltando)
+            # Crear UserBase para la escuela
             userbase = UserBase.objects.create(user=user)
             userbase.save()
             logger.info(f"UserBase creado para escuela: {email}")
@@ -236,36 +237,45 @@ def register_school_view(request):
                 reverse("base:verify_email") + f"?code={code}"
             )
 
-            # Verificar que la configuración de email esté completa
+            # Verificar configuración de email
             if not settings.EMAIL_HOST_PASSWORD:
                 logger.error("EMAIL_HOST_PASSWORD no está configurado")
-                return render(request, 'base/register_school.html', {'error': "El sistema de correo no está configurado correctamente. Contacte al administrador."})
+                logger.warning(f"Escuela {email} creada pero correo no enviado (sin configuración)")
+                return redirect(reverse('base:verification_mail_sent'))
 
-            try:
-                logger.info(f"Enviando correo de verificación a escuela: {email}")
-                result = send_mail(
-                    subject="DondeEstudiar - Verifica tu escuela",
-                    message=f"Hola {name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[email],
-                    fail_silently=False,
-                )
-                logger.info(f"Correo de verificación enviado a escuela: {email}. Resultado: {result}")
-            except BadHeaderError as e:
-                logger.error(f"Header inválido al enviar correo a escuela {email}: {e}")
-                return render(request, 'base/register_school.html', {'error': "Error en el encabezado del correo."})
-            except (SMTPAuthenticationError, SMTPSenderRefused) as e:
-                logger.error(f"Autenticación/Remitente rechazado para escuela {email}: {e}")
-                return render(request, 'base/register_school.html', {'error': "Error de autenticación con el servidor de correo."})
-            except (SMTPRecipientsRefused, SMTPDataError) as e:
-                logger.error(f"Servidor SMTP rechazó destinatario/datos para escuela {email}: {e}")
-                return render(request, 'base/register_school.html', {'error': "El servidor de correo rechazó el envío."})
-            except (SMTPException, socket.error) as e:
-                logger.error(f"Error de conexión SMTP al enviar correo a escuela {email}: {e}")
-                return render(request, 'base/register_school.html', {'error': "No se pudo enviar el correo. Intente nuevamente más tarde."})
-            except Exception as e:
-                logger.exception(f"Error inesperado enviando correo a escuela {email}: {e}")
-                return render(request, 'base/register_school.html', {'error': "Error inesperado al enviar el correo."})
+            # Enviar correo en un hilo separado para no bloquear la respuesta
+            import threading
+
+            def send_verification_email():
+                """Envía el correo de verificación en segundo plano con timeout"""
+                try:
+                    logger.info(f"[THREAD] Enviando correo de verificación a escuela: {email}")
+
+                    # Usar timeout en la conexión SMTP
+                    from django.core.mail import get_connection
+                    connection = get_connection(
+                        fail_silently=False,
+                        timeout=10,  # Timeout de 10 segundos
+                    )
+
+                    result = send_mail(
+                        subject="DondeEstudiar - Verifica tu escuela",
+                        message=f"Hola {name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[email],
+                        fail_silently=False,
+                        connection=connection,
+                    )
+                    logger.info(f"✅ [THREAD] Correo enviado exitosamente a escuela: {email}. Resultado: {result}")
+                except Exception as e:
+                    # Solo loguear el error, no interrumpir el flujo
+                    logger.error(f"❌ [THREAD] Error enviando correo a escuela {email}: {type(e).__name__}: {str(e)}")
+                    logger.exception(f"[THREAD] Traceback completo del error de correo:")
+
+            # Iniciar el envío en segundo plano
+            email_thread = threading.Thread(target=send_verification_email, daemon=True)
+            email_thread.start()
+            logger.info(f"Hilo de envío de correo iniciado para escuela: {email}")
 
             return redirect(reverse('base:verification_mail_sent'))
 
