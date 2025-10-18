@@ -110,6 +110,7 @@ def school_detail(request, pk):
         logger.debug("Método GET en school_detail")
         context = {
             'school': school,
+            'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
         }
 
         return render(request, 'school/school_detail.html', context)
@@ -195,6 +196,7 @@ def edit_school(request):
     context = {
         "school": school,
         "careers": careers,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
     }
 
     if request.method == "POST":
@@ -219,6 +221,7 @@ def edit_school(request):
                     "error": "Ya existe una escuela con ese nombre.",
                     "school": school,
                     "careers": careers,
+                    'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
                 }
                 return render(request, 'school/edit_school.html', context)
             school.name = name

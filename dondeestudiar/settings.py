@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app.base.middleware.ExceptionLoggingMiddleware',  # Captura y loguea TODAS las excepciones
 ]
 
 ROOT_URLCONF = 'dondeestudiar.urls'
@@ -129,10 +130,13 @@ if 'RENDER' in os.environ:
     }
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
-    LOG_LEVEL = os.environ.get('DJANGO_LOG_LEVEL', 'WARNING')
+    # LOG_LEVEL se determinará de forma centralizada más abajo
 else:
     GOOGLE_MAPS_API_KEY = ""
-    LOG_LEVEL ="WARNING"
+    # LOG_LEVEL se determinará de forma centralizada más abajo
+
+# Determinar LOG_LEVEL centralmente: por defecto INFO en DEBUG, WARNING en producción
+LOG_LEVEL = os.environ.get('DJANGO_LOG_LEVEL', 'INFO' if DEBUG else 'WARNING').upper()
 
 if not DEBUG:
     STORAGES = {
@@ -146,14 +150,6 @@ if not DEBUG:
         },
     }
 
-try:
-    from .local_settings import *
-
-    print("⚡ Usando local_settings.py")
-except ImportError:
-    print("⚡ No se encontró local_settings.py")
-    pass
-
 # =========================
 # Configuración para envío de correos con Gmail
 # =========================
@@ -164,6 +160,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "noreply.dondeestudiar@gmail.com"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Asegurar que la contraseña del host de email pueda venir de la variable de entorno
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
 LOGGING = {
     'version': 1,
@@ -177,7 +175,8 @@ LOGGING = {
     },
     'formatters': {
         'custom': {
-            'format': '[%(asctime)s] %(message)s',
+            # Incluir nivel y nombre del logger para identificar origen y severidad
+            'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s',
             'datefmt': '%d/%b/%Y %H:%M:%S',
         },
     },
@@ -192,10 +191,22 @@ LOGGING = {
             'level': LOG_LEVEL,
             'propagate': False,
         },
-        '': {
+        # Registrar logs de Django para mayor visibilidad
+        'django': {
             'handlers': ['console'],
             'level': LOG_LEVEL,
+            'propagate': False,
         },
+        'django.request': {
+            'handlers': ['console'],
+            'level': LOG_LEVEL,
+            'propagate': False,
+        },
+    },
+    # Logger raíz
+    'root': {
+        'handlers': ['console'],
+        'level': LOG_LEVEL,
     },
 }
 
