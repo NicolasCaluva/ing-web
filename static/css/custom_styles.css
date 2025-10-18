@@ -147,7 +147,7 @@ body, html {
     opacity: 0.4;
 }
 
-    .split-left::before {
+.split-left::before {
     background-image: url("../img/login_image.png");
 }
 
@@ -164,7 +164,7 @@ body, html {
     border-radius: 12px;
     border: none;
     transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .btn-left {
@@ -186,6 +186,7 @@ body, html {
     background: #95a5a6;
     transform: scale(1.05);
 }
+
 .cascading-right {
     margin-right: -50px;
 }
@@ -205,3 +206,46 @@ body, html {
     }
 }
 
+#eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-5%) scale(1);
+    cursor: pointer;
+    color: white;
+    background-color: transparent;
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+#eye-icon:hover {
+    transform: translateY(-5%) scale(1.2);
+}
+
+/* ----- Tailwind-style badge: Small flat pill with dot ----- */
+.badge-pill-flat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    margin: 0 4px 4px 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    background-color: #dbeafe;
+    color: #1e40af;
+    transition: all 0.2s ease;
+}
+
+.badge-pill-flat::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.badge-pill-flat:hover {
+    background-color: #bfdbfe;
+}

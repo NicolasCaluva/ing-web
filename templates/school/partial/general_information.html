@@ -19,6 +19,24 @@
             <p><strong>Dirección:</strong> {{ school.address|default_if_none:"" }}</p>
             <p><strong>Teléfono:</strong> {{ school.phone_number|default_if_none:"" }}</p>
             <p><strong>Email:</strong> {{ school.email|default_if_none:"" }}</p>
+            <p><strong>Turnos:</strong> 
+                {% if school.get_shifts_list %}
+                    {% for shift in school.get_shifts_list %}
+                        <span class="badge-pill-flat">{{ shift }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-muted">No especificados</span>
+                {% endif %}
+            </p>
+            {% if school.address %}
+                <a id="btn-directions"
+                   href="#"
+                   data-address="{{ school.address|escapejs }}"
+                   target="_blank"
+                   class="btn btn-primary mt-2">
+                   ¿Cómo llegar?
+                </a>
+            {% endif %}
         </div>
     </div>
 </div>
