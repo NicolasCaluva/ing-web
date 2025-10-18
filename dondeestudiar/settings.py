@@ -120,7 +120,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =========================
 if 'RENDER' in os.environ:
     print("⚡ USING RENDER.COM SETTINGS!")
-    DEBUG = True
+    DEBUG = False
     ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
     DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
     CLOUDINARY_STORAGE = {
