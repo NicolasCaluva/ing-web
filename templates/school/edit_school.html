@@ -90,9 +90,11 @@
                                 </div>
                                 <div class="mt-1">
                                     <label class="small mb-1">Dirección</label>
-                                    <input class="form-control" type="text" name="address"
-                                           value="{{ school.address }}">
+                                    <input id="id_address" class="form-control" type="text" name="address" value="{{ school.address }}">
                                 </div>
+                                    <div id="map" class="mt-2" style="height:400px;width:100%;"></div>
+                                    <input type="hidden" id="id_latitude" name="latitude">
+                                    <input type="hidden" id="id_longitude" name="longitude">
                                 <div class="mt-1">
                                     <label class="small mb-1">Número de teléfono</label>
                                     <input class="form-control"
@@ -241,4 +243,5 @@
 
 {% block js %}
     <script src="{% static 'js/edit_school.js' %}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
 {% endblock %}
