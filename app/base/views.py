@@ -144,6 +144,19 @@ def register_user_view(request):
             """Envía el correo de verificación en segundo plano con timeout"""
             try:
                 logger.info(f"[THREAD] Enviando correo de verificación a: {email}")
+                logger.info(f"[THREAD] Backend de email: {settings.EMAIL_BACKEND}")
+
+                # Si estamos en Render con console backend, mostrar el enlace directamente
+                if 'console' in settings.EMAIL_BACKEND.lower():
+                    logger.info("=" * 80)
+                    logger.info("📧 ENLACE DE VERIFICACIÓN (Console Backend)")
+                    logger.info("=" * 80)
+                    logger.info(f"Usuario: {email}")
+                    logger.info(f"Nombre: {first_name} {last_name}")
+                    logger.info(f"Enlace: {verification_link}")
+                    logger.info("=" * 80)
+                    logger.info("⚠️  Copia este enlace y pégalo en el navegador para verificar la cuenta")
+                    logger.info("=" * 80)
 
                 # Usar timeout en la conexión SMTP
                 from django.core.mail import get_connection
@@ -164,6 +177,16 @@ def register_user_view(request):
             except Exception as e:
                 # Solo loguear el error, no interrumpir el flujo
                 logger.error(f"❌ [THREAD] Error enviando correo a {email}: {type(e).__name__}: {str(e)}")
+
+                # Si falla el envío por SMTP, mostrar el enlace de todas formas
+                if 'smtp' in settings.EMAIL_BACKEND.lower() or 'Network is unreachable' in str(e):
+                    logger.error("=" * 80)
+                    logger.error("⚠️  EL CORREO NO SE PUDO ENVIAR - USA ESTE ENLACE MANUALMENTE")
+                    logger.error("=" * 80)
+                    logger.error(f"Usuario: {email}")
+                    logger.error(f"Enlace de verificación: {verification_link}")
+                    logger.error("=" * 80)
+
                 logger.exception(f"[THREAD] Traceback completo del error de correo:")
 
         # Iniciar el envío en segundo plano
@@ -250,6 +273,19 @@ def register_school_view(request):
                 """Envía el correo de verificación en segundo plano con timeout"""
                 try:
                     logger.info(f"[THREAD] Enviando correo de verificación a escuela: {email}")
+                    logger.info(f"[THREAD] Backend de email: {settings.EMAIL_BACKEND}")
+
+                    # Si estamos en Render con console backend, mostrar el enlace directamente
+                    if 'console' in settings.EMAIL_BACKEND.lower():
+                        logger.info("=" * 80)
+                        logger.info("📧 ENLACE DE VERIFICACIÓN (Console Backend)")
+                        logger.info("=" * 80)
+                        logger.info(f"Usuario: {email}")
+                        logger.info(f"Nombre: {name}")
+                        logger.info(f"Enlace: {verification_link}")
+                        logger.info("=" * 80)
+                        logger.info("⚠️  Copia este enlace y pégalo en el navegador para verificar la cuenta")
+                        logger.info("=" * 80)
 
                     # Usar timeout en la conexión SMTP
                     from django.core.mail import get_connection
@@ -270,6 +306,16 @@ def register_school_view(request):
                 except Exception as e:
                     # Solo loguear el error, no interrumpir el flujo
                     logger.error(f"❌ [THREAD] Error enviando correo a escuela {email}: {type(e).__name__}: {str(e)}")
+
+                    # Si falla el envío por SMTP, mostrar el enlace de todas formas
+                    if 'smtp' in settings.EMAIL_BACKEND.lower() or 'Network is unreachable' in str(e):
+                        logger.error("=" * 80)
+                        logger.error("⚠️  EL CORREO NO SE PUDO ENVIAR - USA ESTE ENLACE MANUALMENTE")
+                        logger.error("=" * 80)
+                        logger.error(f"Usuario: {email}")
+                        logger.error(f"Enlace de verificación: {verification_link}")
+                        logger.error("=" * 80)
+
                     logger.exception(f"[THREAD] Traceback completo del error de correo:")
 
             # Iniciar el envío en segundo plano
