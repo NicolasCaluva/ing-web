@@ -5,34 +5,38 @@
 {% endblock %}
 
 {% block container %}
+    <meta name="google-maps-api-key" content="{{ GOOGLE_MAPS_API_KEY }}">
     <div class="container-xl px-4 mt-4">
         <nav class="nav nav-borders">
-            {% url 'schools:edit_school' as edit_school %}
+            {% url 'school:edit_school' as edit_school %}
             <a class="nav-link ms-0"
-               type="button"
+               style="cursor: pointer;"
                hx-get="{{ edit_school }}"
                hx-target="#section"
                hx-swap="innerHTML"
+               hx-trigger="click"
                id="edit-profile-tab">
                 Editar perfil de la escuela
             </a>
 
-            {% url 'schools:photos' as photos %}
+            {% url 'school:photos' as photos %}
             <a class="nav-link ms-0"
-               href="#" type="button"
+               style="cursor: pointer;"
                hx-get="{{ photos }}"
                hx-target="#section"
                hx-swap="innerHTML"
+               hx-trigger="click"
                id="photos-tab">
                 Editar fotos
             </a>
 
-            {% url 'schools:create_careers' as careers_url %}
+            {% url 'school:create_careers' as careers_url %}
             <a class="nav-link ms-0"
-               href="#" type="button"
+               style="cursor: pointer;"
                hx-get="{{ careers_url }}"
                hx-target="#section"
                hx-swap="innerHTML"
+               hx-trigger="click"
                id="careers-tab">
                 Administrar carreras
             </a>
@@ -58,6 +62,8 @@
         <div id="section" class="mx-4">
             {% if careers_context %}
                 {% include 'school/create_careers.html' %}
+            {% elif photos_context %}
+                {% include 'school/partial/photos.html' %}
             {% else %}
                 {% include 'school/partial/edit_data.html' %}
             {% endif %}
@@ -68,6 +74,5 @@
 
 {% block js %}
     <script src="{% static 'js/edit_school.js' %}"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap"
-            async defer></script>
+    <script src="{% static 'js/manage_photos.js' %}"></script>
 {% endblock %}

@@ -354,7 +354,7 @@ def create_careers(request):
             "careers_context": True,
         }
         # Si es una petición HTMX, solo retorna el parcial
-        if request.headers.get("HX-Request") == "true":
+        if request.headers.get("HX-Request"):
             return render(request, 'school/create_careers.html', context)
         # Si no es HTMX, retorna la página completa
         return render(request, 'school/edit_school.html', context)
@@ -415,7 +415,7 @@ def create_careers(request):
         logger.info("Carrera creada: %s", career.name)
 
         # Después de crear exitosamente, redirigir a la página de edición con el tab de carreras activo
-        return redirect(reverse('schools:create_careers'))
+        return redirect(reverse('school:create_careers'))
 
     context = {
         "careers": Career.objects.filter(school=school),
@@ -487,7 +487,7 @@ def update_career(request, career_id):
         logger.info("Carrera actualizada: %s", career.name)
 
         # Después de actualizar exitosamente, redirigir a la página de edición
-        return redirect(reverse('schools:create_careers'))
+        return redirect(reverse('school:create_careers'))
 
     context = {
         "career": career,
@@ -509,8 +509,12 @@ def schooL_photos(request):
         context = {
             "school": school,
             "photos": school.photos.all(),
+            "photos_context": True,
         }
-        return render(request, 'school/partial/photos.html', context)
+        # Verificar si es una petición HTMX (el header existe, no importa su valor)
+        if request.headers.get("HX-Request"):
+            return render(request, 'school/partial/photos.html', context)
+        return render(request, 'school/edit_school.html', context)
 
     elif request.method == "POST":
         photos = request.FILES.getlist('photos')
@@ -519,19 +523,57 @@ def schooL_photos(request):
                 "error": "Por favor, suba al menos una foto.",
                 "school": school,
                 "photos": school.photos.all(),
+                "photos_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
-            return render(request, 'school/partial/photos.html', context)
+            return render(request, 'school/edit_school.html', context)
 
         for photo in photos:
             school.photos.create(image=photo)
 
-        return redirect(reverse('school:edit_school', args=[school.pk]))
+        logger.info("Fotos cargadas para escuela: %s", school.name)
+        return redirect(reverse('school:photos'))
+
+    context = {
+        "school": school,
+        "photos": school.photos.all(),
+        "photos_context": True,
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+    }
+    return render(request, 'school/edit_school.html', context)
 
 
-    else:
-        context = {
-            "photos_context": True,
-            "school": school,
-            "photos": school.photos.all(),
-        }
-        return render(request, 'school/partial/edit_data.html', context)
+@login_required
+def delete_photos(request):
+    if request.method == "POST":
+        school = School.objects.filter(user__email=request.user.email).first()
+
+        if not school:
+            return redirect(f"{reverse('home')}?next={request.path}")
+
+        photo_ids = request.POST.getlist('photo_ids[]')
+
+        if not photo_ids:
+            context = {
+                "error": "No se seleccionaron fotos para eliminar.",
+                "school": school,
+                "photos": school.photos.all(),
+                "photos_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
+            }
+            return render(request, 'school/edit_school.html', context)
+
+        deleted_count = 0
+        for photo_id in photo_ids:
+            try:
+                photo = school.photos.get(id=int(photo_id))
+                photo.image.delete()  # Elimina el archivo físico
+                photo.delete()  # Elimina el registro de la base de datos
+                deleted_count += 1
+            except Exception as e:
+                logger.error("Error eliminando foto id=%s: %s", photo_id, str(e))
+
+        logger.info("Eliminadas %d fotos de la escuela: %s", deleted_count, school.name)
+        return redirect(reverse('school:photos'))
+
+    return redirect(reverse('school:photos'))

@@ -29,50 +29,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Función para activar un tab específico
-    function activateTab(tabId) {
-        const navLinks = document.querySelectorAll('.nav-borders .nav-link');
-        navLinks.forEach(l => l.classList.remove('active'));
-        const tab = document.getElementById(tabId);
-        if (tab) {
-            tab.classList.add('active');
-        }
-    }
+    // Activar el tab correcto en la carga inicial basado en el contenido del servidor
+    const section = document.getElementById('section');
+    if (section) {
+        const headers = section.querySelectorAll('.card-header');
+        let activeTabId = 'edit-profile-tab'; // Por defecto
 
-    // Función para determinar qué tab debe estar activo
-    function detectAndActivateTab() {
-        // Verificar si hay contenido de carreras cargado
-        const careersContent = document.querySelector('#section .card-header');
-        if (careersContent && careersContent.textContent.trim().includes('Carreras')) {
-            activateTab('careers-tab');
-            return;
-        }
-
-        // Si hay un mapa, es el tab de editar perfil
-        const mapElement = document.getElementById('map');
-        if (mapElement) {
-            activateTab('edit-profile-tab');
-            return;
-        }
-
-        // Si hay un formulario con fotos
-        const photoSection = document.querySelector('#section form[enctype="multipart/form-data"]');
-        if (photoSection) {
-            const photosInput = photoSection.querySelector('input[type="file"][name="photos"]');
-            if (photosInput) {
-                activateTab('photos-tab');
-                return;
+        for (let header of headers) {
+            const text = header.textContent.trim();
+            if (text.includes('Gestión de Fotos')) {
+                activeTabId = 'photos-tab';
+                break;
+            } else if (text.includes('Carreras')) {
+                activeTabId = 'careers-tab';
+                break;
             }
         }
 
-        // Por defecto, activar el primer tab
-        activateTab('edit-profile-tab');
+        // Activar el tab correcto
+        const activeTab = document.getElementById(activeTabId);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
     }
 
-    // Detectar el tab activo al cargar la página
-    detectAndActivateTab();
+    // Cargar Google Maps en la carga inicial si el mapa existe
+    loadGoogleMapsIfNeeded();
 
-    // Inicializar Select2 después de detectar el tab
+    // Cuando se hace clic en un tab, HTMX maneja la carga del contenido
+    // El tab ya se activa con el clic, no necesitamos detectar nada después
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.detail.target.id === 'section') {
+            // Cargar Google Maps si el nuevo contenido tiene un mapa
+            setTimeout(() => {
+                loadGoogleMapsIfNeeded();
+
+                // Re-inicializar Select2 si existe
+                if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+                    const selectElement = $('.select2-shifts');
+                    if (selectElement.length > 0 && !selectElement.hasClass('select2-hidden-accessible')) {
+                        selectElement.select2({
+                            allowClear: true,
+                            width: '100%'
+                        });
+                    }
+                }
+            }, 50);
+        }
+    });
+
+    // Inicializar Select2 si existe
     setTimeout(() => {
         if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
             const selectElement = $('.select2-shifts');
@@ -84,46 +90,41 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }, 100);
-
-    // Manejar clics en los tabs de navegación
-    const navLinks = document.querySelectorAll('.nav-borders .nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Remover 'active' de todos los links
-            navLinks.forEach(l => l.classList.remove('active'));
-            // Agregar 'active' al link clickeado
-            this.classList.add('active');
-        });
-    });
-
-    // Escuchar eventos de HTMX cuando se carga nuevo contenido
-    document.body.addEventListener('htmx:afterSwap', function(event) {
-        // Re-inicializar Select2 si es necesario
-        if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
-            const selectElement = $('.select2-shifts');
-            if (selectElement.length > 0 && !selectElement.hasClass('select2-hidden-accessible')) {
-                selectElement.select2({
-                    allowClear: true,
-                    width: '100%'
-                });
-            }
-        }
-    });
 });
+
+// Función para cargar Google Maps solo cuando sea necesario
+function loadGoogleMapsIfNeeded() {
+    const mapElement = document.getElementById('map');
+    if (mapElement && !window.googleMapsScriptLoaded) {
+        window.googleMapsScriptLoaded = true;
+        const script = document.createElement('script');
+        const apiKey = document.querySelector('meta[name="google-maps-api-key"]')?.content || '';
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    } else if (mapElement && typeof google !== 'undefined' && google.maps) {
+        // Si Google Maps ya está cargado y el mapa existe, inicializar directamente
+        initMap();
+    }
+}
 
 // initMap se mantiene global para que Google Maps API pueda llamarla
 window.initMap = function() {
+    const mapElement = document.getElementById("map");
+    if (!mapElement) return;
+
     const defaultLocation = { lat: -31.25033, lng: -61.4867 };
 
     const latInput = document.getElementById("id_latitude");
     const lngInput = document.getElementById("id_longitude");
     const addressInput = document.getElementById("id_address");
 
-    const initialLocation = (latInput.value && lngInput.value)
+    const initialLocation = (latInput && lngInput && latInput.value && lngInput.value)
         ? { lat: parseFloat(latInput.value), lng: parseFloat(lngInput.value) }
         : defaultLocation;
 
-    const map = new google.maps.Map(document.getElementById("map"), {
+    const map = new google.maps.Map(mapElement, {
         zoom: 13,
         center: initialLocation,
     });
@@ -134,21 +135,23 @@ window.initMap = function() {
         draggable: true,
     });
 
-    const autocomplete = new google.maps.places.Autocomplete(addressInput);
-    autocomplete.bindTo("bounds", map);
+    if (addressInput) {
+        const autocomplete = new google.maps.places.Autocomplete(addressInput);
+        autocomplete.bindTo("bounds", map);
+
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) return;
+
+            map.setCenter(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+
+            latInput.value = place.geometry.location.lat();
+            lngInput.value = place.geometry.location.lng();
+        });
+    }
 
     const geocoder = new google.maps.Geocoder();
-
-    autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (!place.geometry) return;
-
-        map.setCenter(place.geometry.location);
-        marker.setPosition(place.geometry.location);
-
-        latInput.value = place.geometry.location.lat();
-        lngInput.value = place.geometry.location.lng();
-    });
 
     google.maps.event.addListener(marker, "dragend", () => {
         const pos = marker.getPosition();
@@ -156,7 +159,7 @@ window.initMap = function() {
         lngInput.value = pos.lng();
 
         geocoder.geocode({ location: pos }, (results, status) => {
-            if (status === "OK" && results[0]) {
+            if (status === "OK" && results[0] && addressInput) {
                 addressInput.value = results[0].formatted_address;
             }
         });
