@@ -1,0 +1,21 @@
+# robots.txt para DondeEstudiar
+
+User-agent: *
+Allow: /
+Allow: /escuelas/
+
+# Bloquear áreas administrativas y privadas
+Disallow: /admin/
+Disallow: /panel/
+Disallow: /usuarios/
+Disallow: /reportes/
+Disallow: /login/
+Disallow: /logout/
+Disallow: /rebuild_index/
+
+
+# Sitemap del sitio para futuro
+Sitemap: https://donde-estudiar.onrender.com/sitemap.xml
+
+# Crawl-delay para no sobrecargar el servidor
+Crawl-delay: 10
