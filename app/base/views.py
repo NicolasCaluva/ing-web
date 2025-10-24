@@ -1,21 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import password_changed
-from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.text import slugify
 
 from app.schools.models import School
 from app.users.models import UserBase
-from dondeestudiar import settings
 import logging
 logger = logging.getLogger(__name__)
-
-import socket
-from smtplib import SMTPException, SMTPAuthenticationError, SMTPRecipientsRefused, SMTPSenderRefused, SMTPDataError
-from django.core.mail import BadHeaderError
 
 # Create your views here.
 
@@ -111,91 +104,20 @@ def register_user_view(request):
             error_message = "El correo electrónico ya está registrado."
             return render(request, 'base/register_user.html', {'error': error_message})
 
-        # Bloque 1: Creación de usuario y userbase
+        # Crear usuario y userbase — sin envío de email ni verificación adicional
         try:
             user = User.objects.create_user(username=email, email=email, password=password,
-                                            first_name=first_name, last_name=last_name, is_active=False)
-            logger.info(f"Usuario creado: {email}")
-            userbase = UserBase.objects.create(user=user)
+                                            first_name=first_name, last_name=last_name, is_active=True)
+            logger.info(f"Usuario creado y activado: {email}")
+            userbase = UserBase.objects.create(user=user, email_verified=True)
             userbase.save()
-            logger.info(f"UserBase creado para: {email}")
-            code = userbase.generate_auth_code()
-            logger.info(f"Código de verificación generado para: {email}")
+            logger.info(f"UserBase creado y marcado como verificado para: {email}")
         except Exception as e:
             logger.exception(f"Error crítico creando usuario {email}: {e}")
             return render(request, 'base/register_user.html', {'error': "Error al crear la cuenta. Por favor, intente nuevamente."})
 
-        # Bloque 2: Envío de correo ASÍNCRONO con timeout
-        verification_link = request.build_absolute_uri(
-            reverse("base:verify_email") + f"?code={code}"
-        )
-
-        # Verificar configuración de email
-        if not settings.EMAIL_HOST_PASSWORD:
-            logger.error(f"EMAIL_HOST_PASSWORD no está configurado. No se puede enviar correo a {email}")
-            # Continuar de todos modos - el usuario puede contactar soporte
-            logger.warning(f"Usuario {email} creado pero correo no enviado (sin configuración)")
-            return redirect(reverse('base:verification_mail_sent'))
-
-        # Enviar correo en un hilo separado para no bloquear la respuesta
-        import threading
-
-        def send_verification_email():
-            """Envía el correo de verificación en segundo plano con timeout"""
-            try:
-                logger.info(f"[THREAD] Enviando correo de verificación a: {email}")
-                logger.info(f"[THREAD] Backend de email: {settings.EMAIL_BACKEND}")
-
-                # Si estamos en Render con console backend, mostrar el enlace directamente
-                if 'console' in settings.EMAIL_BACKEND.lower():
-                    logger.info("=" * 80)
-                    logger.info("📧 ENLACE DE VERIFICACIÓN (Console Backend)")
-                    logger.info("=" * 80)
-                    logger.info(f"Usuario: {email}")
-                    logger.info(f"Nombre: {first_name} {last_name}")
-                    logger.info(f"Enlace: {verification_link}")
-                    logger.info("=" * 80)
-                    logger.info("⚠️  Copia este enlace y pégalo en el navegador para verificar la cuenta")
-                    logger.info("=" * 80)
-
-                # Usar timeout en la conexión SMTP
-                from django.core.mail import get_connection
-                connection = get_connection(
-                    fail_silently=False,
-                    timeout=10,  # Timeout de 10 segundos
-                )
-
-                result = send_mail(
-                    subject="Verifica tu cuenta",
-                    message=f"Hola {first_name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[email],
-                    fail_silently=False,
-                    connection=connection,
-                )
-                logger.info(f"✅ [THREAD] Correo enviado exitosamente a: {email}. Resultado: {result}")
-            except Exception as e:
-                # Solo loguear el error, no interrumpir el flujo
-                logger.error(f"❌ [THREAD] Error enviando correo a {email}: {type(e).__name__}: {str(e)}")
-
-                # Si falla el envío por SMTP, mostrar el enlace de todas formas
-                if 'smtp' in settings.EMAIL_BACKEND.lower() or 'Network is unreachable' in str(e):
-                    logger.error("=" * 80)
-                    logger.error("⚠️  EL CORREO NO SE PUDO ENVIAR - USA ESTE ENLACE MANUALMENTE")
-                    logger.error("=" * 80)
-                    logger.error(f"Usuario: {email}")
-                    logger.error(f"Enlace de verificación: {verification_link}")
-                    logger.error("=" * 80)
-
-                logger.exception(f"[THREAD] Traceback completo del error de correo:")
-
-        # Iniciar el envío en segundo plano
-        email_thread = threading.Thread(target=send_verification_email, daemon=True)
-        email_thread.start()
-        logger.info(f"Hilo de envío de correo iniciado para: {email}")
-
-        logger.info(f"✅ Registro completado exitosamente para: {email}")
-        return redirect(reverse('base:verification_mail_sent'))
+        # Mostrar el mismo formulario pero con mensaje de éxito
+        return render(request, 'base/register_user.html', {'success': True})
 
     else:
         logger.info("Acceso a registro de usuario por método no soportado")
@@ -240,125 +162,29 @@ def register_school_view(request):
             return render(request, 'base/register_school.html', {'error': error_message})
 
         try:
-            user = User.objects.create_user(username=email, email=email, password=password, is_active=False)
-            logger.info(f"Usuario de escuela creado: {email}")
+            # Crear usuario activo directamente
+            user = User.objects.create_user(username=email, email=email, password=password, is_active=True)
+            logger.info(f"Usuario de escuela creado y activado: {email}")
 
-            # Crear UserBase para la escuela
-            userbase = UserBase.objects.create(user=user)
+            # Crear UserBase para la escuela y marcar verificado
+            userbase = UserBase.objects.create(user=user, email_verified=True)
             userbase.save()
-            logger.info(f"UserBase creado para escuela: {email}")
+            logger.info(f"UserBase creado y marcado como verificado para escuela: {email}")
 
             slug = slugify(name)
             school = School.objects.create(user=user, name=name, slug=slug)
-            school.email_verified = False
+            school.email_verified = True
             school.save()
-            logger.info(f"Escuela creada: {name}")
-
-            code = userbase.generate_auth_code()
-
-            verification_link = request.build_absolute_uri(
-                reverse("base:verify_email") + f"?code={code}"
-            )
-
-            # Verificar configuración de email
-            if not settings.EMAIL_HOST_PASSWORD:
-                logger.error("EMAIL_HOST_PASSWORD no está configurado")
-                logger.warning(f"Escuela {email} creada pero correo no enviado (sin configuración)")
-                return redirect(reverse('base:verification_mail_sent'))
-
-            # Enviar correo en un hilo separado para no bloquear la respuesta
-            import threading
-
-            def send_verification_email():
-                """Envía el correo de verificación en segundo plano con timeout"""
-                try:
-                    logger.info(f"[THREAD] Enviando correo de verificación a escuela: {email}")
-                    logger.info(f"[THREAD] Backend de email: {settings.EMAIL_BACKEND}")
-
-                    # Si estamos en Render con console backend, mostrar el enlace directamente
-                    if 'console' in settings.EMAIL_BACKEND.lower():
-                        logger.info("=" * 80)
-                        logger.info("📧 ENLACE DE VERIFICACIÓN (Console Backend)")
-                        logger.info("=" * 80)
-                        logger.info(f"Usuario: {email}")
-                        logger.info(f"Nombre: {name}")
-                        logger.info(f"Enlace: {verification_link}")
-                        logger.info("=" * 80)
-                        logger.info("⚠️  Copia este enlace y pégalo en el navegador para verificar la cuenta")
-                        logger.info("=" * 80)
-
-                    # Usar timeout en la conexión SMTP
-                    from django.core.mail import get_connection
-                    connection = get_connection(
-                        fail_silently=False,
-                        timeout=10,  # Timeout de 10 segundos
-                    )
-
-                    result = send_mail(
-                        subject="DondeEstudiar - Verifica tu escuela",
-                        message=f"Hola {name},\n\nPor favor verifica tu cuenta haciendo clic en el siguiente enlace:\n{verification_link}",
-                        from_email=settings.EMAIL_HOST_USER,
-                        recipient_list=[email],
-                        fail_silently=False,
-                        connection=connection,
-                    )
-                    logger.info(f"✅ [THREAD] Correo enviado exitosamente a escuela: {email}. Resultado: {result}")
-                except Exception as e:
-                    # Solo loguear el error, no interrumpir el flujo
-                    logger.error(f"❌ [THREAD] Error enviando correo a escuela {email}: {type(e).__name__}: {str(e)}")
-
-                    # Si falla el envío por SMTP, mostrar el enlace de todas formas
-                    if 'smtp' in settings.EMAIL_BACKEND.lower() or 'Network is unreachable' in str(e):
-                        logger.error("=" * 80)
-                        logger.error("⚠️  EL CORREO NO SE PUDO ENVIAR - USA ESTE ENLACE MANUALMENTE")
-                        logger.error("=" * 80)
-                        logger.error(f"Usuario: {email}")
-                        logger.error(f"Enlace de verificación: {verification_link}")
-                        logger.error("=" * 80)
-
-                    logger.exception(f"[THREAD] Traceback completo del error de correo:")
-
-            # Iniciar el envío en segundo plano
-            email_thread = threading.Thread(target=send_verification_email, daemon=True)
-            email_thread.start()
-            logger.info(f"Hilo de envío de correo iniciado para escuela: {email}")
-
-            return redirect(reverse('base:verification_mail_sent'))
+            logger.info(f"Escuela creada y marcada como verificada: {name}")
 
         except Exception as e:
             logger.exception(f"Error crítico durante registro de escuela {email}: {e}")
             return render(request, 'base/register_school.html', {'error': "Error al crear la cuenta. Por favor, intente nuevamente."})
 
+        # Mostrar el mismo formulario pero con mensaje de éxito
+        return render(request, 'base/register_school.html', {'success': True})
+
     else:
         messages.add_message(request, messages.INFO, 'Por favor, regístrese para continuar.')
         logger.info("Acceso a registro de escuela por método no soportado")
         return redirect('users:register_school')
-
-
-def verify_email(request):
-    code = request.GET.get("code")
-    logger.info(f"Intento de verificación de email con código: {code}")
-    if not code:
-        logger.warning("Verificación fallida: código no proporcionado")
-        return render(request, "base/verify_email.html", {"error": "Código inválido."})
-
-    try:
-        userbase = UserBase.objects.get(recovery_code=code)
-    except UserBase.DoesNotExist:
-        logger.warning(f"Verificación fallida: código inválido o expirado ({code})")
-        return render(request, "base/verify_email.html", {"error": "Código inválido o expirado."})
-    logger.info(f"Email verificado para usuario: {userbase.user.email}")
-
-    userbase.email_verified = True
-    userbase.recovery_code = None
-    userbase.user.is_active = True
-    userbase.user.save()
-    userbase.save()
-
-    messages.success(request, "Tu cuenta ha sido verificada. Ahora puedes iniciar sesión.")
-    return redirect("login")
-
-
-def verification_mail_sent(request):
-    logger.info("Vista de correo de verificación enviado mostrada")
-    return render(request, 'base/verify_email_sent.html')
