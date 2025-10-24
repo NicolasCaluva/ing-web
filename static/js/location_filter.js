@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
             askLocation((ok) => {
                 if (!ok) {
                     this.value = ""; // Resetear a "--Selecciona--"
-                    alert("No se pudo obtener tu ubicación.Por favor, verifica los permisos del navegador");
+                    alert("No se pudo obtener tu ubicación. Por favor, verifica los permisos del navegador");
                 }
             });
         }
