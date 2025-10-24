@@ -15,15 +15,6 @@ class UserBase(models.Model):
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
 
-    def generate_auth_code(self):
-        code = string.ascii_letters + string.digits
-        while True:
-            new_code = ''.join(random.choice(code) for _ in range(10))
-            if not UserBase.objects.filter(recovery_code=new_code).exists():
-                self.recovery_code = new_code
-                self.save()
-                return new_code
-
 
 class UserWarnings(models.Model):
     user = models.ForeignKey('UserBase', on_delete=models.CASCADE)
@@ -36,20 +27,3 @@ class WarningType(models.Model):
 
     def __str__(self):
         return self.description
-
-
-class EmailVerificationCode(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    code = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()
-
-    def is_valid(self, code):
-        return (
-            self.code == code and
-            timezone.now() < self.expires_at
-        )
-
-    @staticmethod
-    def generate_code():
-        return str(random.randint(100000, 999999))  # código de 6 dígitos

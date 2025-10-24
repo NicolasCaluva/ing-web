@@ -130,7 +130,6 @@ if 'RENDER' in os.environ:
     }
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
-    # LOG_LEVEL se determinará de forma centralizada más abajo
 else:
     GOOGLE_MAPS_API_KEY = ""
     # LOG_LEVEL se determinará de forma centralizada más abajo
