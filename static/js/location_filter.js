@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function getLocationByIP() {
         try {
             // Usar ip-api.com que tiene mejor límite y no tiene problemas de CORS
-            const response = await fetch('http://ip-api.com/json/?fields=status,lat,lon,city,country');
+            const response = await fetch('https://ip-api.com/json/?fields=status,lat,lon,city,country');
             const data = await response.json();
             
             if (data.status === 'success' && data.lat && data.lon) {
