@@ -225,8 +225,10 @@ def edit_school(request):
                 }
                 return render(request, 'school/edit_school.html', context)
             school.name = name
-        if address:
+        address_changed = False
+        if address and address != school.address:
             school.address = address
+            address_changed = True
         if phone_number:
             school.phone_number = phone_number
         if general_description:
@@ -240,6 +242,21 @@ def edit_school(request):
             career.scope = request.POST.get(f"career_scope_{i}", career.scope)
             career.duration = request.POST.get(f"career_duration_{i}", career.duration)
             career.save()
+
+        # Geocodificar si la dirección cambió
+        if address_changed:
+            try:
+                gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+                geocode_result = gmaps.geocode(school.address)
+                if geocode_result:
+                    location = geocode_result[0]['geometry']['location']
+                    school.latitude = location['lat']
+                    school.longitude = location['lng']
+                    logger.info("Coordenadas actualizadas para escuela: %s", school.name)
+                else:
+                    logger.warning("No se encontraron coordenadas para la dirección: %s", school.address)
+            except Exception as e:
+                logger.error("Error al geocodificar dirección: %s", str(e))
 
         school.save()
         logger.info("Perfil de escuela actualizado: %s", school.name)
@@ -306,14 +323,23 @@ def create_school(request):
         )
         logger.info("Escuela creada: %s", school.name)
 
+        # Geocodificar la dirección para obtener coordenadas
         if school.address:
-            gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
-            geocode_result = gmaps.geocode(school.address)
-
-            if geocode_result:
-                location = geocode_result[0]['geometry']['location']
-                school.latitude = location['lat']
-                school.longitude = location['lng']
+            try:
+                gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+                geocode_result = gmaps.geocode(school.address)
+                
+                if geocode_result:
+                    location = geocode_result[0]['geometry']['location']
+                    school.latitude = location['lat']
+                    school.longitude = location['lng']
+                    logger.info("Coordenadas obtenidas para escuela: %s - lat: %s, lng: %s", 
+                              school.name, school.latitude, school.longitude)
+                else:
+                    logger.warning("No se encontraron coordenadas para la dirección: %s", school.address)
+            except Exception as e:
+                logger.error("Error al geocodificar dirección en create_school: %s", str(e))
+        
         school.save()
 
         return redirect(reverse('school:create_careers'))
