@@ -15,5 +15,4 @@ urlpatterns = [
     path('crear-carrera/', create_careers, name='create_careers'),
     path("careers/update/<int:career_id>/", update_career, name="update_career"),
     path("<int:pk>/photos/", photos_list, name="photos_list"),
-    path('rebuild_index/', rebuild_index, name='rebuild_index')
 ]
