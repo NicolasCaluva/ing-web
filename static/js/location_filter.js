@@ -8,16 +8,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // Pedir ubicación por IP (fallback para PCs sin GPS)
     async function getLocationByIP() {
         try {
-            // Usar ipapi.co con HTTPS
-            const response = await fetch('https://ipapi.co/json/');
+            // Usar ip-api.com que tiene mejor límite y no tiene problemas de CORS
+            const response = await fetch('http://ip-api.com/json/?fields=status,lat,lon,city,country');
             const data = await response.json();
             
-            if (data.latitude && data.longitude) {
-                document.cookie = `user_lat=${data.latitude}; path=/`;
-                document.cookie = `user_lon=${data.longitude}; path=/`;
-                userCoords = { lat: data.latitude, lon: data.longitude };
-                console.log("Ubicación obtenida por IP:", data.city, data.country_name);
-                console.log("Coordenadas:", data.latitude, data.longitude);
+            if (data.status === 'success' && data.lat && data.lon) {
+                document.cookie = `user_lat=${data.lat}; path=/`;
+                document.cookie = `user_lon=${data.lon}; path=/`;
+                userCoords = { lat: data.lat, lon: data.lon };
+                console.log("Ubicación obtenida por IP:", data.city, data.country);
+                console.log("Coordenadas:", data.lat, data.lon);
                 return true;
             }
         } catch (error) {
