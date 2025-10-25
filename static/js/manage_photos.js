@@ -85,6 +85,8 @@ function initializePhotoManagement() {
         if (files.length === 0) {
             photoPreviewContainer.style.display = 'none';
             uploadButton.disabled = true;
+            uploadButton.classList.remove('btn-primary');
+            uploadButton.classList.add('btn-secondary');
             selectedFiles = [];
             return;
         }
@@ -92,6 +94,8 @@ function initializePhotoManagement() {
         selectedFiles = files;
         showPreview(files);
         uploadButton.disabled = false;
+        uploadButton.classList.remove('btn-secondary');
+        uploadButton.classList.add('btn-primary');
     });
 
     // Mostrar previsualización de las fotos seleccionadas
@@ -143,6 +147,8 @@ function initializePhotoManagement() {
         if (selectedFiles.length === 0) {
             photoPreviewContainer.style.display = 'none';
             uploadButton.disabled = true;
+            uploadButton.classList.remove('btn-primary');
+            uploadButton.classList.add('btn-secondary');
             photoInput.value = '';
         } else {
             // Actualizar el input file con los archivos restantes
