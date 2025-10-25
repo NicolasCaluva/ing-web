@@ -1,0 +1,74 @@
+{% load static %}
+<div class="custom-bg-white p-3 shadow-sm">
+    <div class="card border-0">
+        <div class="card-header border-bottom-0">
+            <h2>Galería de Fotos</h2>
+        </div>
+        <div class="card-body">
+            {% if school.photos.all %}
+                <p class="text-muted mb-4">
+                    <i class="fas fa-images"></i> {{ school.photos.count }} foto{{ school.photos.count|pluralize:"s" }} disponible{{ school.photos.count|pluralize:"s" }}
+                </p>
+
+                <div class="row g-3">
+                    {% for photo in school.photos.all %}
+                        <div class="col-md-4 col-sm-6">
+                            <div class="card photo-card h-100 border-0 shadow-sm">
+                                <div class="position-relative">
+                                    <img src="{{ photo.image.url }}"
+                                         alt="Foto de {{ school.name }}"
+                                         class="card-img-top"
+                                         style="height: 250px; object-fit: cover; cursor: pointer;"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#photoModal{{ photo.id }}">
+                                    <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-50 text-white p-2">
+                                        <small>
+                                            <i class="fas fa-calendar"></i>
+                                            {{ photo.uploaded_at|date:"d/m/Y" }}
+                                        </small>
+                                    </div>
+                                </div>
+                                {% if photo.description %}
+                                    <div class="card-body">
+                                        <p class="card-text small text-muted mb-0">{{ photo.description }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Modal para ver la foto en grande -->
+                        <div class="modal fade" id="photoModal{{ photo.id }}" tabindex="-1" aria-labelledby="photoModalLabel{{ photo.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="photoModalLabel{{ photo.id }}">
+                                            {{ school.name }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-0">
+                                        <img src="{{ photo.image.url }}"
+                                             alt="Foto de {{ school.name }}"
+                                             class="img-fluid w-100">
+                                    </div>
+                                    {% if photo.description %}
+                                        <div class="modal-footer">
+                                            <p class="text-muted mb-0">{{ photo.description }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div>
+                        Esta institución aún no ha cargado fotos en su galería.
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

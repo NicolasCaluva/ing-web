@@ -181,7 +181,7 @@ def photos_list(request, pk):
         'photos': photos,
     }
 
-    return render(request, 'school/partial/photos.html', context)
+    return render(request, 'school/partial/photos_detail.html', context)
 
 
 @login_required

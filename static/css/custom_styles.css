@@ -249,3 +249,58 @@ body, html {
 .badge-pill-flat:hover {
     background-color: #bfdbfe;
 }
+
+/* Estilos para la galería de fotos */
+.photo-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.photo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+}
+
+.photo-card img {
+    transition: opacity 0.2s ease;
+}
+
+.photo-card img:hover {
+    opacity: 0.9;
+}
+
+/* Estilos para el botón de volver */
+.btn-back {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border: 2px solid #6c757d;
+    color: #495057;
+}
+
+.btn-back:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+.btn-back i {
+    transition: transform 0.3s ease;
+}
+
+.btn-back:hover i {
+    transform: translateX(-3px);
+}
+
+/* Estilos para pestañas activas */
+.flap-active {
+    background-color: #6c757d !important;
+    color: white !important;
+    font-weight: 600;
+    border-bottom: 3px solid #495057 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+}
