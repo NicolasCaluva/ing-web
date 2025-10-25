@@ -1,7 +1,9 @@
 import googlemaps
 import math
+
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -26,19 +28,19 @@ def rebuild_index(request):
     return JsonResponse({"result": result})
 
 # función auxiliar para calcular distancia en km
-#TODO revisar si esta funcion iria en otro lado
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # radio de la tierra en km
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
     a = (
-        math.sin(dlat / 2) ** 2
-        + math.cos(math.radians(lat1))
-        * math.cos(math.radians(lat2))
-        * math.sin(dlon / 2) ** 2
+            math.sin(dlat / 2) ** 2
+            + math.cos(math.radians(lat1))
+            * math.cos(math.radians(lat2))
+            * math.sin(dlon / 2) ** 2
     )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
+
 
 def school_list(request):
     query = request.GET.get("search", "").strip()
@@ -169,7 +171,7 @@ def general_information(request, pk):
 
     return render(request, 'school/partial/general_information.html', context)
 
-  
+
 def photos_list(request, pk):
     school = get_object_or_404(School, pk=pk)
     photos = school.photos.all()
@@ -180,18 +182,20 @@ def photos_list(request, pk):
     }
 
     return render(request, 'school/partial/photos.html', context)
-  
-  
+
+
+@login_required
 def edit_school(request):
     logger.info("Acceso a edit_school por usuario: %s", request.user)
     if not request.user.is_authenticated:
         logger.warning("Usuario no autenticado en edit_school")
         return redirect(f"{reverse('login')}?next={request.path}")
-    school= School.objects.filter(user__email=request.user.email).first()
+    school = School.objects.filter(user__email=request.user.email).first()
 
     if not school:
         logger.warning("No se encontró escuela para usuario: %s", request.user.email)
         return redirect(f"{reverse('home')}?next={request.path}")
+
     careers = Career.objects.filter(school=school)
     context = {
         "school": school,
@@ -264,9 +268,15 @@ def edit_school(request):
         context["success"] = "Perfil de la escuela actualizado correctamente."
         return redirect(reverse('home'))
 
+    elif request.method == "GET":
+        if request.headers.get("HX-Request") == "true":
+            return render(request, 'school/partial/edit_data.html', context)
+        return render(request, 'school/edit_school.html', context)
+
     return render(request, 'school/edit_school.html', context)
 
 
+@login_required
 def create_school(request):
     logger.info("Acceso a create_school por usuario: %s", request.user)
     if not request.user.is_authenticated:
@@ -349,6 +359,7 @@ def create_school(request):
     return render(request, 'school/create_school.html', context)
 
 
+@login_required
 def create_careers(request):
     logger.info("Acceso a create_careers por usuario: %s", request.user)
     if not request.user.is_authenticated:
@@ -360,22 +371,37 @@ def create_careers(request):
         logger.warning("No se encontró escuela para usuario en create_careers: %s", request.user.email)
         return redirect(f"{reverse('home')}?next={request.path}")
 
+    if request.method == "GET":
+        logger.debug("GET recibido en create_careers")
+        context = {
+            "careers": Career.objects.filter(school=school),
+            "school": school,
+            "careers_context": True,
+        }
+        # Si es una petición HTMX, solo retorna el parcial
+        if request.headers.get("HX-Request"):
+            return render(request, 'school/create_careers.html', context)
+        # Si no es HTMX, retorna la página completa
+        return render(request, 'school/edit_school.html', context)
+
     if request.method == "POST":
         logger.debug("POST recibido en create_careers")
         career_name = request.POST.get('career_name', '').strip()
         career_scope = request.POST.get('career_scope', '').strip()
-        origin=request.POST.get('origin','').strip()
-        career_dura= request.POST.get('career_duration','').strip()
+        origin = request.POST.get('origin', '').strip()
+        career_dura = request.POST.get('career_duration', '').strip()
 
         if not career_dura.isdigit():
             context = {
                 "error": "Error, La duracion de la carrera debe ser un numero entero mayor a 0",
                 "careers": Career.objects.filter(school=school),
                 "school": school,
+                "careers_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
-            return render(request, 'school/create_careers.html', context)
+                return render(request, "school/edit_school.html", context)
+            return render(request, 'school/edit_school.html', context)
         career_duration = int(career_dura)
 
         if career_duration <= 0:
@@ -384,10 +410,12 @@ def create_careers(request):
                 "error": "Error, La duracion de la carrera debe ser mayor a 0",
                 "careers": Career.objects.filter(school=school),
                 "school": school,
+                "careers_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
-            return render(request, 'school/create_careers.html', context)
+                return render(request, 'school/edit_school.html', context)
+            return render(request, 'school/edit_school.html', context)
 
         if not career_name or not career_scope or not career_duration:
             logger.warning("Campos obligatorios faltantes en create_careers")
@@ -395,10 +423,12 @@ def create_careers(request):
                 "error": "Por favor, complete todos los campos obligatorios.",
                 "careers": Career.objects.filter(school=school),
                 "school": school,
+                "careers_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
             if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
-            return render(request, 'school/create_careers.html', context)
+                return render(request, "school/edit_school.html", context)
+            return render(request, 'school/edit_school.html', context)
 
         career = Career.objects.create(
             school=school,
@@ -409,18 +439,19 @@ def create_careers(request):
         career.save()
         logger.info("Carrera creada: %s", career.name)
 
-        if origin=='edit_school':
-            return redirect(reverse('school:edit_school'))
-
+        # Después de crear exitosamente, redirigir a la página de edición con el tab de carreras activo
         return redirect(reverse('school:create_careers'))
 
     context = {
-        "careers": Career.objects.filter(school=school)
+        "careers": Career.objects.filter(school=school),
+        "school": school,
+        "careers_context": True,
     }
 
     return render(request, 'school/create_careers.html', context)
 
 
+@login_required
 def update_career(request, career_id):
     logger.info("Acceso a update_career id=%s por usuario: %s", career_id, request.user)
     if not request.user.is_authenticated:
@@ -446,10 +477,10 @@ def update_career(request, career_id):
                 "error": "Error, La duracion de la carrera debe ser un numero entero mayor a 0",
                 "careers": Career.objects.filter(school=school),
                 "school": school,
+                "careers_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
-            if origin == 'edit_school':
-                return render(request, "school/edit_school.html", context)
-            return render(request, 'school/create_careers.html', context)
+            return render(request, "school/edit_school.html", context)
         career_duration = int(career_dura)
 
         if career_duration <= 0:
@@ -458,10 +489,10 @@ def update_career(request, career_id):
                 "error": "Error, La duracion de la carrera debe ser mayor a 0",
                 "careers": Career.objects.filter(school=school),
                 "school": school,
+                "careers_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
-            if origin == 'edit_school':
-                return render(request, 'school/edit_school.html',context)
-            return render(request, 'school/create_careers.html', context)
+            return render(request, 'school/edit_school.html', context)
 
         if not career_name or not career_scope or not career_duration:
             logger.warning("Campos obligatorios faltantes en update_career")
@@ -469,10 +500,10 @@ def update_career(request, career_id):
                 "error": "Por favor, complete todos los campos obligatorios.",
                 "careers": Career.objects.filter(school=school),
                 "school": school,
+                "careers_context": True,
+                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
-            if origin == 'edit_school':
-                return render(request, "school/edit_school.html",context)
-            return render(request, 'school/create_careers.html', context)
+            return render(request, "school/edit_school.html", context)
 
         career.name = career_name
         career.scope = career_scope
@@ -480,7 +511,111 @@ def update_career(request, career_id):
         career.save()
         logger.info("Carrera actualizada: %s", career.name)
 
-        if origin=='edit_school':
-            return redirect(reverse('school:edit_school'))
-
+        # Después de actualizar exitosamente, redirigir a la página de edición
         return redirect(reverse('school:create_careers'))
+
+    context = {
+        "career": career,
+        "school": school,
+        "careers_context": True,
+    }
+
+    return render(request, 'school/edit_school.html', context)
+
+
+@login_required
+def schooL_photos(request):
+    school = School.objects.filter(user__email=request.user.email).first()
+
+    if not school:
+        return redirect(f"{reverse('home')}?next={request.path}")
+
+    if request.method == "GET":
+        context = {
+            "school": school,
+            "photos": school.photos.all(),
+            "photos_context": True,
+        }
+        # Verificar si es una petición HTMX (el header existe, no importa su valor)
+        if request.headers.get("HX-Request"):
+            return render(request, 'school/partial/photos.html', context)
+        return render(request, 'school/edit_school.html', context)
+
+    elif request.method == "POST":
+        photos = request.FILES.getlist('photos')
+        if not photos:
+            context = {
+                "error": "Por favor, suba al menos una foto.",
+                "school": school,
+                "photos": school.photos.all(),
+                "photos_context": True,
+            }
+            return render(request, 'school/edit_school.html', context)
+
+        # Guardar las fotos
+        for photo in photos:
+            school.photos.create(image=photo)
+
+        logger.info("Fotos cargadas para escuela: %s", school.name)
+
+        # Hacer redirect normal
+        return redirect(reverse('school:photos'))
+
+    context = {
+        "school": school,
+        "photos": school.photos.all(),
+        "photos_context": True,
+    }
+    return render(request, 'school/edit_school.html', context)
+
+
+@login_required
+def delete_photos(request):
+    if request.method == "POST":
+        school = School.objects.filter(user__email=request.user.email).first()
+
+        if not school:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se encontró la escuela asociada a tu cuenta.'
+            }, status=403)
+
+        photo_ids = request.POST.getlist('photo_ids[]')
+
+        if not photo_ids:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se seleccionaron fotos para eliminar.'
+            }, status=400)
+
+        deleted_count = 0
+        deleted_ids = []
+        errors = []
+
+        for photo_id in photo_ids:
+            try:
+                photo = school.photos.get(id=int(photo_id))
+                photo.image.delete()  # Elimina el archivo físico
+                photo.delete()  # Elimina el registro de la base de datos
+                deleted_count += 1
+                deleted_ids.append(int(photo_id))
+            except Exception as e:
+                logger.error("Error eliminando foto id=%s: %s", photo_id, str(e))
+                errors.append(f"Error al eliminar foto {photo_id}")
+
+        logger.info("Eliminadas %d fotos de la escuela: %s", deleted_count, school.name)
+
+        message = f"Se {'eliminó' if deleted_count == 1 else 'eliminaron'} {deleted_count} foto{'s' if deleted_count != 1 else ''} exitosamente."
+
+        return JsonResponse({
+            'success': True,
+            'message': message,
+            'deleted_count': deleted_count,
+            'deleted_ids': deleted_ids,
+            'errors': errors
+        })
+
+    return JsonResponse({
+        'success': False,
+        'message': 'Método no permitido.'
+    }, status=405)

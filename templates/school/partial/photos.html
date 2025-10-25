@@ -1,20 +1,123 @@
-<div class="custom-bg-white p-3 shadow">
-    <div class="card border-0">
-        <div class="card-header border-bottom-0">
-            <h2>Fotos</h2>
+{% load static %}
+{% if error %}
+    <div class="alert alert-danger py-2 px-3">{{ error }}</div>
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Gestión de Fotos</h5>
+    </div>
+    <div class="card-body">
+        <!-- Formulario para subir fotos -->
+        <form method="post" action="{% url 'school:photos' %}" enctype="multipart/form-data" id="uploadPhotosForm" hx-boost="false">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Seleccionar fotos</label>
+                <input type="file"
+                       class="form-control"
+                       name="photos"
+                       id="photoInput"
+                       accept="image/*"
+                       multiple
+                       required>
+                <small class="text-muted">Puedes seleccionar múltiples fotos a la vez</small>
+            </div>
+
+            <!-- Previsualización de fotos -->
+            <div id="photoPreviewContainer" class="mb-3" style="display: none;">
+                <label class="form-label">Vista previa:</label>
+                <div id="photoPreview" class="row g-2"></div>
+            </div>
+
+            <button type="submit" class="btn btn-secondary" id="uploadButton" disabled>
+                <i class="fas fa-upload"></i> Subir fotos
+            </button>
+        </form>
+
+        <hr class="my-4">
+
+        <!-- Fotos existentes -->
+        <div class="mb-3">
+            <h6 id="photosCounter">Fotos cargadas (<span id="photosCount">{{ photos.count }}</span>)</h6>
         </div>
 
         {% if photos %}
-            <div class="row d-flex mx-5">
-                {% for photo in photos %}
-                    <div class="col-3 flex-wrap justify-content-start">
-                        <img src="{{ photo.image.url }}" alt="Foto de {{ photo.school.name }}" class="img-thumbnail"
-                             style="width: 200px; height: auto;">
-                    </div>
-                {% endfor %}
-            </div>
+            <form method="post" action="{% url 'school:delete_photos' %}" id="deletePhotosForm">
+                {% csrf_token %}
+                <div class="mb-3" id="photoActionsButtons">
+                    <button type="button" class="btn btn-sm btn-danger" id="deleteSelectedBtn" disabled>
+                        <i class="fas fa-trash"></i> Eliminar seleccionadas
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" id="selectAllBtn">
+                        <i class="fas fa-check-square"></i> Seleccionar todas
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" id="deselectAllBtn">
+                        <i class="fas fa-square"></i> Deseleccionar todas
+                    </button>
+                </div>
+
+                <div class="row g-3" id="photosGrid">
+                    {% for photo in photos %}
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card photo-card">
+                                <div class="position-relative">
+                                    <img src="{{ photo.image.url }}"
+                                         alt="Foto de {{ photo.school.name }}"
+                                         class="card-img-top"
+                                         style="height: 200px; object-fit: cover;">
+                                    <div class="position-absolute top-0 end-0 p-2">
+                                        <input type="checkbox"
+                                               class="form-check-input photo-checkbox"
+                                               name="photo_ids[]"
+                                               value="{{ photo.id }}"
+                                               style="width: 20px; height: 20px; cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <small class="text-muted">
+                                        Subida: {{ photo.uploaded_at|date:"d/m/Y H:i" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
         {% else %}
-            <p>No hay fotos disponibles para esta escuela.</p>
+            <div class="alert alert-info" id="noPhotosAlert">
+                <i class="fas fa-info-circle"></i> No hay fotos cargadas aún. ¡Sube algunas fotos para mostrar tu institución!
+            </div>
         {% endif %}
     </div>
 </div>
+
+<style>
+    .photo-card {
+        transition: transform 0.2s;
+    }
+    .photo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    #photoPreview .preview-item {
+        position: relative;
+        display: inline-block;
+    }
+    #photoPreview .preview-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 0, 0, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+    }
+    #photoPreview .preview-remove:hover {
+        background: rgba(255, 0, 0, 1);
+    }
+</style>

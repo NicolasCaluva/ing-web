@@ -4,14 +4,100 @@
     right: 20px;
     background: white;
     border-radius: 12px;
-    padding: 20px 24px;
+    padding: 16px 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    min-width: 300px;
+    max-width: 500px;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease-out;
+    border-left: 4px solid #10b981;
+}
+
+.success-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.success-toast .toast-content {
     display: flex;
     align-items: center;
-    gap: 15px;
-    z-index: 9999;
-    min-width: 320px;
-    animation: slideInRight 0.4s ease-out;
+    gap: 12px;
+}
+
+.success-toast .toast-content i {
+    color: #10b981;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.success-toast .toast-content span {
+    color: #1f2937;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Toast de error */
+.error-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    min-width: 300px;
+    max-width: 500px;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease-out;
+    border-left: 4px solid #ef4444;
+}
+
+.error-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.error-toast .toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.error-toast .toast-content i {
+    color: #ef4444;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.error-toast .toast-content span {
+    color: #1f2937;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Responsive: En pantallas pequeñas, centrar el toast */
+@media (max-width: 768px) {
+    .success-toast,
+    .error-toast {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%) translateY(-20px);
+        opacity: 0;
+        min-width: 280px;
+        max-width: calc(100vw - 40px);
+    }
+
+    .success-toast.show,
+    .error-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
 @keyframes slideInRight {
@@ -25,6 +111,7 @@
     }
 }
 
+/* Estilos antiguos para compatibilidad */
 .success-toast-icon {
     width: 40px;
     height: 40px;
@@ -62,4 +149,3 @@
     font-weight: 600;
     color: #10b981;
 }
-
