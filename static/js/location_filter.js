@@ -5,7 +5,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let userCoords = null;
 
-    // Pedir ubicación
+    // Pedir ubicación por IP (fallback para PCs sin GPS)
+    async function getLocationByIP() {
+        try {
+            // Usar ipapi.co con HTTPS
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            
+            if (data.latitude && data.longitude) {
+                document.cookie = `user_lat=${data.latitude}; path=/`;
+                document.cookie = `user_lon=${data.longitude}; path=/`;
+                userCoords = { lat: data.latitude, lon: data.longitude };
+                console.log("Ubicación obtenida por IP:", data.city, data.country_name);
+                console.log("Coordenadas:", data.latitude, data.longitude);
+                return true;
+            }
+        } catch (error) {
+            console.warn("Error obteniendo ubicación por IP:", error);
+            return false;
+        }
+        return false;
+    }
+
+    // Pedir ubicación por GPS/navegador
     function askLocation(callback) {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -17,41 +39,40 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.cookie = `user_lon=${lon}; path=/`;
 
                     userCoords = { lat, lon };
+                    console.log("Ubicación GPS obtenida:", lat, lon);
                     if (callback) callback(true);
                 },
-                (error) => {
-                    console.warn("No se pudo obtener ubicación:", error);
-                    userCoords = null;
-                    if (callback) callback(false);
+                async (error) => {
+                    console.warn("GPS no disponible, usando ubicación por IP");
+                    const success = await getLocationByIP();
+                    if (callback) callback(success);
                 }
             );
         } else {
-            console.warn("Geolocalización no soportada.");
-            if (callback) callback(false);
+            console.warn("Geolocalización no soportada, usando ubicación por IP...");
+            getLocationByIP().then(success => {
+                if (callback) callback(success);
+            });
         }
     }
 
     // Pedir ubicación al cargar, solo para calcular distancias
     askLocation();
 
-    // Función para disparar HTMX sin recargar scroll
-    function triggerHTMX() {
-        htmx.trigger(searchInput, 'keyup');
-    }
-
-    // Cambios en distancia
+    // HTMX se encarga automáticamente del filtrado gracias a hx-trigger="change"
     distanceSelect.addEventListener("change", function () {
-        if (!userCoords) {
+        const selectedValue = this.value;
+        
+        if (selectedValue && !userCoords) {
+            // Si selecciona una distancia pero no hay ubicación, pedir nuevamente
             askLocation((ok) => {
-                if (ok) triggerHTMX();
-                else distanceSelect.value = ""; // volver a "--Selecciona--"
+                if (!ok) {
+                    this.value = ""; // Resetear a "--Selecciona--"
+                    alert("No se pudo obtener tu ubicación.Por favor, verifica los permisos del navegador");
+                }
             });
-        } else {
-            triggerHTMX();
         }
     });
-
-    // Cambios en búsqueda y turno
 });
 
 function getCookie(name) {
