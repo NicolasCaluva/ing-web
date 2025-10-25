@@ -3,7 +3,7 @@
 {% block container %}
     <div class="row w-100 vh-100">
         <div class="col-md-2 d-flex flex-column">
-            <a href="">Inicio</a>
+            <a href="{% url 'home' %}">Volver al sitio web</a>
             <a href="{% url 'panel:list_users' %}">Usuarios</a>
             <a href="{% url 'panel:list_schools' %}">Escuelas</a>
         </div>
