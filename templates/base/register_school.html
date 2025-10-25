@@ -14,9 +14,25 @@
     <link
             href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css"
             rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'css/success_toast.css' %}">
 {% endblock %}
 
 {% block container %}
+    <!-- Toast de éxito -->
+    {% if success %}
+    <div class="success-toast" id="successToast">
+        <div class="success-toast-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="success-toast-content">
+            <p class="success-toast-title">¡Registro Exitoso!</p>
+            <p class="success-toast-message">
+                Redirigiendo al login en <span class="success-toast-countdown" id="countdown">3</span>s...
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Section: Design Block -->
 <section class="text-center text-lg-start background-gradient-primary vw-100 vh-100 d-flex justify-content-center align-items-center">
   <!-- Jumbotron -->
@@ -75,5 +91,11 @@
 
 {% block js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.js"></script>
-    <script src="../../static/js/animations.js"></script>
+    <script src="{% static 'js/animations.js' %}"></script>
+    {% if success %}
+    <script src="{% static 'js/success_toast.js' %}"></script>
+    <script>
+        initSuccessToast("{% url 'login' %}");
+    </script>
+    {% endif %}
 {% endblock %}

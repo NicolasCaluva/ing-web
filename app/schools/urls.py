@@ -1,7 +1,7 @@
 from django.urls import path
 
 from app.schools.views import school_detail, careers_list, general_information, edit_school, create_school, \
-    create_careers, update_career, photos_list, rebuild_index
+    create_careers, update_career, photos_list, schooL_photos, delete_photos
 from app.base.views import register_school_view
 
 app_name = 'school'
@@ -15,4 +15,6 @@ urlpatterns = [
     path('crear-carrera/', create_careers, name='create_careers'),
     path("careers/update/<int:career_id>/", update_career, name="update_career"),
     path("<int:pk>/photos/", photos_list, name="photos_list"),
+    path('photos/', schooL_photos, name='photos'),
+    path('photos/delete/', delete_photos, name='delete_photos')
 ]

@@ -1,97 +1,87 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block container %}
-<div class="container-xl px-4 mt-4">
-<nav class="nav nav-borders">
-    <a class="nav-link active ms-0" href="#">Crear carreras</a>
-</nav>
-<hr class="mt-0 mb-4">
-
 {% if error %}
-<div class="alert alert-danger py-1 px-2">{{ error }}</div>
+    <div class="alert alert-danger py-1 px-2">{{ error }}</div>
 {% endif %}
 
-<div class="mb-3">
-    <a class="text-decoration-none" href="{% url 'home' %}">
-        <i class="fa-solid fa-arrow-left"></i> Volver al listado de escuelas
-    </a>
-</div>
-<div class="container mt-4">
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span>Carreras</span>
-            <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addCareerModal">
-                + Agregar
-            </button>
-        </div>
-        <div class="card-body">
-            <ul class="list-group">
-                {% for career in careers %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ career.name }}
-                        <button class="btn btn-sm btn-warning"
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#careerModal{{ forloop.counter }}">
-                            Editar
-                        </button>
-                    </li>
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Carreras</span>
+        <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal"
+                data-bs-target="#addCareerModal">
+            + Agregar
+        </button>
+    </div>
+    <div class="card-body">
+        <ul class="list-group">
+            {% for career in careers %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ career.name }}
+                    <button class="btn btn-sm btn-warning"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#careerModal{{ forloop.counter }}">
+                        Editar
+                    </button>
+                </li>
 
-                    <div class="modal fade" id="careerModal{{ forloop.counter }}" tabindex="-1"
-                         aria-labelledby="careerModalLabel{{ forloop.counter }}" aria-hidden="true">
-                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                            <div class="modal-content">
-                                <form method="post" action="{% url 'school:update_career' career.id %}">
-                                    {% csrf_token %}
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="careerModalLabel{{ forloop.counter }}">
-                                            Editar carrera
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Cerrar"></button>
+                <div class="modal fade" id="careerModal{{ forloop.counter }}" tabindex="-1"
+                     aria-labelledby="careerModalLabel{{ forloop.counter }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <form method="post" action="{% url 'school:update_career' career.id %}">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="careerModalLabel{{ forloop.counter }}">
+                                        Editar carrera
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="small mb-1">Nombre</label>
+                                        <input class="form-control" type="text" name="career_name"
+                                               value="{{ career.name }}">
                                     </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="small mb-1">Nombre</label>
-                                            <input class="form-control" type="text" name="career_name"
-                                                   value="{{ career.name }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1">Alcance</label>
-                                            <input class="form-control" type="text" name="career_scope"
-                                                   value="{{ career.scope }}">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="small mb-1">Duración</label>
-                                            <input class="form-control" type="text" name="career_duration"
-                                                   value="{{ career.duration }}">
-                                        </div>
+                                    <div class="mb-3">
+                                        <label class="small mb-1">Alcance</label>
+                                        <input class="form-control" type="text" name="career_scope"
+                                               value="{{ career.scope }}">
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Cerrar</button>
-                                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                    <div class="mb-3">
+                                        <label class="small mb-1">Duración</label>
+                                        <input class="form-control" type="text" name="career_duration"
+                                               value="{{ career.duration }}">
                                     </div>
-                                </form>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cerrar
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                {% empty %}
-                    <li class="list-group-item">No hay carreras registradas.</li>
-                {% endfor %}
-            </ul>
-        </div>
+                </div>
+            {% empty %}
+                <li class="list-group-item">No hay carreras registradas.</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 
-<div class="modal fade" id="addCareerModal" tabindex="-1" aria-labelledby="addCareerModalLabel" aria-hidden="true">
+
+<div class="modal fade" id="addCareerModal" tabindex="-1" aria-labelledby="addCareerModalLabel"
+     aria-hidden="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <form method="post" action="{% url 'school:create_careers' %}">
                 {% csrf_token %}
                 <div class="modal-header">
                     <h5 class="modal-title" id="addCareerModalLabel">Agregar nueva carrera</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -115,4 +105,3 @@
         </div>
     </div>
 </div>
-{% endblock %}
