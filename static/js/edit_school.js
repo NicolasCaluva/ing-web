@@ -29,30 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Activar el tab correcto en la carga inicial basado en el contenido del servidor
-    const section = document.getElementById('section');
-    if (section) {
-        const headers = section.querySelectorAll('.card-header');
-        let activeTabId = 'edit-profile-tab'; // Por defecto
-
-        for (let header of headers) {
-            const text = header.textContent.trim();
-            if (text.includes('Gestión de Fotos')) {
-                activeTabId = 'photos-tab';
-                break;
-            } else if (text.includes('Carreras')) {
-                activeTabId = 'careers-tab';
-                break;
-            }
-        }
-
-        // Activar el tab correcto
-        const activeTab = document.getElementById(activeTabId);
-        if (activeTab) {
-            activeTab.classList.add('active');
-        }
-    }
-
     // Cargar Google Maps en la carga inicial si el mapa existe
     loadGoogleMapsIfNeeded();
 

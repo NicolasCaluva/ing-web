@@ -2,6 +2,7 @@
 {% load static %}
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/success_toast.css' %}">
 {% endblock %}
 
 {% block container %}
@@ -9,7 +10,7 @@
     <div class="container-xl px-4 mt-4">
         <nav class="nav nav-borders">
             {% url 'school:edit_school' as edit_school %}
-            <a class="nav-link ms-0"
+            <a class="nav-link tab ms-0 active"
                style="cursor: pointer;"
                hx-get="{{ edit_school }}"
                hx-target="#section"
@@ -20,7 +21,7 @@
             </a>
 
             {% url 'school:photos' as photos %}
-            <a class="nav-link ms-0"
+            <a class="nav-link tab ms-0"
                style="cursor: pointer;"
                hx-get="{{ photos }}"
                hx-target="#section"
@@ -31,7 +32,7 @@
             </a>
 
             {% url 'school:create_careers' as careers_url %}
-            <a class="nav-link ms-0"
+            <a class="nav-link tab ms-0"
                style="cursor: pointer;"
                hx-get="{{ careers_url }}"
                hx-target="#section"
@@ -75,4 +76,5 @@
 {% block js %}
     <script src="{% static 'js/edit_school.js' %}"></script>
     <script src="{% static 'js/manage_photos.js' %}"></script>
+    <script src="{% static 'js/manage_tabs.js' %}"></script>
 {% endblock %}

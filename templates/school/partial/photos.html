@@ -1,5 +1,4 @@
 {% load static %}
-
 {% if error %}
     <div class="alert alert-danger py-2 px-3">{{ error }}</div>
 {% endif %}
@@ -10,7 +9,7 @@
     </div>
     <div class="card-body">
         <!-- Formulario para subir fotos -->
-        <form method="post" action="{% url 'school:photos' %}" enctype="multipart/form-data" id="uploadPhotosForm">
+        <form method="post" action="{% url 'school:photos' %}" enctype="multipart/form-data" id="uploadPhotosForm" hx-boost="false">
             {% csrf_token %}
             <div class="mb-3">
                 <label class="form-label">Seleccionar fotos</label>
@@ -39,13 +38,13 @@
 
         <!-- Fotos existentes -->
         <div class="mb-3">
-            <h6>Fotos cargadas ({{ photos.count }})</h6>
+            <h6 id="photosCounter">Fotos cargadas (<span id="photosCount">{{ photos.count }}</span>)</h6>
         </div>
 
         {% if photos %}
             <form method="post" action="{% url 'school:delete_photos' %}" id="deletePhotosForm">
                 {% csrf_token %}
-                <div class="mb-3">
+                <div class="mb-3" id="photoActionsButtons">
                     <button type="button" class="btn btn-sm btn-danger" id="deleteSelectedBtn" disabled>
                         <i class="fas fa-trash"></i> Eliminar seleccionadas
                     </button>
@@ -57,7 +56,7 @@
                     </button>
                 </div>
 
-                <div class="row g-3">
+                <div class="row g-3" id="photosGrid">
                     {% for photo in photos %}
                         <div class="col-md-3 col-sm-6">
                             <div class="card photo-card">
@@ -85,7 +84,7 @@
                 </div>
             </form>
         {% else %}
-            <div class="alert alert-info">
+            <div class="alert alert-info" id="noPhotosAlert">
                 <i class="fas fa-info-circle"></i> No hay fotos cargadas aún. ¡Sube algunas fotos para mostrar tu institución!
             </div>
         {% endif %}

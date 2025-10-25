@@ -3,7 +3,7 @@ import math
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -28,7 +28,6 @@ def rebuild_index(request):
     return JsonResponse({"result": result})
 
 # función auxiliar para calcular distancia en km
-# TODO revisar si esta funcion iria en otro lado
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # radio de la tierra en km
     dlat = math.radians(lat2 - lat1)
@@ -550,21 +549,22 @@ def schooL_photos(request):
                 "school": school,
                 "photos": school.photos.all(),
                 "photos_context": True,
-                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
             }
             return render(request, 'school/edit_school.html', context)
 
+        # Guardar las fotos
         for photo in photos:
             school.photos.create(image=photo)
 
         logger.info("Fotos cargadas para escuela: %s", school.name)
+
+        # Hacer redirect normal
         return redirect(reverse('school:photos'))
 
     context = {
         "school": school,
         "photos": school.photos.all(),
         "photos_context": True,
-        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
     }
     return render(request, 'school/edit_school.html', context)
 
@@ -575,31 +575,47 @@ def delete_photos(request):
         school = School.objects.filter(user__email=request.user.email).first()
 
         if not school:
-            return redirect(f"{reverse('home')}?next={request.path}")
+            return JsonResponse({
+                'success': False,
+                'message': 'No se encontró la escuela asociada a tu cuenta.'
+            }, status=403)
 
         photo_ids = request.POST.getlist('photo_ids[]')
 
         if not photo_ids:
-            context = {
-                "error": "No se seleccionaron fotos para eliminar.",
-                "school": school,
-                "photos": school.photos.all(),
-                "photos_context": True,
-                'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
-            }
-            return render(request, 'school/edit_school.html', context)
+            return JsonResponse({
+                'success': False,
+                'message': 'No se seleccionaron fotos para eliminar.'
+            }, status=400)
 
         deleted_count = 0
+        deleted_ids = []
+        errors = []
+
         for photo_id in photo_ids:
             try:
                 photo = school.photos.get(id=int(photo_id))
                 photo.image.delete()  # Elimina el archivo físico
                 photo.delete()  # Elimina el registro de la base de datos
                 deleted_count += 1
+                deleted_ids.append(int(photo_id))
             except Exception as e:
                 logger.error("Error eliminando foto id=%s: %s", photo_id, str(e))
+                errors.append(f"Error al eliminar foto {photo_id}")
 
         logger.info("Eliminadas %d fotos de la escuela: %s", deleted_count, school.name)
-        return redirect(reverse('school:photos'))
 
-    return redirect(reverse('school:photos'))
+        message = f"Se {'eliminó' if deleted_count == 1 else 'eliminaron'} {deleted_count} foto{'s' if deleted_count != 1 else ''} exitosamente."
+
+        return JsonResponse({
+            'success': True,
+            'message': message,
+            'deleted_count': deleted_count,
+            'deleted_ids': deleted_ids,
+            'errors': errors
+        })
+
+    return JsonResponse({
+        'success': False,
+        'message': 'Método no permitido.'
+    }, status=405)
