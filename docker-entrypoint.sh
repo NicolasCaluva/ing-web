@@ -1,10 +1,12 @@
-
 #!/bin/bash
 set -e
 
 echo "Iniciando"
 
 export DJANGO_SETTINGS_MODULE=dondeestudiar.docker_settings
+
+# Generar migraciones automáticamente
+python manage.py makemigrations --noinput
 
 python manage.py migrate --noinput
 
