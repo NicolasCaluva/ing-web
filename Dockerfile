@@ -22,9 +22,9 @@ COPY . .
 
 RUN mkdir -p /data
 
+# Asegurar que docker-entrypoint.sh tenga permisos de ejecución
+RUN chmod +x /app/docker-entrypoint.sh
+
 EXPOSE 8000
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/app/docker-entrypoint.sh"]
