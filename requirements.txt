@@ -1,1 +1,12 @@
+Django>=5.1.1
 django-haystack
+whoosh
+dj-database-url
+psycopg2-binary
+cloudinary
+django-cloudinary-storage
+django-multiselectfield
+googlemaps
+whitenoise
+gunicorn
+Pillow
